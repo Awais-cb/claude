@@ -67,16 +67,10 @@ npm install -g @anthropic-ai/claude-code
 claude auth login
 ```
 
-6. **Start Claude Code:**
-
-```bash
-claude --ide
-```
-
-The prompt box in your local VS Code window connects to Claude running on the remote machine.
+6. **Open Claude Code via the panel** (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run `claude` in the integrated terminal.
 
 ![Remote SSH connection in VS Code](./images/remote-ssh-status.png)
-> What to expect: The bottom-left corner of VS Code shows a green indicator with "SSH: your-server-name". The integrated terminal opens a shell on the remote machine. Running `claude --ide` there connects it to your local VS Code window.
+> What to expect: The bottom-left corner of VS Code shows a green indicator with "SSH: your-server-name". The integrated terminal opens a shell on the remote machine. The Claude Code panel connects automatically once the extension is active on the remote.
 
 ### Why SSH + Claude Code works well
 
@@ -95,7 +89,7 @@ The prompt box in your local VS Code window connects to Claude running on the re
 **Claude can't find VS Code:**
 - Make sure you opened VS Code via Remote-SSH (not just a regular window)
 - Check the status bar — it should say "SSH: hostname"
-- Then run `claude --ide` from within that window's integrated terminal
+- Open Claude via the panel (Spark icon). If using the integrated terminal, run `claude --ide` to explicitly connect it to the IDE
 
 **API key not set on remote:**
 ```bash
@@ -138,14 +132,10 @@ npm install -g @anthropic-ai/claude-code
 claude auth login
 ```
 
-6. **Start Claude Code:**
-
-```bash
-claude --ide
-```
+6. **Open Claude Code via the panel** (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run `claude` in the integrated terminal.
 
 ![Dev Container status in VS Code](./images/dev-container-status.png)
-> What to expect: The bottom-left status bar shows "Dev Container: your-container-name". The terminal prompt may look slightly different (container hostname). Claude Code runs inside the container, accessing the container's file system.
+> What to expect: The bottom-left status bar shows "Dev Container: your-container-name". The terminal prompt may look slightly different (container hostname). Claude Code runs inside the container, accessing the container's file system. The Claude Code panel connects automatically once the extension is active inside the container.
 
 ### Adding Claude Code to your devcontainer (pre-install)
 
@@ -278,16 +268,16 @@ code .
 
 VS Code opens a new window connected to WSL. The status bar shows "WSL: Ubuntu" (or your distro name).
 
-**Step 6: Start Claude Code**
+**Step 6: Open Claude Code via the panel**
 
-In the VS Code integrated terminal (which runs inside WSL):
+Open Claude Code via the panel (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run `claude` in the integrated terminal:
 ```bash
 cd ~/projects/my-app
-claude --ide
+claude
 ```
 
 ![WSL connection in VS Code](./images/wsl-status.png)
-> What to expect: The bottom-left status bar shows "WSL: Ubuntu" or your distribution name. The integrated terminal shows a Linux prompt. File paths use Linux format (`~/projects/...` not `C:\...`).
+> What to expect: The bottom-left status bar shows "WSL: Ubuntu" or your distribution name. The integrated terminal shows a Linux prompt. File paths use Linux format (`~/projects/...` not `C:\...`). The Claude Code panel connects automatically once the WSL extension is active.
 
 ### WSL-specific notes
 
@@ -296,11 +286,11 @@ claude --ide
 ```bash
 # Good: project in Linux filesystem
 cd ~/projects/my-app
-claude --ide
+claude   # then open the panel, or run claude --ide for external terminal
 
 # Slower: project on Windows drive
 cd /mnt/c/Users/YourName/projects/my-app
-claude --ide
+claude
 ```
 
 **Setting the API key in WSL:**
@@ -340,7 +330,7 @@ source ~/.bashrc
 
 **Claude Code not connecting to VS Code from WSL:**
 
-Make sure you opened VS Code *from WSL* (using `code .` or "WSL: New WSL Window"), not just opened the Windows VS Code and then used an integrated terminal. The WSL extension needs to be active for the connection to work.
+Make sure you opened VS Code *from WSL* (using `code .` or "WSL: New WSL Window"), not just opened the Windows VS Code and then used an integrated terminal. The WSL extension needs to be active for the panel connection to work. If using the terminal directly, run `claude --ide` to explicitly connect to the IDE.
 
 ---
 
@@ -370,14 +360,10 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 echo 'export ANTHROPIC_API_KEY="sk-ant-..."' >> ~/.bashrc
 ```
 
-7. Start Claude Code:
-
-```bash
-claude --ide
-```
+7. Open Claude Code via the panel (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run `claude` in the integrated terminal.
 
 ![GitHub Codespace with Claude Code](./images/codespace-setup.png)
-> What to expect: The Codespace opens in a VS Code-like interface in your browser (or the VS Code desktop app). The status bar shows "Codespace: your-codespace-name". You can run Claude Code in the integrated terminal just like a local setup.
+> What to expect: The Codespace opens in a VS Code-like interface in your browser (or the VS Code desktop app). The status bar shows "Codespace: your-codespace-name". The Claude Code panel connects automatically once the extension is active inside the Codespace.
 
 ### Making the API key persistent in Codespaces
 
@@ -421,10 +407,10 @@ When working remotely, you can give Claude access to paths beyond your current p
 
 ```bash
 # Grant access to a shared library on the remote machine
-claude --ide --add-dir /opt/shared-libraries/my-lib
+claude --add-dir /opt/shared-libraries/my-lib
 
 # Grant access to a sibling directory
-claude --ide --add-dir ../shared-utils
+claude --add-dir ../shared-utils
 ```
 
 ---

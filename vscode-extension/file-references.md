@@ -30,8 +30,22 @@ When you type `@` in the VS Code prompt box, a file picker autocomplete dropdown
 
 This works for any file in your current workspace.
 
+**Fuzzy matching** is supported — you don't need to type the exact filename. Typing `@auth` can match `auth.js`, `AuthService.ts`, `useAuth.tsx`, and so on. Claude Code ranks matches by relevance, so the most likely file appears at the top.
+
 ![@ autocomplete dropdown](./images/file-reference-autocomplete.png)
 > What to expect: As soon as you type `@` followed by a few letters, a dropdown appears showing matching files from your project. Files are sorted by recent activity, so the files you've been working with appear near the top.
+
+---
+
+## Line Range References
+
+To reference a specific range of lines within a file, press `Option+K` (Mac) or `Alt+K` (Windows/Linux) when the cursor is in the prompt box. This inserts an @-mention with the line range included, for example:
+
+```
+@src/app.ts#5-10
+```
+
+This tells Claude to look specifically at lines 5 through 10 of `app.ts`, rather than the entire file. This is especially useful for large files where you want to focus Claude on a precise location — a particular function, a route definition, or a block of config.
 
 ---
 
@@ -67,7 +81,7 @@ Claude Code normalizes these paths internally.
 
 ## Referencing Folders
 
-You can reference an entire directory:
+You can reference an entire directory. When referencing folders, include a **trailing slash** to make clear you're pointing at a directory rather than a file prefix:
 
 ```
 > @src/services/ — which service handles payment processing?

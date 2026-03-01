@@ -153,14 +153,14 @@ Three links. Three clicks. Problem traced.
 
 ### Links are not clickable
 
-Make sure Claude Code is connected via `claude --ide`. Without the IDE connection, file references are plain text.
+File links work natively when using the VS Code extension panel. If running Claude in an external terminal, use `claude --ide` or `/ide` inside the session to connect to VS Code.
 
-Check the connection:
+Check the connection status:
 ```
 > /ide
 ```
 
-This shows whether VS Code is currently connected. If not, exit and restart with `claude --ide`.
+This shows whether VS Code is currently connected. If you are running Claude outside the extension panel (e.g., in a standalone terminal), restart with `claude --ide` to enable the IDE connection.
 
 ### Link opens the wrong file
 

@@ -182,9 +182,9 @@ Don't mix concerns in one session. One session for the auth refactor, another fo
 
 ### Resume instead of restarting
 
-```bash
-claude --ide -c
-```
+In the VS Code extension, resume sessions via the **Past Conversations dropdown** in the Claude Code panel — no command needed. Select the session by name (another reason to use `/rename` immediately when starting one).
+
+For terminal sessions, `claude -c` resumes the most recent session, or `claude -r <name>` resumes a named session.
 
 Always try to resume the last session rather than starting fresh. You'll have all the context from where you left off. Starting a new session every day is like throwing away your notes every morning.
 
@@ -269,9 +269,12 @@ VS Code reloads edited files automatically. When Claude edits a file:
 Two ways to revert:
 
 1. **In VS Code**: `Ctrl+Z` (`Cmd+Z` on macOS) in the affected file (standard undo)
-2. **In Claude**: `Esc Esc` — reverts the last file operation Claude performed
+2. **In Claude**: `Esc Esc` — opens a rewind menu with three options:
+   - **Fork conversation** — branch the conversation from this point without changing files
+   - **Rewind code** — restore files to their previous state without altering the conversation
+   - **Fork + Rewind** — branch the conversation and restore files simultaneously
 
-`Esc Esc` is better when Claude changed multiple files — it reverts them all at once. `Ctrl+Z` works file-by-file.
+`Esc Esc` is better when Claude changed multiple files — it can restore them all at once. `Ctrl+Z` works file-by-file.
 
 ---
 
@@ -361,7 +364,7 @@ Claude reads the actual implementation and writes accurate documentation — no 
 | Mistake | Better Approach |
 |---------|----------------|
 | Asking too vaguely | Include the file, the error, and the expected behavior |
-| Starting fresh sessions every time | Use `claude --ide -c` to resume |
+| Starting fresh sessions every time | Use the Past Conversations dropdown in the panel (or `claude -c` in the terminal) to resume |
 | Letting sessions get too long | Run `/compact` when responses drift |
 | Ignoring the permission mode | Use Auto-Accept on trusted projects, Plan-only for exploration |
 | Not naming sessions | `/rename` immediately after starting |
@@ -378,10 +381,13 @@ Claude reads the actual implementation and writes accurate documentation — no 
 ```bash
 # 1. Open your project
 code ~/projects/my-app
+```
 
-# 2. Resume your session from yesterday
-claude --ide -c
+2. Resume your session from yesterday via the **Past Conversations dropdown** in the Claude Code panel. Select the session by name.
 
+   For terminal users: `claude -c` resumes the last session, or `claude -r <name>` resumes by name.
+
+```
 # 3. Check where you left off
 > /history
 

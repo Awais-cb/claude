@@ -51,7 +51,7 @@ No special setup needed — all commands are available as soon as you're in a Cl
 | `/rename <name>` | Name the current session for easy resumption later |
 | `/history` | Show the full conversation history for this session |
 | `/vim` | Toggle vim editing mode for the prompt box |
-| `/fast` | Toggle Fast Mode (2.5x faster responses) |
+| `/fast [on\|off]` | Toggle Fast Mode (2.5x faster responses); optionally pass `on` or `off` |
 | `/model <name>` | Switch model — `opus`, `sonnet`, or `haiku` |
 | `/desktop` | Move the session to the Claude Code desktop app |
 
@@ -73,17 +73,15 @@ No special setup needed — all commands are available as soon as you're in a Cl
 
 | Command | What It Does |
 |---------|-------------|
-| `/config` | Open the visual configuration interface |
-| `/settings` | Open `settings.json` for editing |
+| `/config` | Open the Settings interface (same as `/settings`) |
+| `/settings` | Open the Settings interface (same as `/config`) |
 | `/keybindings` | Edit keyboard shortcuts in `keybindings.json` |
 | `/memory` | View and edit CLAUDE.md and memory files |
 | `/permissions` | View and modify allowed/denied tool permissions |
 
 ### When to use these
 
-**`/config`** — The easiest way to change settings. Opens a visual UI (no JSON editing required). Navigate with arrow keys, toggle options, save.
-
-**`/settings`** — Opens the raw `settings.json` in your `$EDITOR`. Use when you know exactly what you want to change and prefer editing JSON directly.
+**`/config`** and **`/settings`** — These are aliases of each other and open the same Settings interface. Use either one to access Claude Code's configuration. The interface may show different tabs depending on context, but both commands take you to the same place.
 
 **`/memory`** — Opens the CLAUDE.md file for this project. Add things here that Claude should always know: project conventions, architecture decisions, testing patterns, etc.
 
@@ -110,7 +108,7 @@ No special setup needed — all commands are available as soon as you're in a Cl
 
 **`/security-review`** — Run before merging any code that touches authentication, payments, or user data. Claude checks specifically for security vulnerabilities.
 
-**`/commit-push-pr`** — The "I'm done" command. Stages your changes, writes a commit message, pushes the branch, and opens a pull request — all in one go.
+**`/commit-push-pr`** — The "I'm done" command. Stages your changes, writes a commit message, pushes the branch, and opens a pull request — all in one go. Note: this is a built-in **skill** (not a raw slash command), so it runs as a Claude Code workflow rather than a direct CLI flag.
 
 ---
 
@@ -163,25 +161,22 @@ Status: Active
 
 ---
 
-## Thinking and Mode Commands
+## Extended Thinking
 
-| Command | What It Does |
-|---------|-------------|
-| `/think` | Activate extended thinking for the next response |
-| `/think-hard` | Activate deeper thinking (more thorough analysis) |
-| `/think-harder` | Maximum thinking depth for the most complex problems |
+`/think`, `/think-hard`, and `/think-harder` are **not** built-in slash commands. Extended thinking is toggled via `Option+T` (macOS) / `Alt+T` (Windows/Linux) or by selecting the thinking level from the `/` command menu inside the session.
 
-### When to use these
+### When to use extended thinking
 
-Use the thinking commands before asking Claude about genuinely complex problems:
+Extended thinking is best for genuinely complex problems:
 - Architectural decisions with many tradeoffs
 - Debugging an obscure issue that involves multiple interacting systems
 - Designing a system that needs to handle edge cases carefully
 
+You can also phrase requests naturally to invoke deeper reasoning:
+
 ```
-> /think-hard
-> How should I design the retry logic for our payment processor to handle
-  network failures, duplicate charges, and idempotency correctly?
+> Think carefully about how to design the retry logic for our payment processor
+  to handle network failures, duplicate charges, and idempotency correctly.
 ```
 
 The response will be slower but significantly more thorough.

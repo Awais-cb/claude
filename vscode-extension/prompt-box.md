@@ -56,11 +56,7 @@ Select **Claude Code: Open Panel** (or similar) from the list.
 
 ### Option 2: Keyboard Shortcut
 
-```
-Ctrl+Shift+A
-```
-
-Opens a new Claude Code session directly. This shortcut works on all operating systems.
+When the Claude Code panel is focused, use `Cmd+N` (macOS) or `Ctrl+N` (Windows / Linux) to start a new conversation.
 
 ### Option 3: It Opens Automatically
 
@@ -196,6 +192,24 @@ Pasting an image lets you ask Claude things like:
 ```
 
 This works on all platforms as long as the image is in your clipboard. On macOS, `Cmd+Shift+4` takes a screenshot directly to clipboard. On Windows, `Win+Shift+S` does the same. On Linux, `Flameshot` or `scrot` can be configured similarly.
+
+---
+
+## Context Window Usage Indicator
+
+The prompt box footer shows a **context window usage indicator** — a small display of how much of Claude's available context has been consumed by the current conversation. As a session grows longer (more messages, more files referenced), this indicator fills up. When it approaches the limit, consider starting a new session (`Cmd+N` / `Ctrl+N`) or compacting the conversation.
+
+---
+
+## Permission Mode Selector
+
+The prompt box includes a **permission mode selector** that lets you switch between modes without leaving the UI. Click the mode indicator in the prompt box to cycle between:
+
+- **Normal** — Claude asks for permission before making file edits or running commands
+- **Plan** — Claude outlines what it intends to do without executing anything (useful for review before action)
+- **Auto-accept** — Claude executes all actions automatically without prompting
+
+This is the same as the `--dangerously-skip-permissions` / plan-mode flags, but toggled per-session directly from the panel.
 
 ---
 

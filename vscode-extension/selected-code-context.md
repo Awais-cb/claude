@@ -65,6 +65,14 @@ When you have a selection active:
 
 If you have no active selection, Claude falls back to the **currently open file** as context.
 
+### Visibility toggle
+
+The prompt box footer shows a **selection indicator** with the number of lines currently selected. You can click this indicator to **toggle whether Claude sees the highlighted text**. When the eye-slash icon is shown, the selection is hidden from Claude even though it remains highlighted in the editor. Click again to re-enable it. This is useful when you want to highlight code for your own reference without including it in Claude's context.
+
+### Insert a line-range reference with `Option+K` / `Alt+K`
+
+With code selected, pressing `Option+K` (Mac) or `Alt+K` (Windows/Linux) inserts an @-mention reference into the prompt box pointing at the exact line range — for example, `@src/payment.ts#45-82`. This creates a permanent, shareable reference to those specific lines rather than relying on the transient selection state.
+
 ```
 ┌──────────────────────────────────────────────────┐
 │  What Claude receives when you ask a question    │

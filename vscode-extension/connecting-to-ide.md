@@ -1,16 +1,18 @@
 # Connecting Claude Code to VS Code
 
-The `--ide` flag is the bridge between the Claude Code CLI and your VS Code editor. Without it, Claude Code runs in a standalone terminal with no awareness of your editor — like having a smart assistant in another room who can't see your desk. With `--ide`, Claude gets full context of what you're working on, sees what you've selected, and can send clickable links back to your editor.
+The Claude Code VS Code extension opens natively inside your editor — no terminal command required. Once the extension is installed, click the **Spark icon** in the Activity Bar (left sidebar) or click **"✱ Claude Code"** in the status bar to open the Claude Code panel directly.
+
+The `--ide` flag is a separate, optional workflow for users who launch Claude from an **external terminal** (outside VS Code) and want that terminal session to connect to and communicate with their open VS Code editor. If you're working entirely within VS Code, you don't need `--ide` at all.
 
 ---
 
-## The `--ide` Flag
+## The `--ide` Flag (For External Terminal Sessions)
 
 ```bash
 claude --ide
 ```
 
-Run this from your project directory in VS Code's integrated terminal (or any terminal where the project is open). Claude Code will:
+Use this when you launch Claude from a terminal **outside** VS Code and want it to auto-connect to your open editor. Claude Code will:
 
 1. Detect your running VS Code instance
 2. Establish a bidirectional connection over a local socket
@@ -19,7 +21,9 @@ Run this from your project directory in VS Code's integrated terminal (or any te
 
 ---
 
-## Step-by-Step: Your First IDE Connection
+## Step-by-Step: Connecting a Terminal Session to VS Code
+
+This section covers how to connect an **external terminal session** to VS Code using `--ide`. If you're using Claude Code purely within VS Code (via the panel), you can skip this section.
 
 ### 1. Open your project in VS Code
 
@@ -83,9 +87,9 @@ When the connection is successful, you'll notice:
 
 ---
 
-## Auto-Connect on Every Session (Recommended)
+## Auto-Connect on Every Terminal Session (Optional)
 
-Instead of typing `claude --ide` every time, make it your default. The approach differs slightly per OS.
+If you prefer launching Claude from an external terminal and want it to always connect to VS Code, you can avoid typing `claude --ide` every time by setting up an alias. The approach differs slightly per OS.
 
 ### Shell alias setup
 
@@ -224,9 +228,9 @@ This is the recommended way to start each day — you pick up right where you le
 
 ---
 
-## Without `--ide` (Fallback Mode)
+## Without `--ide` (Terminal-Only Mode)
 
-If you run `claude` without `--ide`, Claude Code still works — it just runs in the terminal without editor integration. You lose:
+If you run `claude` in a terminal without `--ide`, Claude Code still works — it just runs without connecting to your VS Code editor. You lose:
 
 - The VS Code prompt box
 - Selected code as automatic context
