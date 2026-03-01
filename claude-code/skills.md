@@ -31,42 +31,50 @@ Claude Code ships with several built-in skills:
 
 ## Creating a Custom Skill
 
-### 1. Create the skill file
+### 1. Create the skill directory and file
+
+Each skill lives in its own **directory** with a `SKILL.md` file inside it — not a standalone `.md` file.
 
 **macOS / Linux (Ubuntu):**
 ```bash
 # User-level: available in all your projects
-~/.claude/skills/my-skill.md
+mkdir -p ~/.claude/skills/my-skill
+# then create ~/.claude/skills/my-skill/SKILL.md
 
 # Project-level: only for the current project
-.claude/skills/my-skill.md
+mkdir -p .claude/skills/my-skill
+# then create .claude/skills/my-skill/SKILL.md
 ```
 
 **Windows (WSL):**
 ```bash
 # User-level
-~/.claude/skills/my-skill.md
+mkdir -p ~/.claude/skills/my-skill
 
 # Project-level
-.claude/skills/my-skill.md
+mkdir -p .claude/skills/my-skill
 ```
 
 **Windows (native path):**
 ```
 # User-level
-%USERPROFILE%\.claude\skills\my-skill.md
+%USERPROFILE%\.claude\skills\my-skill\SKILL.md
 
 # Project-level
-.claude\skills\my-skill.md
+.claude\skills\my-skill\SKILL.md
 ```
 
-> **Tip:** If the `skills/` directory doesn't exist yet, create it first:
->
-> macOS/Linux: `mkdir -p ~/.claude/skills`
->
-> Windows PowerShell: `New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\skills" -Force`
+The resulting structure looks like this:
 
-### 2. Add frontmatter + instructions
+```
+~/.claude/skills/
+└── my-skill/
+    └── SKILL.md      ← required
+```
+
+> **Common mistake:** Creating `~/.claude/skills/my-skill.md` (flat file) instead of `~/.claude/skills/my-skill/SKILL.md` (directory + file). The flat file will not appear in `/skills`.
+
+### 2. Add frontmatter + instructions to `SKILL.md`
 
 ```markdown
 ---
@@ -95,38 +103,38 @@ Commands to use:
 
 Here's a complete beginner walkthrough. We'll create a `/standup` skill that generates a daily standup summary from your recent git activity.
 
-**Step 1: Create the skills folder**
+**Step 1: Create the skill directory**
 
 **macOS / Linux (Ubuntu):**
 ```bash
-mkdir -p ~/.claude/skills
+mkdir -p ~/.claude/skills/standup
 ```
 
 **Windows (WSL):**
 ```bash
-mkdir -p ~/.claude/skills
+mkdir -p ~/.claude/skills/standup
 ```
 
 **Windows (PowerShell):**
 ```powershell
-New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\skills" -Force
+New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\skills\standup" -Force
 ```
 
-**Step 2: Create the skill file**
+**Step 2: Create the SKILL.md file**
 
 **macOS / Linux (Ubuntu):**
 ```bash
-nano ~/.claude/skills/standup.md
+nano ~/.claude/skills/standup/SKILL.md
 ```
 
 **Windows (WSL):**
 ```bash
-nano ~/.claude/skills/standup.md
+nano ~/.claude/skills/standup/SKILL.md
 ```
 
 **Windows (PowerShell):**
 ```powershell
-notepad "$env:USERPROFILE\.claude\skills\standup.md"
+notepad "$env:USERPROFILE\.claude\skills\standup\SKILL.md"
 ```
 
 **Step 3: Write the skill**
@@ -166,6 +174,19 @@ That's it. Claude reads your git history and generates a ready-to-paste standup 
 ---
 
 ## Skill File Format
+
+Each skill is a **directory** containing a `SKILL.md` file:
+
+```
+~/.claude/skills/
+└── skill-name/
+    ├── SKILL.md          ← required
+    ├── scripts/          ← optional: helper scripts
+    ├── references/       ← optional: docs loaded as needed
+    └── assets/           ← optional: templates, icons, etc.
+```
+
+The `SKILL.md` file uses YAML frontmatter followed by instructions:
 
 ```markdown
 ---
@@ -407,23 +428,30 @@ context: fork
 
 ## Organizing Skills
 
-You can organize skills into subdirectories:
+Each skill is a directory containing a `SKILL.md`. You can group related skills under subdirectories:
 
 ```
 .claude/skills/
 ├── review/
-│   ├── code-review.md
-│   ├── security-review.md
-│   └── performance-review.md
+│   ├── code-review/
+│   │   └── SKILL.md
+│   ├── security-review/
+│   │   └── SKILL.md
+│   └── performance-review/
+│       └── SKILL.md
 ├── docs/
-│   ├── changelog.md
-│   └── readme-update.md
+│   ├── changelog/
+│   │   └── SKILL.md
+│   └── readme-update/
+│       └── SKILL.md
 └── testing/
-    ├── test-coverage.md
-    └── integration-tests.md
+    ├── test-coverage/
+    │   └── SKILL.md
+    └── integration-tests/
+        └── SKILL.md
 ```
 
-All skills are discovered automatically regardless of nesting.
+All skills are discovered automatically regardless of nesting depth.
 
 **Suggested organization for beginners:**
 - Put personal workflow shortcuts in `~/.claude/skills/` (user-level)
