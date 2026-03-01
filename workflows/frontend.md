@@ -255,7 +255,7 @@ The VS Code extension is especially valuable for frontend work — you can highl
 
 ## Tips
 
-- **Always use `--ide`** — the VS Code extension lets you highlight code and ask about it without referencing files manually
+- **Use the VS Code extension** — open Claude Code in the VS Code panel to highlight code and ask about it without referencing files manually. You can also launch from a terminal with `claude --ide` to auto-connect to your open editor
 - **Paste screenshots directly** — `Ctrl+V` in the prompt box sends images; great for UI bugs and design mockups
 - **Reference your existing components with `@`** — Claude matches your patterns instead of inventing new ones
 - **For complex state bugs, enable thinking** — `Alt+T` / `Option+T` before asking about race conditions or complex re-render issues

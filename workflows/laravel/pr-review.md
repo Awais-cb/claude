@@ -48,7 +48,7 @@ php artisan test
 ```
 
 ```
-> /team-review
+> /review
 ```
 
 Or manually:

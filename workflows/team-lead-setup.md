@@ -321,8 +321,7 @@ Share this with every new developer joining the team:
 # Claude Code Onboarding
 
 ## Install (10 min)
-- [ ] Install Node.js 18+ (use nvm recommended)
-- [ ] `npm install -g @anthropic-ai/claude-code`
+- [ ] Install Claude Code: `curl -fsSL https://claude.ai/install.sh | bash` (macOS: `brew install claude`, Windows: `winget install Anthropic.Claude`)
 - [ ] `claude auth login` — sign in with your Anthropic account
 - [ ] Install the Claude Code VS Code extension: `code --install-extension anthropic.claude-code`
 - [ ] Run `/terminal-setup` inside Claude to configure Shift+Enter
