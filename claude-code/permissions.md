@@ -1,6 +1,20 @@
 # Permissions & Safety
 
-Claude Code gives you fine-grained control over what Claude is allowed to do. This ranges from simple "ask before every action" to "do everything automatically."
+## What are Permissions?
+
+Think of Claude's permissions like the access badge you give a new employee on their first day. A junior contractor might only get a key to their desk — they can look at things but can't modify production systems. A trusted senior developer gets broader access, but you'd still want to know before they push to main. A fully automated CI bot might have unrestricted access to run scripts — but only in a sandboxed environment where nothing important can break.
+
+Claude works the same way. By default, it asks for your approval before doing anything that could have consequences — running commands, editing files, making network requests. As you build trust, you can expand its access. And you can always restrict specific actions, no matter what mode you're in.
+
+```
+New employee (day 1)         Trusted dev (6 months in)    Automated CI bot
+────────────────────         ─────────────────────────    ─────────────────
+"Can I delete this file?"    Just does it, tells you      Runs everything,
+"Should I run npm install?"  after                        no supervision
+"Is this the right DB?"
+     ↓                              ↓                           ↓
+  Normal Mode               Auto-Accept Mode            --dangerously-skip-permissions
+```
 
 ---
 
@@ -48,7 +62,96 @@ Shift+Tab  (cycle to Auto-Accept)
 
 **Best for:** Trusted, fast iteration when you're confident about what Claude is doing.
 
-> ⚠️ Use Auto-Accept carefully — Claude will make changes without asking first.
+> Use Auto-Accept carefully — Claude will make changes without asking first.
+
+---
+
+## The Three Modes at a Glance
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Permission Mode Comparison                   │
+├──────────────────┬──────────────────┬───────────────────────────┤
+│   Normal Mode    │   Plan Mode      │   Auto-Accept Mode        │
+│   (default)      │   (read-only)    │                           │
+├──────────────────┼──────────────────┼───────────────────────────┤
+│ Reads files: YES │ Reads files: YES │ Reads files: YES          │
+│ Edits files: ASK │ Edits files: NO  │ Edits files: YES          │
+│ Runs commands: ASK│ Runs commands: NO│ Runs commands: YES       │
+│ Network: ASK     │ Network: YES     │ Network: YES              │
+├──────────────────┼──────────────────┼───────────────────────────┤
+│ Use when:        │ Use when:        │ Use when:                 │
+│ Daily coding     │ Exploring code   │ You trust the task        │
+│ New codebase     │ Planning refactor│ Rapid prototyping         │
+│ Risky tasks      │ Reviewing design │ Known-safe scripts        │
+└──────────────────┴──────────────────┴───────────────────────────┘
+         Switch between modes with: Shift+Tab
+```
+
+---
+
+## The Permission Prompt
+
+When Claude wants to run an action that needs approval, you see:
+
+```
+Claude wants to: run `npm install lodash`
+
+[y] Allow once
+[a] Always allow this command
+[n] Deny
+[d] Deny and tell Claude why
+```
+
+- **Allow once** — approve just this time
+- **Always allow** — add to your permanent allow list
+- **Deny** — block this specific action
+- **Deny and explain** — block and give Claude feedback on why
+
+![Claude permission prompt in terminal](./images/permission-prompt.png)
+> What to expect: a prompt like the one above appears in your terminal whenever Claude wants to take an action that could have side effects. You choose how to respond before anything happens.
+
+---
+
+## What Happens When You Deny
+
+Denying an action doesn't end the conversation. Claude is told the action was denied and immediately looks for another way to help.
+
+**Example 1: Denying a destructive command**
+```
+> Delete all log files
+
+Claude wants to: rm -rf logs/
+[Deny]
+
+Claude: I couldn't delete the logs directory. Would you like me to:
+1. Delete only .log files individually (rm logs/*.log)
+2. Clear the contents without deleting the folder
+3. Show you the files first so you can confirm?
+```
+
+**Example 2: Denying a file write**
+```
+> Update the database config
+
+Claude wants to: Write to config/database.php
+[Deny]
+
+Claude: I can't write to that file. I can show you the exact changes
+you'd need to make manually — want me to do that instead?
+```
+
+**Example 3: Denying and explaining**
+```
+> Install the lodash package
+
+Claude wants to: run npm install lodash
+[Deny and explain: we don't add dependencies without discussing it first]
+
+Claude: Understood — I'll always discuss dependency choices before
+installing anything. For this task I can use native JS array methods
+instead of lodash. Here's how...
+```
 
 ---
 
@@ -136,23 +239,28 @@ Not committed — your personal overrides.
 
 ---
 
-## The Permission Prompt
+## OS-Specific Notes
 
-When Claude wants to run an action that needs approval, you see:
-
-```
-Claude wants to: run `npm install lodash`
-
-[y] Allow once
-[a] Always allow this command
-[n] Deny
-[d] Deny and tell Claude why
+### macOS / Linux
+File paths use forward slashes. Wildcard patterns in settings work directly:
+```json
+"deny": ["Write(.env*)", "Write(config/secrets*)"]
 ```
 
-- **Allow once** — approve just this time
-- **Always allow** — add to your permanent allow list
-- **Deny** — block this specific action
-- **Deny and explain** — block and give Claude feedback on why
+### Windows (WSL)
+When running Claude Code inside WSL, paths follow Linux conventions (forward slashes), even though your files are on a Windows filesystem. Use Linux-style paths in your settings files:
+```json
+"deny": ["Write(.env*)", "Write(config/secrets*)"]
+```
+
+If you're running Claude Code in native PowerShell (less common), paths use backslashes in the filesystem but still use forward slashes in Claude's tool patterns.
+
+### Windows (PowerShell)
+To create the settings directory and file:
+```powershell
+New-Item -ItemType Directory -Force .claude
+New-Item -ItemType File .claude\settings.json
+```
 
 ---
 
@@ -164,7 +272,7 @@ claude --dangerously-skip-permissions
 
 This disables ALL permission prompts. Every action is automatically approved.
 
-> ⚠️ **Only use this in:** throwaway containers, CI/CD pipelines, sandboxed environments. Never on a machine with important data.
+> **Only use this in:** throwaway containers, CI/CD pipelines, sandboxed environments. Never on a machine with important data.
 
 ---
 

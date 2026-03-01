@@ -1,6 +1,79 @@
 # Hooks — Automate Actions on Events
 
-Hooks let you run shell commands, scripts, or HTTP requests automatically when Claude Code events happen — like before Claude edits a file, after Claude runs a command, or when a session starts.
+Think of hooks like IFTTT or Zapier, but for your coding assistant. "When Claude edits a file, automatically run the formatter." "When Claude finishes responding, send me a desktop notification." "When Claude tries to run a dangerous command, block it." You define the trigger (the Claude Code event) and the action (a shell command), and it happens automatically every time.
+
+Without hooks, you have to manually run your linter after Claude makes changes, manually check if files were formatted, manually remember to test after edits. With hooks, these things just happen — you stay in the flow.
+
+```
+Hook Lifecycle:
+
+  Claude does something
+         |
+         v
+   [Event fires]
+   (e.g., PostToolUse)
+         |
+         v
+   [Matcher checks]  <-- Does "Edit|Write" match the tool used?
+         |
+    YES  |  NO
+         |   \
+         v    \--> Skip hook, continue
+   [Command runs]
+   (your shell script)
+         |
+    +----+----+
+    |         |
+   PreToolUse  PostToolUse
+   can BLOCK   result is
+   the action  informational
+```
+
+---
+
+## Prerequisites
+
+Before writing complex hooks, make sure you have the relevant tools installed:
+
+**For code formatting hooks:**
+
+macOS (using Homebrew):
+```bash
+brew install prettier          # JavaScript/TypeScript formatter
+brew install black             # Python formatter
+```
+
+Linux (Ubuntu):
+```bash
+npm install -g prettier
+pip install black
+```
+
+Windows (WSL):
+```bash
+npm install -g prettier
+pip install black
+```
+
+**For desktop notification hooks:**
+
+macOS: `osascript` is built in — no install needed.
+
+Linux (Ubuntu):
+```bash
+sudo apt install libnotify-bin   # Provides notify-send
+```
+
+Windows (WSL): For notifications that appear on the Windows desktop from WSL:
+```bash
+# Option 1: Use PowerShell from WSL
+powershell.exe -Command "..."
+
+# Option 2: Install a notification tool
+# wsl-notify-send works well for WSL -> Windows notifications
+```
+
+**For HTTP hooks:** `curl` is usually pre-installed on macOS and Linux. On Windows, it's included in modern PowerShell.
 
 ---
 
@@ -56,11 +129,38 @@ Hooks are configured in `settings.json`:
 
 ### Where to put hooks
 
+**macOS / Linux (Ubuntu):**
 ```
-~/.claude/settings.json          ← User-wide (all projects)
-.claude/settings.json            ← Project-wide
-.claude/settings.local.json      ← Local only (not committed)
+~/.claude/settings.json          # User-wide (all projects)
+.claude/settings.json            # Project-wide
+.claude/settings.local.json      # Local only (not committed to git)
 ```
+
+**Windows (native path):**
+```
+%USERPROFILE%\.claude\settings.json     # User-wide
+.claude\settings.json                   # Project-wide
+.claude\settings.local.json             # Local only
+```
+
+**Recommendation for beginners:**
+- Start with `.claude/settings.local.json` in your project — it won't affect other projects and won't be accidentally committed.
+- Once you're happy with a hook, move it to `.claude/settings.json` if the whole team should use it, or `~/.claude/settings.json` if it's a personal preference for all your projects.
+
+---
+
+## Environment Variables in Hooks
+
+Claude Code passes these variables to hook commands. Here's what each one actually contains:
+
+| Variable | What it contains | Example value |
+|----------|-----------------|---------------|
+| `$CLAUDE_PROJECT_DIR` | Absolute path to the current working directory | `/home/alice/myproject` |
+| `$CLAUDE_TOOL_NAME` | The name of the tool Claude just used | `Edit`, `Bash`, `Write`, `Read` |
+| `$CLAUDE_TOOL_INPUT_FILE_PATH` | The full path of the file being edited or written | `/home/alice/myproject/src/utils.js` |
+| `$CLAUDE_TOOL_INPUT_COMMAND` | The exact shell command Claude is about to run | `npm test -- --coverage` |
+| `$CLAUDE_SESSION_ID` | A unique identifier for the current Claude session | `sess_abc123def456` |
+| `$CLAUDE_NOTIFICATION_TYPE` | The category of notification being sent | `waiting_for_input`, `task_complete` |
 
 ---
 
@@ -83,10 +183,11 @@ Run Prettier automatically after Claude edits any JS/TS file:
 }
 ```
 
+**What this does:** Every time Claude saves a change to a file, Prettier reformats it automatically. You never have to manually run the formatter.
+
 ### 2. Desktop notification when Claude needs you
 
-Get a macOS notification when Claude is waiting for input:
-
+**macOS (built-in, no install required):**
 ```json
 {
   "hooks": {
@@ -99,18 +200,35 @@ Get a macOS notification when Claude is waiting for input:
 }
 ```
 
-For Linux (using `notify-send`):
+**Linux (Ubuntu) — requires `libnotify-bin`:**
 ```json
 {
   "hooks": {
     "Notification": [
       {
-        "command": "notify-send 'Claude Code' 'Claude needs your input'"
+        "command": "notify-send 'Claude Code' 'Claude needs your input' --icon=dialog-information"
       }
     ]
   }
 }
 ```
+
+**Windows (WSL) — sends a Windows toast notification from WSL:**
+```json
+{
+  "hooks": {
+    "Notification": [
+      {
+        "command": "powershell.exe -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Claude needs your input', 'Claude Code')\""
+      }
+    ]
+  }
+}
+```
+
+> **Tip for macOS:** The `osascript` notification only appears if your terminal app has notification permissions. Go to System Settings > Notifications > your terminal app and enable notifications if they don't appear.
+
+> **Tip for Linux:** If `notify-send` shows an error, check that a notification daemon is running. On GNOME, this is usually automatic. On minimal setups, try `dunst` as a lightweight notification daemon.
 
 ### 3. Run linter after edits
 
@@ -158,6 +276,10 @@ Prevent Claude from ever editing `.env` or credentials files:
   }
 }
 ```
+
+**macOS / Linux path:** `~/.claude/command-log.txt`
+
+**Windows path (in WSL):** `~/.claude/command-log.txt` (inside WSL home)
 
 ### 6. Run tests after file changes
 
@@ -209,6 +331,13 @@ else
 fi
 ```
 
+Save this as a script file, then reference it in your hook:
+
+**macOS / Linux (Ubuntu):**
+```bash
+chmod +x ~/.claude/hooks/check-dangerous-commands.sh
+```
+
 Configure it:
 ```json
 {
@@ -223,20 +352,12 @@ Configure it:
 }
 ```
 
----
+**Windows (WSL):**
+```bash
+chmod +x ~/.claude/hooks/check-dangerous-commands.sh
+```
 
-## Environment Variables in Hooks
-
-Claude Code passes these variables to hook commands:
-
-| Variable | Value |
-|----------|-------|
-| `$CLAUDE_PROJECT_DIR` | Current working directory |
-| `$CLAUDE_TOOL_NAME` | Tool being called (Edit, Bash, etc.) |
-| `$CLAUDE_TOOL_INPUT_FILE_PATH` | File being edited (for Edit/Write/Read) |
-| `$CLAUDE_TOOL_INPUT_COMMAND` | Command being run (for Bash) |
-| `$CLAUDE_SESSION_ID` | Current session ID |
-| `$CLAUDE_NOTIFICATION_TYPE` | Type of notification (for Notification event) |
+The hook path in `settings.json` should use the WSL path format (`~/.claude/hooks/...`) when Claude Code is running in WSL.
 
 ---
 
@@ -325,6 +446,108 @@ For debugging or one-off sessions:
 
 ---
 
+## Troubleshooting Common Hook Failures
+
+**Problem: Hook command not found**
+
+Symptoms: The hook silently fails or you see "command not found" in logs.
+
+Cause: Hooks run in a non-interactive shell that may not have your PATH set up the same way your terminal does.
+
+Fix: Use absolute paths to commands in your hook:
+
+```json
+{
+  "command": "/usr/local/bin/prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+}
+```
+
+Find the absolute path with `which prettier` (macOS/Linux) or `Get-Command prettier` (PowerShell).
+
+---
+
+**Problem: Hook fires but does nothing visible**
+
+Symptoms: The hook runs (no error) but the expected effect doesn't happen.
+
+Cause: The command is running but in the wrong directory, or the file path variable isn't expanding correctly.
+
+Fix: Test your hook command manually in your terminal, substituting real values for the environment variables:
+
+```bash
+# Manually simulate what the hook will do:
+CLAUDE_TOOL_INPUT_FILE_PATH="/path/to/your/file.js"
+prettier --write "$CLAUDE_TOOL_INPUT_FILE_PATH"
+```
+
+---
+
+**Problem: PreToolUse hook not blocking actions**
+
+Symptoms: You expect the hook to block an action but Claude proceeds anyway.
+
+Cause: The JSON output from your hook is malformed, or the script exits with an error before printing the JSON.
+
+Fix: Test your blocking script directly. The output must be exactly valid JSON:
+
+```bash
+# Good - this will block:
+echo '{"decision": "block", "reason": "Not allowed"}'
+
+# Bad - extra whitespace or quotes around the JSON will fail:
+echo "{ decision: block }"
+```
+
+---
+
+**Problem: macOS notifications don't appear**
+
+Symptoms: The `osascript` command runs without error but no notification appears.
+
+Cause: Your terminal app doesn't have notification permissions.
+
+Fix: Go to System Settings > Notifications > find your terminal app (Terminal, iTerm2, etc.) > enable "Allow Notifications".
+
+---
+
+**Problem: Linux `notify-send` fails**
+
+Symptoms: `notify-send: No notification servers are available` error.
+
+Cause: No notification daemon is running.
+
+Fix:
+```bash
+# Check if dunst is installed:
+which dunst
+
+# Install and start dunst if not present:
+sudo apt install dunst
+dunst &
+
+# Or for GNOME: ensure gnome-shell is running (it includes a notification daemon)
+```
+
+---
+
+**Problem: Hooks slow down every Claude response**
+
+Symptoms: There's noticeable lag after every file edit.
+
+Cause: A `PostToolUse` hook is running a slow command synchronously.
+
+Fix: Add `"async": true` to the hook so it runs in the background:
+
+```json
+{
+  "matcher": "Edit|Write",
+  "command": "npm run lint",
+  "async": true
+}
+```
+
+---
+
 ## Complete Real-World Setup
 
 Here's a complete `.claude/settings.json` for a Node.js project:
@@ -357,3 +580,5 @@ Here's a complete `.claude/settings.json` for a Node.js project:
   }
 }
 ```
+
+> **Note on `terminal-notifier`:** This is a macOS-specific tool installable via `brew install terminal-notifier`. The `2>/dev/null || true` at the end means it fails silently on Linux/Windows where the tool isn't available — safe to leave in a shared `settings.json` if the team uses mixed OS.

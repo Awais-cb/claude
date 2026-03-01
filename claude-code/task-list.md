@@ -1,6 +1,11 @@
 # Task List & Progress Tracking
 
-Claude Code has a built-in task system for tracking progress on multi-step work. When Claude breaks a complex task into steps, it creates a todo list and marks items as it completes them — so you always know what's happening.
+Think of the task list like a sticky note board that Claude keeps updated while it works — you can see exactly what's done, what's in progress, and what's coming next. When you hand Claude a big job, it doesn't just dive in blindly. It first pins up a set of sticky notes (tasks), then works through them one at a time, moving each from "todo" to "done" as it goes. You always know where it is and how much is left.
+
+This is especially valuable for complex work that takes several minutes. Instead of staring at a blank terminal wondering "is it still going?", you get a live progress board.
+
+![Claude Code task list panel showing tasks in different states](./images/task-list-panel.png)
+> *What to expect: A sidebar or inline panel listing task steps with icons showing pending, in-progress, and completed states updating in real time.*
 
 ---
 
@@ -32,15 +37,30 @@ Claude starts working...
 
 ## Viewing the Task List
 
+Toggle the task list view at any time:
+
+**macOS:**
 ```bash
 Ctrl+T      # Toggle task list view
 ```
 
-Or:
+**Linux (Ubuntu):**
+```bash
+Ctrl+T      # Toggle task list view
+```
+
+**Windows (WSL or PowerShell):**
+```bash
+Ctrl+T      # Toggle task list view
+```
+
+Or type a slash command inside any session:
 
 ```
 > /tasks    # Show all tasks and their status
 ```
+
+This works the same way on all operating systems.
 
 ---
 
@@ -52,12 +72,91 @@ Or:
 | 🔄 | `in_progress` | Currently working on |
 | ✅ | `completed` | Done |
 
+Here is what the flow looks like as Claude works through a feature:
+
+```
+Time →
+
+[⏳] Create DB tables
+[⏳] Build model
+[⏳] Build endpoint
+[⏳] Write tests
+
+          ↓  Claude starts
+
+[✅] Create DB tables
+[🔄] Build model
+[⏳] Build endpoint
+[⏳] Write tests
+
+          ↓  Model done
+
+[✅] Create DB tables
+[✅] Build model
+[🔄] Build endpoint
+[⏳] Write tests
+
+          ↓  All done
+
+[✅] Create DB tables
+[✅] Build model
+[✅] Build endpoint
+[✅] Write tests
+```
+
+---
+
+## When to Use Task Lists
+
+The task list feature is most helpful when:
+
+- You are asking Claude to implement a multi-step feature from scratch
+- You want to monitor progress without interrupting Claude mid-task
+- You are running long jobs (test suites, large refactors, batch file processing) and want to do other work in parallel
+- You are coordinating multiple Claude agents across a shared codebase
+
+You do NOT need to do anything to enable the task list. Claude creates it automatically when it detects that the work has 3 or more distinct steps.
+
+---
+
+## When Claude Creates Tasks (and When It Doesn't)
+
+Claude creates a task list when:
+- Multiple independent steps are needed
+- The work will take more than a few actions
+- You give multiple things to do at once
+
+```
+> 1. Update the API endpoints to use the new auth system
+  2. Update all the tests
+  3. Update the documentation
+  4. Create a migration for the schema changes
+```
+
+Claude creates 4 tasks and works through them systematically.
+
+Claude does NOT create a task list when:
+- The request is a single action (e.g., "rename this variable")
+- You are asking a question rather than requesting work
+- The job can be completed in one or two steps
+
 ---
 
 ## Background Tasks
 
-You can run tasks in the background while you do something else:
+You can run tasks in the background while you do something else. Think of it like putting laundry in the washing machine — you start it, walk away, and check back when it is done.
 
+**macOS:**
+```bash
+Ctrl+B      # Background the currently running task
+```
+
+**Linux (Ubuntu):**
+```bash
+Ctrl+B      # Background the currently running task
+```
+
+**Windows (WSL):**
 ```bash
 Ctrl+B      # Background the currently running task
 ```
@@ -68,7 +167,7 @@ The task keeps running. You can:
 - Check back on the background task
 
 ```bash
-Ctrl+T      # See background task progress
+Ctrl+T      # See background task progress (all platforms)
 ```
 
 ### Example: Run tests while working
@@ -96,9 +195,14 @@ Tests/UserAuthTest.php:
 
 ## Killing Background Agents
 
+If you need to cancel a background task:
+
+**macOS / Linux (Ubuntu) / Windows (WSL):**
 ```bash
 Ctrl+F      # Kill background agents (press twice to confirm)
 ```
+
+This is the equivalent of pulling the plug — use it when a task is going in the wrong direction or has been running longer than expected.
 
 ---
 
@@ -106,8 +210,20 @@ Ctrl+F      # Kill background agents (press twice to confirm)
 
 For agent teams or cross-session task coordination:
 
+**macOS / Linux (Ubuntu):**
 ```bash
 CLAUDE_CODE_TASK_LIST_ID=/path/to/shared/tasks claude
+```
+
+**Windows (WSL):**
+```bash
+CLAUDE_CODE_TASK_LIST_ID=/mnt/c/path/to/shared/tasks claude
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:CLAUDE_CODE_TASK_LIST_ID = "C:\path\to\shared\tasks"
+claude
 ```
 
 Multiple Claude sessions can see and update the same task list — useful for agent teams working on different parts of the same project.
@@ -123,21 +239,35 @@ Claude automatically creates tasks for complex work (3+ distinct steps). It uses
 3. **Stay organized** — one task at a time, in order
 4. **Survive compaction** — tasks persist even when conversation is compacted
 
-### When Claude creates tasks
-
-Claude creates a task list when:
-- Multiple independent steps are needed
-- The work will take more than a few actions
-- You give multiple things to do at once:
+### Visual: How tasks relate to Claude's work
 
 ```
-> 1. Update the API endpoints to use the new auth system
-  2. Update all the tests
-  3. Update the documentation
-  4. Create a migration for the schema changes
+Your request
+     │
+     ▼
+Claude plans
+  ┌─────────────────────────┐
+  │ [⏳] Step 1             │
+  │ [⏳] Step 2             │
+  │ [⏳] Step 3             │
+  └─────────────────────────┘
+     │
+     ▼
+Claude executes (updates task list as it goes)
+  ┌─────────────────────────┐
+  │ [✅] Step 1  ← done     │
+  │ [🔄] Step 2  ← active   │
+  │ [⏳] Step 3             │
+  └─────────────────────────┘
+     │
+     ▼
+Claude finishes
+  ┌─────────────────────────┐
+  │ [✅] Step 1             │
+  │ [✅] Step 2             │
+  │ [✅] Step 3             │
+  └─────────────────────────┘
 ```
-
-Claude creates 4 tasks and works through them systematically.
 
 ---
 

@@ -2,6 +2,8 @@
 
 All Claude Code slash commands work inside VS Code sessions. Type them in the prompt box or the integrated terminal — they behave identically either way.
 
+Slash commands are like keyboard shortcuts for common tasks. Instead of explaining to Claude what you want in natural language, you type a short command and it happens. `/diff` shows all your changes. `/review` reviews a PR. `/compact` cleans up a long conversation. They're the fastest way to trigger specific behaviors.
+
 ---
 
 ## How to Use Slash Commands
@@ -14,7 +16,7 @@ In the prompt box or terminal, type `/` followed by the command name:
 > /review
 ```
 
-No special setup needed — all commands are available as soon as you're in a Claude Code session.
+No special setup needed — all commands are available as soon as you're in a Claude Code session. You'll see autocomplete suggestions as you type `/`.
 
 ---
 
@@ -28,18 +30,42 @@ No special setup needed — all commands are available as soon as you're in a Cl
 | `/status` | Show Claude Code version, model, and account info |
 | `/doctor` | Diagnose issues with your Claude Code setup |
 
+### When to use these
+
+**`/help`** — Your first stop when you're unsure what's available. Prints a full list of commands with one-line descriptions.
+
+**`/clear`** — Use this when you've finished one task and want to start a different one without ending your session. The session persists (you can still resume it later), but Claude's working memory resets. Good for switching topics.
+
+**`/compact`** — Use this in long sessions when Claude's answers start to feel off-topic or you notice it forgetting earlier context. It summarizes old history into a condensed form and frees up space for new context.
+
+**`/status`** — Quickly check which model you're using, your API status, and the current permission mode.
+
+**`/doctor`** — Run this when something seems broken. It checks your setup (CLI version, auth status, extension connection) and tells you what's wrong.
+
 ---
 
-## Navigation & UI Commands
+## Navigation and UI Commands
 
 | Command | What It Does |
 |---------|-------------|
 | `/rename <name>` | Name the current session for easy resumption later |
 | `/history` | Show the full conversation history for this session |
 | `/vim` | Toggle vim editing mode for the prompt box |
-| `/fast` | Toggle Fast Mode (2.5× faster responses) |
+| `/fast` | Toggle Fast Mode (2.5x faster responses) |
 | `/model <name>` | Switch model — `opus`, `sonnet`, or `haiku` |
 | `/desktop` | Move the session to the Claude Code desktop app |
+
+### When to use these
+
+**`/rename`** — Do this immediately when starting a session: `> /rename payment-refactor`. Without a name, you'll have trouble finding the session later.
+
+**`/history`** — When resuming a session after a break, use `/history` to scroll through what was discussed and remind yourself where you left off.
+
+**`/vim`** — For vim users only. Enables vim keybindings in the prompt input.
+
+**`/fast`** — Toggle on for quick questions or rapid iteration. Toggle off for complex multi-step tasks where thoroughness matters more than speed.
+
+**`/model haiku`** — Switch to a faster, cheaper model for simple questions like "what does this function do?" Switch back with `/model opus` for complex tasks.
 
 ---
 
@@ -53,9 +79,19 @@ No special setup needed — all commands are available as soon as you're in a Cl
 | `/memory` | View and edit CLAUDE.md and memory files |
 | `/permissions` | View and modify allowed/denied tool permissions |
 
+### When to use these
+
+**`/config`** — The easiest way to change settings. Opens a visual UI (no JSON editing required). Navigate with arrow keys, toggle options, save.
+
+**`/settings`** — Opens the raw `settings.json` in your `$EDITOR`. Use when you know exactly what you want to change and prefer editing JSON directly.
+
+**`/memory`** — Opens the CLAUDE.md file for this project. Add things here that Claude should always know: project conventions, architecture decisions, testing patterns, etc.
+
+**`/permissions`** — Check what Claude is and isn't allowed to do. Useful when Claude unexpectedly asks for permission on something you want to auto-approve.
+
 ---
 
-## Code & Review Commands
+## Code and Review Commands
 
 | Command | What It Does |
 |---------|-------------|
@@ -66,6 +102,16 @@ No special setup needed — all commands are available as soon as you're in a Cl
 | `/simplify` | Review changed code for quality, reuse, and efficiency |
 | `/commit-push-pr` | Stage changes, commit, push, and open a pull request |
 
+### When to use these
+
+**`/diff`** — Before committing, run `/diff` to see a summary of all your changes. Claude can then tell you if anything looks off.
+
+**`/review 47`** — Review PR #47 from GitHub. Claude fetches the diff, analyzes it, and gives you a structured review with specific feedback. File links in the response let you navigate directly to any issue.
+
+**`/security-review`** — Run before merging any code that touches authentication, payments, or user data. Claude checks specifically for security vulnerabilities.
+
+**`/commit-push-pr`** — The "I'm done" command. Stages your changes, writes a commit message, pushes the branch, and opens a pull request — all in one go.
+
 ---
 
 ## Context Commands
@@ -74,6 +120,12 @@ No special setup needed — all commands are available as soon as you're in a Cl
 |---------|-------------|
 | `/context` | Visualize how much of the context window is being used |
 | `/add-dir <path>` | Add an additional directory Claude can access |
+
+### When to use these
+
+**`/context`** — Run when sessions feel sluggish or Claude seems to be losing track of earlier details. It shows a visual bar of how full the context window is.
+
+**`/add-dir ../shared-lib`** — When your project depends on code in a sibling directory, this gives Claude read access to it without restarting the session.
 
 ---
 
@@ -85,6 +137,14 @@ No special setup needed — all commands are available as soon as you're in a Cl
 
 Useful when you want to check whether VS Code is properly connected or switch between multiple editor instances.
 
+```
+> /ide
+
+Connected IDE: VS Code
+Window: my-project — src/services/UserService.ts
+Status: Active
+```
+
 ---
 
 ## Integration Commands
@@ -95,15 +155,36 @@ Useful when you want to check whether VS Code is properly connected or switch be
 | `/chrome` | Manage Chrome browser integration |
 | `/install-github-app` | Set up Claude as a GitHub Actions bot for PR automation |
 
+### When to use these
+
+**`/mcp`** — Use when you want to connect a database, API, or external tool to your Claude session. MCP servers extend Claude's abilities beyond just your local files.
+
+**`/install-github-app`** — One-time setup to enable Claude Code to automatically review PRs and respond to GitHub comments. Great for teams.
+
 ---
 
-## Thinking & Mode Commands
+## Thinking and Mode Commands
 
 | Command | What It Does |
 |---------|-------------|
 | `/think` | Activate extended thinking for the next response |
 | `/think-hard` | Activate deeper thinking (more thorough analysis) |
 | `/think-harder` | Maximum thinking depth for the most complex problems |
+
+### When to use these
+
+Use the thinking commands before asking Claude about genuinely complex problems:
+- Architectural decisions with many tradeoffs
+- Debugging an obscure issue that involves multiple interacting systems
+- Designing a system that needs to handle edge cases carefully
+
+```
+> /think-hard
+> How should I design the retry logic for our payment processor to handle
+  network failures, duplicate charges, and idempotency correctly?
+```
+
+The response will be slower but significantly more thorough.
 
 ---
 
@@ -147,7 +228,7 @@ Check for security issues. If all clear:
 > /history
 ```
 
-Scroll through what was discussed. Then continue.
+Scroll through what was discussed. Then continue where you left off.
 
 ### When the context feels cluttered
 
@@ -163,7 +244,11 @@ Claude compresses old history, keeping the important parts but freeing up contex
 > /model haiku
 ```
 
-Haiku is significantly faster and cheaper for straightforward questions.
+Haiku is significantly faster and cheaper for straightforward questions. Switch back:
+
+```
+> /model opus
+```
 
 ### Bringing in an MCP tool
 
@@ -173,6 +258,14 @@ Haiku is significantly faster and cheaper for straightforward questions.
 
 Add or activate an MCP server (e.g., a database connection or Jira integration) without leaving VS Code.
 
+### Checking setup health
+
+```
+> /doctor
+```
+
+Runs a diagnostic check and prints a report of your Claude Code setup — version, auth status, API connectivity, extension connection.
+
 ---
 
 ## Tips
@@ -181,6 +274,7 @@ Add or activate an MCP server (e.g., a database connection or Jira integration) 
 - **Slash commands work in both the prompt box and terminal** — no difference
 - **Some commands open interactive UIs** — `/config` and `/memory` open visual editors
 - **`/compact` is your friend in long sessions** — run it when responses start feeling less focused
+- **Tab autocomplete works for slash commands** — type `/` and press Tab to see all options
 
 ---
 

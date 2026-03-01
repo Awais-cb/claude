@@ -1,6 +1,11 @@
 # Chrome Browser Integration
 
-Claude Code can control a Chrome browser — filling forms, clicking buttons, extracting data, and automating web workflows. It's like Selenium or Playwright, but you describe what you want in plain English.
+Think of Chrome integration like having Claude look over your shoulder while you browse — it can see what's on screen and help you interact with it. Instead of writing Selenium or Playwright automation scripts, you just describe what you want in plain English and Claude drives the browser.
+
+This is powerful for testing web apps, extracting data from pages, automating repetitive form filling, and debugging frontend issues in a real browser environment.
+
+![Claude Code controlling a Chrome browser window](./images/chrome-integration.png)
+> *What to expect: A Chrome browser window opens (or runs invisibly in headless mode), Claude navigates to pages, clicks buttons, fills fields, and reports back what it sees.*
 
 ---
 
@@ -16,6 +21,106 @@ claude --no-chrome
 # Enable from inside a session
 > /chrome
 ```
+
+---
+
+## Checking that Chrome is Installed
+
+Before you start, make sure Chrome is installed on your system.
+
+**macOS:**
+```bash
+# Check if Chrome is installed
+ls /Applications/Google\ Chrome.app
+
+# Or check the binary path
+which google-chrome 2>/dev/null || which chromium 2>/dev/null || echo "Not in PATH"
+```
+
+If Chrome is not installed, download it from https://www.google.com/chrome/
+
+**Linux (Ubuntu):**
+```bash
+# Check if Chrome is installed
+google-chrome --version 2>/dev/null || chromium-browser --version 2>/dev/null || echo "Chrome not found"
+
+# Install Chrome on Ubuntu if needed
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
+
+# Or install Chromium (open-source version)
+sudo apt install chromium-browser
+```
+
+**Windows (WSL):**
+```bash
+# Chrome on Windows is accessible from WSL
+# Check if the Chrome executable exists at the typical Windows path
+ls /mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe 2>/dev/null && echo "Chrome found" || echo "Chrome not found"
+```
+
+If Chrome is not found, install it in Windows (not inside WSL) from https://www.google.com/chrome/
+
+**Windows (PowerShell):**
+```powershell
+# Check if Chrome is installed
+Test-Path "C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+# Or check via registry
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe" -ErrorAction SilentlyContinue
+```
+
+---
+
+## Step-by-Step Setup
+
+### macOS Setup
+
+1. Install Chrome if needed (see above)
+2. Open Terminal
+3. Start Claude Code with Chrome:
+   ```bash
+   claude --chrome
+   ```
+4. Claude will open Chrome automatically when you ask it to browse
+
+### Linux (Ubuntu) Setup
+
+1. Install Chrome or Chromium (see above)
+2. If you are running a headless server (no GUI), Claude automatically uses headless mode
+3. If you have a desktop environment, Claude opens a visible browser window:
+   ```bash
+   claude --chrome
+   ```
+
+For servers without a display, set up a virtual display if you want to see the browser:
+```bash
+# Install virtual display
+sudo apt install xvfb
+
+# Run Claude with virtual display
+Xvfb :99 -screen 0 1280x800x24 &
+export DISPLAY=:99
+claude --chrome
+```
+
+### Windows (WSL) Setup
+
+1. Chrome must be installed on the Windows side (not inside WSL)
+2. Claude Code running in WSL can use the Windows Chrome binary
+3. Start Claude with Chrome:
+   ```bash
+   claude --chrome
+   ```
+
+### Windows (PowerShell) Setup
+
+1. Install Chrome for Windows (see above)
+2. Open PowerShell
+3. Start Claude Code with Chrome:
+   ```powershell
+   claude --chrome
+   ```
 
 ---
 
@@ -70,6 +175,25 @@ Claude opens Chrome, navigates to your local app, logs in, and verifies the cont
 > walk through the main features of the app and record a demo GIF
 ```
 
+### Web scraping
+
+```
+> go to https://news.ycombinator.com
+> extract the top 10 story titles and their URLs into a JSON array
+> save the result to scripts/hn-top10.json
+```
+
+### Visual regression testing
+
+```
+> take screenshots of our app at:
+  - http://localhost:3000/home
+  - http://localhost:3000/dashboard
+  - http://localhost:3000/settings
+> compare each with the baseline screenshots in screenshots/baseline/
+> report any layout differences
+```
+
 ---
 
 ## Practical Examples
@@ -116,6 +240,15 @@ Claude opens Chrome, navigates to your local app, logs in, and verifies the cont
 > Save them to screenshots/ folder
 > Compare with the baseline screenshots in screenshots/baseline/
 > Report any visual differences
+```
+
+### Example 5: Extracting structured data
+
+```
+> Go to https://store.example.com/products
+> Scroll through all pages (handle pagination)
+> Extract product names, prices, and stock status into CSV
+> Save to data/products.csv
 ```
 
 ---
@@ -167,6 +300,75 @@ You can set global defaults or per-domain rules.
 
 ---
 
+## Troubleshooting Common Issues
+
+### Chrome won't open
+
+**macOS:**
+```bash
+# Make sure Chrome is in Applications
+open /Applications/Google\ Chrome.app
+
+# If Claude can't find it, specify the path
+export CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+claude --chrome
+```
+
+**Linux (Ubuntu):**
+```bash
+# Test that Chrome runs directly
+google-chrome --version
+
+# If missing, reinstall
+sudo apt install --reinstall google-chrome-stable
+
+# On headless server, confirm virtual display is running
+echo $DISPLAY
+```
+
+**Windows (WSL):**
+```bash
+# Confirm the Windows Chrome path is accessible from WSL
+ls /mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe
+```
+
+### "No display" error on Linux server
+
+```bash
+# Install and run a virtual framebuffer
+sudo apt install xvfb
+Xvfb :99 -screen 0 1280x800x24 &
+export DISPLAY=:99
+claude --chrome
+```
+
+### Chrome opens but Claude can't control it
+
+This usually means another Chrome process is running with a conflicting user profile. Close all Chrome windows and try again:
+
+**macOS / Linux:**
+```bash
+pkill -f chrome
+claude --chrome
+```
+
+**Windows (PowerShell):**
+```powershell
+Stop-Process -Name chrome -Force
+claude --chrome
+```
+
+### Slow performance
+
+For automation tasks where you don't need to see the browser, Claude runs Chrome in headless mode automatically in CI. If you are running locally and want faster performance:
+
+```bash
+# Claude handles headless mode automatically in print mode
+claude -p "test the login form" --chrome
+```
+
+---
+
 ## Security Considerations
 
 - Chrome integration only works with explicitly enabled sites
@@ -205,3 +407,22 @@ The most powerful use: Claude finds a bug in the browser and fixes it in the cod
 ```
 
 Claude switches between the browser (observing behavior) and your code (making fixes) seamlessly.
+
+```
+Browser observation
+      │
+      ▼
+Identify the error (console, network tab, visual)
+      │
+      ▼
+Find the relevant source file
+      │
+      ▼
+Edit the code
+      │
+      ▼
+Reload browser and verify
+      │
+      ▼
+Report result
+```

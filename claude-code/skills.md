@@ -1,8 +1,15 @@
 # Skills — Custom Slash Commands
 
-Skills let you create your own `/commands` in Claude Code. A skill is a markdown file with instructions — when you type `/skill-name`, Claude loads and executes those instructions.
+Think of skills like keyboard macros or TextExpander shortcuts. Instead of typing out a long, repetitive set of instructions every time you want Claude to do something, you define it once as a skill — and then trigger it with a short `/command`. One short command, full workflow.
+
+For example, instead of typing "Please review my code for security issues, check for hardcoded credentials, validate all SQL queries use parameterized inputs, and check that authentication is required on protected routes" every time, you create a `/security-check` skill and just type that.
+
+Skills are markdown files with instructions. When you type `/skill-name`, Claude loads and executes those instructions as if you had written them out in full.
 
 Think of skills as reusable macros or playbooks for things you do repeatedly.
+
+![The /skills list view showing available commands](./images/skills-list.png)
+> *What to expect: Typing `/skills` opens a list of all available skills with their names and descriptions. Built-in skills appear alongside any custom ones you've created. You can tab-complete skill names when typing `/` in your session.*
 
 ---
 
@@ -26,13 +33,38 @@ Claude Code ships with several built-in skills:
 
 ### 1. Create the skill file
 
+**macOS / Linux (Ubuntu):**
 ```bash
-# User-level (all projects)
+# User-level: available in all your projects
 ~/.claude/skills/my-skill.md
 
-# Project-level (this project only)
+# Project-level: only for the current project
 .claude/skills/my-skill.md
 ```
+
+**Windows (WSL):**
+```bash
+# User-level
+~/.claude/skills/my-skill.md
+
+# Project-level
+.claude/skills/my-skill.md
+```
+
+**Windows (native path):**
+```
+# User-level
+%USERPROFILE%\.claude\skills\my-skill.md
+
+# Project-level
+.claude\skills\my-skill.md
+```
+
+> **Tip:** If the `skills/` directory doesn't exist yet, create it first:
+>
+> macOS/Linux: `mkdir -p ~/.claude/skills`
+>
+> Windows PowerShell: `New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\skills" -Force`
 
 ### 2. Add frontmatter + instructions
 
@@ -56,6 +88,80 @@ Commands to use:
 ```
 > /test-coverage
 ```
+
+---
+
+## Create Your First Skill in 5 Minutes
+
+Here's a complete beginner walkthrough. We'll create a `/standup` skill that generates a daily standup summary from your recent git activity.
+
+**Step 1: Create the skills folder**
+
+**macOS / Linux (Ubuntu):**
+```bash
+mkdir -p ~/.claude/skills
+```
+
+**Windows (WSL):**
+```bash
+mkdir -p ~/.claude/skills
+```
+
+**Windows (PowerShell):**
+```powershell
+New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\skills" -Force
+```
+
+**Step 2: Create the skill file**
+
+**macOS / Linux (Ubuntu):**
+```bash
+nano ~/.claude/skills/standup.md
+```
+
+**Windows (WSL):**
+```bash
+nano ~/.claude/skills/standup.md
+```
+
+**Windows (PowerShell):**
+```powershell
+notepad "$env:USERPROFILE\.claude\skills\standup.md"
+```
+
+**Step 3: Write the skill**
+
+```markdown
+---
+name: standup
+description: Generate a daily standup summary from recent git activity
+---
+
+Generate my daily standup report by:
+
+1. Running `git log --oneline --since="yesterday" --author="$(git config user.name)"`
+2. Looking at which files were changed with `git diff --name-only HEAD~5..HEAD`
+3. Summarizing in the classic standup format:
+
+## Yesterday
+[What was completed based on commits]
+
+## Today
+[What's in progress or next logical step based on recent changes]
+
+## Blockers
+[Any TODO comments added recently, or note "None identified"]
+
+Keep it brief — 3-5 bullet points per section max. Friendly, casual tone.
+```
+
+**Step 4: Use it**
+
+```
+> /standup
+```
+
+That's it. Claude reads your git history and generates a ready-to-paste standup summary.
 
 ---
 
@@ -193,6 +299,64 @@ Don't change the function code, only add documentation.
 
 ---
 
+### Example 5: Environment setup check (practical for new teammates)
+
+```markdown
+---
+name: env-check
+description: Verify the development environment is correctly configured
+---
+
+Check that the development environment is set up correctly:
+
+1. Run `node --version` and verify it's >= 18.0.0
+2. Run `npm --version` and verify it's >= 9.0.0
+3. Check that `.env` exists (don't read it, just confirm it's present)
+4. Run `npm install` and report if there are any errors
+5. Run the test suite with `npm test` and report pass/fail count
+6. Check if the database is reachable (if applicable to this project)
+
+Report a clear PASS/FAIL for each step with the actual version numbers found.
+Suggest fixes for anything that fails.
+```
+
+**Usage (great to run when onboarding to a new project):**
+```
+> /env-check
+```
+
+---
+
+### Example 6: PR description writer
+
+```markdown
+---
+name: pr-description
+description: Generate a pull request description from recent commits and changes
+---
+
+Write a pull request description for the current branch.
+
+1. Run `git log --oneline main..HEAD` to see all commits on this branch
+2. Run `git diff --stat main..HEAD` to see which files changed
+3. Read the most significantly changed files to understand the changes
+4. Write a PR description with:
+   - A one-sentence summary of what this PR does
+   - A "Why" section explaining the motivation
+   - A "What changed" section with bullet points for each significant change
+   - A "How to test" section with specific steps for a reviewer
+   - Any breaking changes or migration steps needed
+
+Keep it factual and specific — avoid vague language like "various improvements".
+```
+
+**Usage:**
+```
+> /pr-description
+```
+
+---
+
 ## Skill Configuration Options
 
 ### `trigger` — Auto-invocation
@@ -261,6 +425,10 @@ You can organize skills into subdirectories:
 
 All skills are discovered automatically regardless of nesting.
 
+**Suggested organization for beginners:**
+- Put personal workflow shortcuts in `~/.claude/skills/` (user-level)
+- Put team/project standards in `.claude/skills/` (project-level, commit to git so teammates get them too)
+
 ---
 
 ## Viewing Available Skills
@@ -269,7 +437,7 @@ All skills are discovered automatically regardless of nesting.
 > /skills
 ```
 
-Lists all available skills with their descriptions.
+Lists all available skills with their descriptions. Tab completion works — type `/` and press Tab to see all available skills.
 
 ---
 

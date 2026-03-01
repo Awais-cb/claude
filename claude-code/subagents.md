@@ -1,8 +1,22 @@
 # Subagents — Parallel & Specialized Workers
 
-Subagents are specialized Claude instances that your main Claude session can spawn to handle specific tasks. They run independently, have their own tools and permissions, and report results back to the main session.
+Imagine you're a project manager with a big deliverable. You could do every task yourself — the research, the writing, the review, the testing — one by one, slowly. Or you could delegate: send the researcher off to gather information, the writer to draft content, and the tester to run tests, all at the same time. You check in when each finishes and combine the results.
 
-Think of subagents like hiring specialists: instead of one generalist doing everything, you can delegate research to an Explore agent, planning to a Plan agent, and run multiple tasks in parallel.
+That's exactly how subagents work in Claude Code. Your main Claude session acts as the project manager, spawning specialized Claude instances (subagents) to handle specific tasks — sometimes in parallel — and collecting their results.
+
+```
+                    Your Main Claude Session
+                           |
+           +---------------+---------------+
+           |               |               |
+     [Explore Agent]  [Plan Agent]  [Custom Agent]
+     searches code    designs arch   writes tests
+           |               |               |
+           +---------------+---------------+
+                           |
+                    Results combined
+                    back to main session
+```
 
 ---
 
@@ -24,14 +38,50 @@ Claude automatically picks the right agent based on your request. You can also r
 
 ---
 
+## When to Use Subagents vs Just Asking Claude Directly
+
+This is the most common beginner question. Here's a practical guide:
+
+**Use subagents when:**
+- You want multiple things done in parallel (saves real time)
+- The task requires a specialist mindset (e.g., "only look, never touch")
+- You want to isolate risky work (worktree isolation)
+- The task is very large and would exceed Claude's context window if done inline
+- You want a second opinion — run two agents with different approaches
+
+**Just ask Claude directly when:**
+- The task is simple and quick
+- You want to stay in one conversation thread
+- The task requires back-and-forth with you
+- You're still figuring out what you want
+
+**Real-world analogy:** You wouldn't hire a contractor to replace one lightbulb. But you would hire one to renovate a kitchen. Subagents are for the kitchen-sized jobs.
+
+---
+
 ## Creating Custom Subagents
 
 ### Where to create them
 
+**macOS / Linux (Ubuntu):**
+```bash
+~/.claude/agents/          # Available in all your projects (user-wide)
+.claude/agents/            # Only for the current project
 ```
-~/.claude/agents/          ← Available in all your projects
-.claude/agents/            ← Project-specific agents
+
+**Windows (WSL):**
+```bash
+~/.claude/agents/          # Translates to /home/yourname/.claude/agents/
+.claude/agents/            # In your current project directory
 ```
+
+**Windows (PowerShell / native path):**
+```
+%USERPROFILE%\.claude\agents\     # User-wide agents
+.claude\agents\                   # Project-specific agents
+```
+
+> **Tip:** If the `agents/` folder doesn't exist yet, create it. On macOS/Linux: `mkdir -p ~/.claude/agents`. On Windows PowerShell: `New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\agents" -Force`.
 
 ### Agent file format
 
@@ -83,6 +133,76 @@ memory: project                   # user, project, local, or omit
 isolation: worktree               # Run in isolated git worktree
 ---
 ```
+
+---
+
+## Step-by-Step: Create Your First Subagent
+
+Here's a beginner walkthrough to create a simple "file summarizer" agent.
+
+**Step 1: Create the agents folder (if needed)**
+
+**macOS / Linux (Ubuntu):**
+```bash
+mkdir -p ~/.claude/agents
+```
+
+**Windows (WSL):**
+```bash
+mkdir -p ~/.claude/agents
+```
+
+**Windows (PowerShell):**
+```powershell
+New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\agents" -Force
+```
+
+**Step 2: Create the agent file**
+
+**macOS / Linux (Ubuntu):**
+```bash
+nano ~/.claude/agents/file-summarizer.md
+```
+
+**Windows (WSL):**
+```bash
+nano ~/.claude/agents/file-summarizer.md
+```
+
+**Windows (PowerShell):**
+```powershell
+notepad "$env:USERPROFILE\.claude\agents\file-summarizer.md"
+```
+
+**Step 3: Paste this content into the file:**
+
+```markdown
+---
+name: file-summarizer
+description: Reads files and produces concise plain-English summaries
+model: haiku
+tools:
+  - Read
+  - Glob
+permissionMode: plan
+---
+
+You summarize files clearly and concisely. When given a file or folder:
+1. Read the contents
+2. Identify the main purpose
+3. List the key functions, classes, or sections
+4. Write a 3-5 sentence plain-English summary
+
+Never modify any files. Just read and report.
+```
+
+**Step 4: Use it in Claude Code**
+
+```
+> Use the file-summarizer agent to summarize everything in the src/ folder
+```
+
+That's it. Claude will spawn the agent, have it read the files, and return a summary.
 
 ---
 
@@ -165,6 +285,19 @@ You write documentation for developers. Your docs are:
 - Use consistent formatting
 ```
 
+### Example 4: Realistic beginner scenario — refactoring safely
+
+You want to refactor a large file but don't want to accidentally break other parts of the codebase. Here's how to use subagents safely:
+
+```
+> I want to refactor UserService.js. Before I do, use the explorer agent
+  to find every file that imports or depends on UserService. Then use
+  the test-writer agent to make sure those files have tests before
+  I start changing anything.
+```
+
+Claude spawns both agents, the explorer maps all dependencies, the test writer adds missing tests, and then you can refactor with confidence.
+
 ---
 
 ## Running Agents in Parallel
@@ -181,6 +314,18 @@ Can you run these in parallel using subagents?
 ```
 
 Claude spawns three agents simultaneously, then combines results — much faster than doing them sequentially.
+
+```
+Main Session
+    |
+    +---> [Agent 1] Find API endpoints -----> returns list of 23 routes
+    |
+    +---> [Agent 2] Check auth on routes ---> finds 3 unprotected
+    |
+    +---> [Agent 3] Research API security --> returns best practices
+    |
+    All three finish, main session combines into one report
+```
 
 ---
 
@@ -215,7 +360,7 @@ memory: project
 ```
 
 Memory options:
-- `user` — stored in `~/.claude/`, available across all projects
+- `user` — stored in `~/.claude/` (macOS/Linux) or `%USERPROFILE%\.claude\` (Windows), available across all projects
 - `project` — stored in `.claude/`, scoped to this project
 - `local` — stored locally, not committed to git
 
@@ -235,6 +380,9 @@ Opens an interactive menu to:
 - **Edit** an existing agent
 - **Delete** an agent
 - **Test** an agent
+
+![The /agents interactive menu showing a list of available agents](./images/agents-menu.png)
+> *What to expect: Typing `/agents` opens a menu with all your configured agents listed by name and description. You can navigate with arrow keys, press Enter to select, and use the options to create, edit, or delete agents.*
 
 ---
 

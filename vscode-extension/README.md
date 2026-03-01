@@ -6,9 +6,11 @@ A complete guide to using Claude Code inside Visual Studio Code. Each doc covers
 
 ## What Is the VS Code Extension?
 
-The Claude Code VS Code extension bridges your editor and the Claude Code CLI. Instead of switching between a terminal and your editor, you get a **prompt box inside VS Code**, automatic context from your open files and selections, and clickable file links directly in Claude's responses.
+Think of the Claude Code VS Code extension like hiring a co-pilot who sits right next to you while you code. Instead of switching between a terminal and your editor — like constantly looking over your shoulder — your AI assistant lives *inside* VS Code, sees exactly what you're looking at, and responds right there without you leaving your workspace.
 
-The extension does not replace the CLI — it enhances it. Claude Code still runs as a process (in your terminal or background), and the extension connects VS Code to that process.
+The extension bridges your editor and the Claude Code CLI. You get a **prompt box inside VS Code**, automatic context from your open files and selections, and clickable file links directly in Claude's responses. When Claude says "the bug is in `auth.ts` line 47," you click that reference and VS Code jumps there instantly.
+
+The extension does not replace the CLI — it enhances it. Claude Code still runs as a process (in your terminal or background), and the extension connects VS Code to that process over a local bidirectional channel.
 
 ---
 
@@ -31,13 +33,52 @@ The extension does not replace the CLI — it enhances it. Claude Code still run
 
 ---
 
-## Quick Start (60 seconds)
+## Quick Start
+
+### macOS
 
 ```bash
 # 1. Install the extension
 code --install-extension anthropic.claude-code
 
 # 2. Open your project in VS Code, then in the integrated terminal:
+cd ~/projects/my-app
+claude --ide
+```
+
+> If `code` is not found, open VS Code → `Cmd+Shift+P` → type "Shell Command: Install 'code' command in PATH" → press Enter.
+
+### Linux (Ubuntu/Debian)
+
+```bash
+# 1. Install the extension
+code --install-extension anthropic.claude-code
+
+# 2. Open your project and start Claude with IDE integration
+cd ~/projects/my-app
+claude --ide
+```
+
+### Windows — Native (PowerShell)
+
+```powershell
+# 1. Install the extension
+code --install-extension anthropic.claude-code
+
+# 2. Open your project and start Claude
+cd C:\projects\my-app
+claude --ide
+```
+
+### Windows — WSL (Recommended for Windows users)
+
+```bash
+# Inside your WSL terminal (Ubuntu, Debian, etc.)
+# 1. Install the extension in VS Code (do this from the Windows side, or from WSL with code --install-extension)
+code --install-extension anthropic.claude-code
+
+# 2. Open VS Code connected to WSL: Ctrl+Shift+P → "WSL: New WSL Window"
+# 3. In the WSL integrated terminal:
 cd ~/projects/my-app
 claude --ide
 ```
@@ -49,32 +90,64 @@ The Claude Code prompt box appears in VS Code. You're ready.
 ## How It All Connects
 
 ```
-┌──────────────────────────────────────┐
-│           VS Code Editor             │
-│                                      │
-│  ┌─────────────┐  ┌───────────────┐  │
-│  │  Your Code  │  │  Claude Code  │  │
-│  │  (editor)   │  │  Prompt Box   │  │
-│  └─────────────┘  └───────────────┘  │
-│         ↑                ↓           │
-│    File edits       Prompts sent     │
-│    appear here      from here        │
-└──────────────┬───────────────────────┘
-               │  bidirectional sync
-┌──────────────▼───────────────────────┐
-│      Claude Code CLI (process)       │
-│  Reads files, runs tools, edits code │
-└──────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│                   VS Code Editor                    │
+│                                                     │
+│  ┌──────────────────┐     ┌───────────────────────┐ │
+│  │   Your Code      │     │   Claude Code         │ │
+│  │   (editor tabs)  │     │   Prompt Box / Panel  │ │
+│  │                  │     │                       │ │
+│  │  > select code   │────▶│  > ask about it       │ │
+│  │  > see edits     │◀────│  > Claude edits here  │ │
+│  └──────────────────┘     └───────────────────────┘ │
+│         ▲                           │               │
+│    File edits                  Prompts sent         │
+│    appear here                 from here            │
+└─────────────────────┬───────────────────────────────┘
+                      │  bidirectional sync
+                      │  (local socket connection)
+┌─────────────────────▼───────────────────────────────┐
+│           Claude Code CLI (background process)      │
+│   Reads files, runs tools, edits code, runs tests   │
+└─────────────────────────────────────────────────────┘
+                      │
+                      │  HTTPS API calls
+                      ▼
+┌─────────────────────────────────────────────────────┐
+│              Anthropic API (Claude model)           │
+└─────────────────────────────────────────────────────┘
 ```
+
+**What this means in practice:**
+- Your code editor and Claude share the same workspace awareness
+- When you select code, Claude sees it without you doing anything extra
+- When Claude edits a file, VS Code refreshes it instantly
+- File references in Claude's responses (`auth.ts:47`) are clickable links
 
 ---
 
 ## Prerequisites
 
-- VS Code (any recent version)
-- Node.js 18+
-- Claude Code CLI installed: `npm install -g @anthropic-ai/claude-code`
-- Anthropic account (for API key)
+| Requirement | Minimum Version | Per-OS Notes |
+|-------------|----------------|--------------|
+| VS Code | 1.80+ | Works on Windows, macOS, Linux |
+| Node.js | 18+ | macOS: use `brew` or `nvm`; Windows: use `nvm-windows` or WSL; Linux: use `nvm` or `apt` |
+| Claude Code CLI | Latest | Install via `npm install -g @anthropic-ai/claude-code` |
+| Anthropic account | — | Sign up free at [claude.ai](https://claude.ai) |
+
+### Node.js version check
+
+**macOS / Linux / WSL:**
+```bash
+node --version   # Should print v18.0.0 or higher
+```
+
+**Windows (PowerShell):**
+```powershell
+node --version
+```
+
+If Node.js is missing or outdated, see [installation.md](installation.md) for full OS-specific install instructions.
 
 ---
 

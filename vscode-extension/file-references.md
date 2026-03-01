@@ -2,6 +2,8 @@
 
 The `@` syntax lets you reference specific files or folders in your prompts. VS Code autocompletes the paths as you type, so you can point Claude at exactly the right code without copy-pasting paths or opening files first.
 
+Think of it like tagging someone in a message. When you type `@src/services/AuthService.ts`, you're saying "hey Claude, look at *this specific file* when answering." Without `@`, Claude uses whatever context it currently has — which might be enough, but `@` makes it precise.
+
 ---
 
 ## Basic Usage
@@ -28,6 +30,39 @@ When you type `@` in the VS Code prompt box, a file picker autocomplete dropdown
 
 This works for any file in your current workspace.
 
+![@ autocomplete dropdown](./images/file-reference-autocomplete.png)
+> What to expect: As soon as you type `@` followed by a few letters, a dropdown appears showing matching files from your project. Files are sorted by recent activity, so the files you've been working with appear near the top.
+
+---
+
+## Path Separators: A Note for Windows Users
+
+On macOS and Linux, file paths use forward slashes:
+```
+@src/components/LoginForm.tsx
+```
+
+On Windows, the native path separator is a backslash (`\`), but when working with VS Code and Claude Code — especially in WSL — you should use **forward slashes** in `@` references:
+```
+@src/components/LoginForm.tsx    ✓ Works everywhere
+@src\components\LoginForm.tsx    ✗ May cause issues
+```
+
+**Windows (WSL):** Since WSL uses the Linux filesystem, paths look like:
+```
+@home/user/projects/my-app/src/components/LoginForm.tsx
+```
+But because you're running from your project root, you typically just use the relative path:
+```
+@src/components/LoginForm.tsx
+```
+
+**Windows (Native PowerShell):** Use forward slashes in `@` references even when on Windows:
+```
+@src/components/LoginForm.tsx
+```
+Claude Code normalizes these paths internally.
+
 ---
 
 ## Referencing Folders
@@ -49,11 +84,17 @@ Claude reads the directory contents and uses all relevant files as context.
 Chain multiple `@` references in a single message:
 
 ```
-> @src/auth/login.ts and @src/auth/register.ts — these two files have duplicated validation logic, consolidate it into a shared helper
+> @src/auth/login.ts and @src/auth/register.ts — these two files have
+  duplicated validation logic, consolidate it into a shared helper
 ```
 
 ```
 > @package.json @tsconfig.json — are there any version conflicts I should know about?
+```
+
+```
+> @app/Http/Controllers/UserController.php @app/Models/User.php @app/Services/UserService.php
+  — trace how a user creation request flows through these three layers
 ```
 
 ---
@@ -70,6 +111,12 @@ Chain multiple `@` references in a single message:
 - The file is currently open and selected — Claude already sees it
 - You've highlighted the relevant code — Claude has it as context
 - You want Claude to search for the right file itself
+
+**Combine both** when you want maximum precision:
+```
+[Select a function in UserController.php]
+> @app/Models/User.php — refactor this function to use the User model's methods
+```
 
 ---
 
@@ -105,6 +152,20 @@ Chain multiple `@` references in a single message:
 > @database/migrations/ — summarize what schema changes have been made in the last 10 migrations
 ```
 
+### Onboard Claude on a new codebase
+
+```
+> @src/ — I'm new to this project. Give me a guided tour: what does each major folder do,
+  what are the key patterns used, and what should I understand before making changes?
+```
+
+### Cross-reference two related files
+
+```
+> @src/api/endpoints.ts @src/api/middleware.ts — the middleware applies rate limiting,
+  but I think the POST /auth/login endpoint is exempt. Can you confirm and show me why?
+```
+
 ---
 
 ## `@` in the Terminal
@@ -124,6 +185,7 @@ claude --ide
 - **Autocomplete shows recently edited files first** — so your active files are always at the top
 - **You can mix `@` references with natural language** — write prompts as you normally would, and drop in `@file` where specific context helps
 - **Folder references are great for onboarding** — `@src/ — give me an overview of this codebase` is a quick way to orient Claude on a new project
+- **Use `@` for files outside your current tab** — if you're editing `UserController.php` but need Claude to also check `UserService.php`, use `@` to pull in the service file without switching tabs
 
 ---
 

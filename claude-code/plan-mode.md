@@ -1,14 +1,36 @@
 # Plan Mode
 
-Plan Mode is a read-only mode where Claude can explore and reason about your code without making any changes. It's perfect for understanding a codebase, reviewing a plan before execution, or getting a second opinion before a big refactor.
+## What is Plan Mode?
+
+Imagine you're renovating your kitchen. You wouldn't want the contractor to start tearing out cabinets the moment they walk in the door. First, you'd want them to look around, measure everything, and draw up blueprints. Only once you've reviewed the plan and said "yes, this is what I want" would construction begin.
+
+Plan Mode works the same way. When you activate it, Claude can look at everything — read your files, trace through your code, research approaches — but it cannot touch anything. No edits, no commands, no changes of any kind. It draws up the blueprints first. You review them. Then you decide whether to proceed.
+
+```
+Without Plan Mode:              With Plan Mode:
+> refactor the auth module      > refactor the auth module
+
+Claude: [immediately starts     Claude: Here's what I'd change:
+editing files]                  1. Extract token logic (auth.ts)
+                                2. Split into 3 smaller services
+                                3. Update 8 route handlers
+                                4. Add 12 new tests
+
+                                Ready to proceed?
+
+                                > yes [switch to Normal Mode]
+                                Claude: Starting implementation...
+```
+
+The difference: you see the full scope of work before a single file is touched.
 
 ---
 
 ## What is Plan Mode?
 
 In Plan Mode:
-- ✅ Claude **can** read files, search code, browse the web
-- ❌ Claude **cannot** edit files, run commands, or make any changes
+- Claude **can** read files, search code, browse the web
+- Claude **cannot** edit files, run commands, or make any changes
 
 Think of it as "show me your plan before you do anything."
 
@@ -18,20 +40,81 @@ Think of it as "show me your plan before you do anything."
 
 ### Start a session in plan mode
 
+**macOS / Linux / WSL:**
 ```bash
 claude --permission-mode plan
 ```
 
+**Windows (PowerShell):**
+```powershell
+claude --permission-mode plan
+```
+
+The command is identical on all platforms — only the terminal you run it from differs.
+
 ### Toggle during a session
 
-```bash
+```
 Shift+Tab    # cycles: Normal → Plan → Auto-Accept
 ```
+
+> **Keyboard note:** `Shift+Tab` means hold Shift and press Tab. This works in all terminals on macOS, Linux, and Windows (including WSL and PowerShell). It cycles through the three modes — keep pressing until you see "Plan Mode" in the status bar.
 
 Or use the slash command:
 
 ```
 > /plan
+```
+
+---
+
+## The Plan → Review → Execute Workflow
+
+```
+┌────────────────────────────────────────────────────────────┐
+│              Plan Mode Workflow                            │
+└────────────────────────────────────────────────────────────┘
+
+  Step 1: Enter Plan Mode
+  ┌─────────────────────┐
+  │  $ claude           │
+  │    --permission-mode│
+  │    plan             │
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 2: Explore & Ask Questions
+  ┌─────────────────────┐
+  │ > How does auth     │   Claude reads files,
+  │   work here?        │   traces code paths,
+  │                     │   searches the codebase.
+  │ > What would break  │   Cannot change anything.
+  │   if I changed X?   │
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 3: Request a Plan
+  ┌─────────────────────┐
+  │ > I want to add     │   Claude outlines every
+  │   rate limiting.    │   file it would change,
+  │   What's your plan? │   every step it would take.
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 4: Review the Plan
+  ┌─────────────────────┐
+  │ You read the plan.  │   Ask follow-up questions.
+  │ Does it look right? │   Request changes to the plan.
+  │ Any concerns?       │   Clarify scope or approach.
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 5: Approve & Execute
+  ┌─────────────────────┐
+  │ > Yes, go ahead     │   Press Shift+Tab to switch
+  │                     │   to Normal Mode.
+  │  [Shift+Tab]        │   Claude implements the plan.
+  └─────────────────────┘
 ```
 
 ---
@@ -76,6 +159,40 @@ Now you can review the plan, ask follow-up questions, then switch to Normal Mode
 ```
 
 Claude traces through the code — reading files, following function calls — and explains everything without risk of accidental changes.
+
+---
+
+## When Would a Beginner Use This?
+
+You don't need to be an expert to benefit from Plan Mode. Here are common beginner scenarios:
+
+**"I've inherited someone else's code and I'm afraid to break it."**
+```
+> [Plan Mode] Walk me through how this app handles user login.
+  What files are involved? What would I need to understand before changing anything?
+```
+Claude maps out the codebase for you safely, before you touch a thing.
+
+**"I want to add a feature but I'm not sure how big it is."**
+```
+> [Plan Mode] I want to add email notifications when a user places an order.
+  What would that involve? How many files would you need to change?
+```
+Claude tells you the scope upfront — whether it's a 1-file change or a 15-file refactor.
+
+**"I asked Claude to do something and I'm not sure if it's safe."**
+```
+> [Plan Mode] What would happen if you ran the database migration script?
+  What exactly would change?
+```
+Plan Mode lets you inspect Claude's intended actions before they happen.
+
+**"I'm learning a new framework and want to understand the patterns."**
+```
+> [Plan Mode] Explain how this Django app handles API authentication.
+  Show me each layer from the request to the response.
+```
+Safe exploration — Claude reads and explains, but touches nothing.
 
 ---
 
@@ -153,6 +270,47 @@ Claude: Starting implementation...
 
 ---
 
+## Example: Understanding an Unfamiliar Codebase
+
+```
+$ claude --permission-mode plan
+
+> I just joined this team. Can you give me a tour of the codebase?
+  What are the main parts, how do they connect, and where should I
+  start if I want to add a new API endpoint?
+
+Claude: [reads project structure, key files, routes, controllers]
+
+Here's an overview:
+
+This is a Laravel + Vue.js application with 3 main layers:
+
+1. API Layer (routes/api.php → app/Http/Controllers/Api/)
+   - All endpoints follow REST conventions
+   - Authentication uses JWT via app/Http/Middleware/JwtAuth.php
+
+2. Service Layer (app/Services/)
+   - Business logic lives here, not in controllers
+   - Example: OrderService.php handles all order operations
+
+3. Frontend (resources/js/)
+   - Vue 3 with Composition API
+   - State managed by Pinia stores in resources/js/stores/
+
+To add a new API endpoint, you'd typically:
+1. Add route to routes/api.php
+2. Create a controller in app/Http/Controllers/Api/
+3. Put business logic in a new or existing Service
+4. Add validation in app/Http/Requests/
+5. Write tests in tests/Feature/Api/
+
+Want me to walk through a specific feature in detail?
+```
+
+This whole exploration happened without a single file being changed.
+
+---
+
 ## Plan Mode vs `/review`
 
 | | Plan Mode | `/review` |
@@ -172,3 +330,4 @@ Use Plan Mode **before**, `/review` **after**.
 - You can **ask clarifying questions** in Plan Mode before executing
 - Plan Mode **doesn't affect** what Claude has already read — context carries over when you switch modes
 - Plan Mode is great for **onboarding** to an unfamiliar codebase: just explore and ask questions
+- You can **switch back to Plan Mode mid-task** if you want to pause and re-examine before continuing

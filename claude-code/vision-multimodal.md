@@ -1,20 +1,72 @@
 # Vision & Multimodal
 
-Claude Code can see and analyze images. Paste screenshots, diagrams, mockups, or error screens directly into your session — Claude understands them.
+Think of this like sending a photo to a knowledgeable friend and asking "what do you think?" — except Claude can actually analyze what it sees in technical detail. You can take a screenshot of a broken UI, a whiteboard diagram, a design mockup, or a wall of error messages and paste it directly into your Claude Code session. Claude will look at the image and respond as if it has eyes.
+
+This changes the way you work. Instead of typing out a long description of what is wrong with your layout, you just show it. Instead of explaining what a diagram says, you paste it and ask Claude to generate code from it.
+
+![Image being pasted into a Claude Code terminal session](./images/image-paste-demo.png)
+> *What to expect: After copying a screenshot, pressing Ctrl+V or Cmd+V in the terminal pastes the image inline. Claude acknowledges it and begins analyzing the visual content.*
 
 ---
 
 ## Pasting Images
 
-### From clipboard
+### Taking a screenshot and pasting it
 
-```bash
-Ctrl+V      # Linux/Windows
-Cmd+V       # macOS
-Alt+V       # Alternative
+The workflow is: take a screenshot, then paste it into Claude Code.
+
+**macOS:**
+
+Take the screenshot:
+```
+Cmd+Shift+4         # Select a region (saves to Desktop)
+Cmd+Shift+4, Space  # Click a window to capture just that window
+Cmd+Shift+3         # Capture the full screen
+Cmd+Ctrl+Shift+4    # Capture region to clipboard (no file saved)
 ```
 
-Take a screenshot, then paste it directly into the Claude Code terminal.
+Paste into Claude Code:
+```
+Cmd+V
+```
+
+**Linux (Ubuntu):**
+
+Take the screenshot (several tools available):
+```bash
+# gnome-screenshot (GNOME desktop)
+gnome-screenshot -a           # Select a region (saves to Pictures)
+gnome-screenshot -a -c        # Select a region, copy to clipboard
+
+# scrot (lightweight, any desktop)
+scrot -s /tmp/screenshot.png  # Select a region and save
+
+# Flameshot (feature-rich, supports annotation)
+flameshot gui                 # Opens GUI selector with annotation tools
+```
+
+Paste into Claude Code:
+```
+Ctrl+V
+```
+
+**Windows (WSL / PowerShell):**
+
+Take the screenshot:
+```
+Win+Shift+S     # Snipping Tool — select a region (copies to clipboard)
+Win+PrtSc       # Full screen to clipboard
+Alt+PrtSc       # Active window to clipboard
+```
+
+Or use the Snipping Tool app for more control (search "Snipping Tool" in Start).
+
+Paste into Claude Code:
+```
+Ctrl+V
+```
+
+> Note: When using WSL, make sure you are running Claude Code in a terminal that supports image paste (such as Windows Terminal). The clipboard is shared between Windows and WSL.
 
 ### From a file
 
@@ -22,6 +74,17 @@ Just reference the file path:
 ```
 > analyze this screenshot: /tmp/error-screenshot.png
 > what's wrong with the UI in ~/Desktop/mockup.jpg?
+```
+
+**macOS / Linux (Ubuntu):**
+```
+> analyze this screenshot: /Users/yourname/Desktop/bug.png
+> what's wrong with the UI in /home/yourname/mockup.jpg?
+```
+
+**Windows (WSL):**
+```
+> analyze this screenshot: /mnt/c/Users/yourname/Desktop/bug.png
 ```
 
 Or drag-and-drop the image file into your terminal (works in most modern terminals).
@@ -70,6 +133,23 @@ Or drag-and-drop the image file into your terminal (works in most modern termina
 ```
 [Paste a performance graph]
 > What trends does this graph show? What should I investigate?
+```
+
+---
+
+## When to Use Vision Instead of Text
+
+```
+Situation                          Approach
+─────────────────────────────────────────────────────
+UI looks wrong / broken            Paste a screenshot
+Error message on screen            Paste a screenshot (faster than typing it)
+Design to implement                Paste the mockup
+Diagram to understand              Paste the diagram
+Whiteboard from a meeting          Photograph it and paste
+Console errors in browser          Screenshot DevTools and paste
+Test output with visual gaps       Screenshot and paste
+Database schema diagram            Paste ER diagram image
 ```
 
 ---
@@ -130,6 +210,55 @@ Claude: I can see 4 entities in the diagram:
 ...
 ```
 
+### Example 5: Recreate a competitor's UI
+
+```
+[You paste a screenshot of a competitor's dashboard]
+
+> Recreate this dashboard layout in our app using our existing
+  component library. Match the structure but use our brand colors.
+
+Claude: I can see a three-column layout with:
+- Left nav with icons
+- Center feed with cards
+- Right sidebar with summary stats
+Here's how to implement this...
+```
+
+### Example 6: Read a terminal error screenshot
+
+```
+[You paste a screenshot of a red stack trace in the terminal]
+
+> What caused this and how do I fix it?
+
+Claude: I can read the stack trace. The root cause is:
+  TypeError: Cannot read properties of null (reading 'user')
+  at middleware.js:47
+The problem is that req.session is null when the session
+middleware hasn't run yet. Here's the fix...
+```
+
+---
+
+## Annotating Screenshots Before Pasting
+
+On each platform you can annotate (draw arrows, circles, labels) before pasting to highlight exactly what you want Claude to look at:
+
+**macOS:**
+- Open the screenshot in Preview (double-click the file)
+- Use the Markup toolbar (pencil icon) to draw shapes and arrows
+- Copy (Cmd+C) and paste into Claude Code
+
+**Linux (Ubuntu):**
+- Use Flameshot: `flameshot gui` — it has built-in annotation tools
+- Or open the image in GIMP and use the drawing tools
+
+**Windows:**
+- Open the screenshot in the Photos app and use Edit > Draw
+- Or use Paint (search "Paint" in Start) to add arrows and shapes
+- Or use Snipping Tool's built-in pen tool right after capturing
+
 ---
 
 ## Multiple Images
@@ -167,9 +296,14 @@ Claude still has the image in context and refers back to it.
 
 When Claude references an image it created or analyzed:
 
+**macOS:**
 ```
-Cmd+Click   # macOS — opens image in viewer
-Ctrl+Click  # Linux/Windows
+Cmd+Click   # Opens image in viewer
+```
+
+**Linux (Ubuntu) / Windows (WSL):**
+```
+Ctrl+Click  # Opens image in viewer
 ```
 
 ---
@@ -187,5 +321,7 @@ Ctrl+Click  # Linux/Windows
 
 - **Screenshots are gold** — instead of describing a bug, just show it
 - **Paste design mockups** to get accurate implementations
-- **Annotate screenshots** with arrows/circles in Preview/Paint before pasting to highlight specific areas
+- **Annotate screenshots** with arrows/circles in Preview/Paint/Flameshot before pasting to highlight specific areas
 - **System diagram photos** — Claude handles messy whiteboard photos surprisingly well
+- **Browser DevTools screenshots** save a lot of typing when debugging frontend errors
+- **Multiple images** can be pasted in one message to ask for a comparison or combined analysis

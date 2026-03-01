@@ -1,6 +1,20 @@
 # Memory System
 
-Claude Code can remember things across sessions automatically. This means you don't have to re-explain your preferences, past decisions, or project context every time you start a new conversation.
+## What is the Memory System?
+
+Imagine you have a notepad on your desk that you keep between meetings with a colleague. After each conversation, you jot down the decisions you made, the preferences they expressed, the problems you solved together. Next time they come back, you glance at your notes first — so you never start from scratch.
+
+Claude's memory system works exactly like that notepad. At the end of a session (or during one), Claude saves important notes to a file on your machine. The next time you open Claude in the same project, it reads those notes automatically. You don't have to re-explain anything it already learned.
+
+```
+Session 1:                           Session 2 (days later):
+> We're using Redis for sessions,    > add a logout endpoint
+  not the database
+                                     Claude: [already knows about Redis,
+Claude: Got it, I'll remember that.   adds the right implementation]
+```
+
+No re-explaining. No starting over. Claude picks up where it left off.
 
 ---
 
@@ -9,8 +23,20 @@ Claude Code can remember things across sessions automatically. This means you do
 At the end of a session (or while working), Claude saves notes to a `MEMORY.md` file on your machine. The next time you start Claude in the same project, those notes are loaded automatically.
 
 **Storage location:**
+
+**macOS / Linux / WSL:**
 ```
 ~/.claude/projects/<project-path>/memory/MEMORY.md
+```
+
+For example, if your project is at `/home/alex/projects/my-api`:
+```
+~/.claude/projects/home-alex-projects-my-api/memory/MEMORY.md
+```
+
+**Windows:**
+```
+C:\Users\YourName\.claude\projects\<project-path>\memory\MEMORY.md
 ```
 
 This is **local to your machine** — it's not synced to the cloud or shared with teammates.
@@ -31,12 +57,24 @@ Claude saves things like:
   - *"Main config is in config/app.ts, not .env"*
 - Project conventions discovered during work
 
+### What gets saved automatically — realistic examples
+
+Here are the kinds of things Claude will note down without being asked:
+
+| What happened in session | What gets saved |
+|--------------------------|-----------------|
+| You corrected Claude's approach to error handling | "User prefers returning error objects, not throwing exceptions" |
+| You explained that tests need a seeded database | "Run `npm run db:seed` before `npm test`" |
+| Claude discovered a non-obvious pattern in the codebase | "Auth middleware is in `middleware/` not `src/auth/`" |
+| You decided on a naming convention mid-session | "New API routes follow REST convention: `/api/v1/resources/:id`" |
+
 ---
 
 ## Enabling / Disabling
 
 Auto-memory is **enabled by default**.
 
+**macOS / Linux / WSL:**
 ```bash
 # Disable for all projects
 echo '{"autoMemoryEnabled": false}' > ~/.claude/settings.json
@@ -45,9 +83,22 @@ echo '{"autoMemoryEnabled": false}' > ~/.claude/settings.json
 > /memory
 ```
 
+**Windows (PowerShell):**
+```powershell
+# Disable for all projects
+'{"autoMemoryEnabled": false}' | Out-File -FilePath "$env:USERPROFILE\.claude\settings.json"
+```
+
 You can also disable via environment variable:
+
+**macOS / Linux / WSL:**
 ```bash
 CLAUDE_CODE_DISABLE_AUTO_MEMORY=true claude
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:CLAUDE_CODE_DISABLE_AUTO_MEMORY="true"; claude
 ```
 
 ---
@@ -64,6 +115,9 @@ This opens an interactive view showing:
 - Your global `~/.claude/CLAUDE.md`
 
 You can edit these directly from this interface.
+
+![Memory viewer inside Claude Code session](./images/memory-viewer.png)
+> What to expect: an interactive panel showing your current memory file contents, with the ability to edit entries directly.
 
 ---
 
@@ -120,6 +174,36 @@ See [patterns.md](patterns.md) for service layer and repository patterns.
 ## Debugging
 See [debugging.md](debugging.md) for known issues and fixes.
 ```
+
+---
+
+## How Memory, CLAUDE.md, and Session Context Relate
+
+These three things all give Claude information — but they serve different purposes:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Claude's Knowledge                   │
+├─────────────────┬──────────────────┬────────────────────┤
+│   CLAUDE.md     │    MEMORY.md     │  Session Context   │
+│                 │                  │                    │
+│ Written by YOU  │ Written by CLAUDE│ Built up as you    │
+│                 │                  │ chat               │
+│ Project rules   │ Discoveries &    │ Everything said    │
+│ & standards     │ decisions from   │ this session       │
+│                 │ past sessions    │                    │
+│ Committed to    │ Local only —     │ Gone when session  │
+│ git (shared)    │ not shared       │ ends               │
+│                 │                  │                    │
+│ Example:        │ Example:         │ Example:           │
+│ "use TypeScript"│ "JWT decided     │ The last 20 things │
+│ "tests: npm t"  │  Jan 15"         │ you said           │
+└─────────────────┴──────────────────┴────────────────────┘
+         ↓                  ↓                  ↓
+         All three are loaded together at the start of a session
+```
+
+**Best practice:** Use CLAUDE.md for project standards and conventions. Let MEMORY.md handle session-specific discoveries and personal preferences.
 
 ---
 
@@ -212,11 +296,49 @@ Claude remembered — no need to re-explain.
 
 ---
 
+## A More Complete Real-World Scenario
+
+Here's how memory builds up over a week of work on a project:
+
+**Monday — Session 1:**
+```
+> the API returns dates as Unix timestamps but the frontend expects ISO 8601
+
+Claude: Got it. I'll note that down and convert dates in all API responses.
+[MEMORY.md updated: "API returns ISO 8601 dates (not Unix timestamps)"]
+```
+
+**Wednesday — Session 2:**
+```
+> why is Claude writing ISO 8601 dates here?
+
+Claude: Based on my notes from Monday, we decided to use ISO 8601 format
+because the frontend expects it that way.
+```
+
+**Friday — Session 3:**
+```
+> add a new /api/events endpoint
+
+Claude: [automatically formats dates as ISO 8601 without being told]
+```
+
+Each session builds on the last. After a week, Claude has a detailed picture of your project's quirks, decisions, and preferences — and you never had to repeat yourself.
+
+---
+
 ## Privacy Note
 
 Memory files are stored **only on your local machine**:
+
+**macOS / Linux / WSL:**
 ```
 ~/.claude/projects/<path-hash>/memory/
+```
+
+**Windows:**
+```
+C:\Users\YourName\.claude\projects\<path-hash>\memory\
 ```
 
 They are never sent to Anthropic's servers independently — they're included as part of your conversation context (which follows normal data handling policies).

@@ -1,38 +1,164 @@
 # Getting Started with Claude Code
 
-Claude Code is an AI coding assistant that lives in your terminal. It can read your files, run commands, search the web, manage git — all through natural conversation.
+## What is Claude Code, really?
+
+Imagine hiring a senior developer who never sleeps, never gets frustrated, and lives permanently inside your terminal. You describe a problem in plain English — "the login form is broken" or "add a search bar to the homepage" — and they read your actual files, figure out what's wrong, make the changes, and run your tests to confirm it works.
+
+That's Claude Code. It's not a chatbot you copy-paste code to and from. It's an AI assistant that can directly read, edit, and run things in your project — with your permission at every step.
+
+```
+You type: "the login is broken, fix it"
+          ↓
+Claude reads your login files
+          ↓
+Claude finds the bug
+          ↓
+Claude edits the file
+          ↓
+Claude runs your tests to verify
+          ↓
+Claude shows you what it changed
+```
+
+You stay in control the whole time. Claude asks before doing anything risky, and you can cancel at any point.
 
 ---
 
 ## Installation
 
 ### Prerequisites
+
 - **Node.js** 18 or higher
 - An **Anthropic account** (claude.ai)
 
-### Install
+### Step 1: Install Node.js
 
+Claude Code runs on Node.js. Here's how to get it on each operating system:
+
+**macOS (using Homebrew — recommended):**
+```bash
+# Install Homebrew first if you don't have it
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Then install Node.js
+brew install node
+```
+
+**macOS (using nvm — for managing multiple Node versions):**
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# Restart your terminal, then:
+nvm install 20
+nvm use 20
+```
+
+**Linux / Ubuntu:**
+```bash
+# Option 1: via apt (easiest)
+sudo apt update
+sudo apt install nodejs npm
+
+# Option 2: via nvm (recommended for developers)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# Restart your terminal, then:
+nvm install 20
+nvm use 20
+```
+
+**Windows (WSL — recommended):**
+
+Most Windows developers run Claude Code inside WSL (Windows Subsystem for Linux), which gives you a real Linux terminal inside Windows.
+
+```powershell
+# Step 1: Install WSL (run in PowerShell as Administrator)
+wsl --install
+
+# This installs Ubuntu by default. Restart your computer when prompted.
+```
+
+```bash
+# Step 2: Inside WSL (Ubuntu), install nvm and Node
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# Close and reopen your WSL terminal, then:
+nvm install 20
+nvm use 20
+```
+
+**Windows (without WSL — PowerShell):**
+```powershell
+# Install Node.js via winget
+winget install OpenJS.NodeJS
+
+# Or download the installer from https://nodejs.org
+# Then restart PowerShell and verify:
+node --version
+```
+
+Verify Node.js is installed correctly:
+```bash
+node --version   # Should print v18.x.x or higher
+npm --version    # Should print a version number
+```
+
+### Step 2: Install Claude Code
+
+**macOS / Linux / WSL:**
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-### Verify installation
+**Windows (PowerShell):**
+```powershell
+npm install -g @anthropic-ai/claude-code
+```
+
+> If you get a permissions error on macOS/Linux, avoid using `sudo`. Instead, fix your npm prefix:
+> ```bash
+> npm config set prefix ~/.npm-global
+> echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+> source ~/.bashrc
+> ```
+
+### Step 3: Verify installation
 
 ```bash
 claude --version
 ```
 
-### Log in
+You should see something like `claude-code/1.x.x`.
+
+![Claude Code version output in terminal](./images/claude-version-output.png)
+> What to expect: a version number printed to your terminal confirming the install worked.
+
+### Step 4: Log in
 
 ```bash
 claude auth login
 ```
 
-This opens a browser window to authenticate with your Anthropic account.
+This opens a browser window to authenticate with your Anthropic account. After logging in, return to the terminal — you're ready to go.
+
+**Windows note:** If the browser doesn't open automatically in WSL, copy the URL shown in the terminal and paste it into your Windows browser manually.
 
 ---
 
 ## Your First Session
+
+### Navigate to your project first
+
+Claude Code works in whatever directory you start it from. Always `cd` into your project before launching Claude:
+
+**macOS / Linux / WSL:**
+```bash
+cd ~/projects/my-app
+claude
+```
+
+**Windows (PowerShell):**
+```powershell
+cd C:\Users\YourName\projects\my-app
+claude
+```
 
 ### Start Claude Code
 
@@ -48,6 +174,76 @@ You'll see a prompt where you can type naturally:
 > Add a unit test for the calculateTotal function
 > Explain what this code does
 ```
+
+### Or start with an immediate task
+
+```bash
+claude "explain what this project does"
+```
+
+### Exit a session
+
+```bash
+# Type in the terminal:
+exit
+
+# Or press:
+Ctrl+D
+```
+
+---
+
+## A Complete First Session Walkthrough
+
+Here's what a realistic first session looks like — from opening Claude to finishing a small task:
+
+```
+$ cd ~/projects/my-web-app
+$ claude
+
+> read the README and give me an overview of this project
+
+Claude reads README.md, package.json, and a few key source files...
+
+Claude: This is a Node.js REST API for a task management app. It uses:
+- Express for routing
+- PostgreSQL via Sequelize ORM
+- JWT for authentication
+- Jest for testing
+
+The main entry point is src/server.js. There are 3 feature modules:
+users, tasks, and notifications.
+
+> the /api/tasks endpoint is returning a 500 error when I filter by status.
+  look at src/routes/tasks.js and fix it
+
+Claude: I'll look at that file now...
+
+[Claude reads src/routes/tasks.js]
+
+I found the issue. On line 47, the status filter is comparing against
+the raw query string value but the database stores it in uppercase.
+Here's the fix:
+
+[Claude edits the file — shows you the diff]
+
+Should I run the test suite to verify?
+
+> yes
+
+Claude runs: npm test
+
+All 23 tests passing. The fix works.
+
+> great. commit the change with a clear message
+
+Claude runs: git add src/routes/tasks.js
+Claude runs: git commit -m "Fix: uppercase status comparison in task filter"
+
+Done. Committed as abc1234.
+```
+
+That's a complete bug-fix cycle — find, fix, test, commit — all through conversation.
 
 ### Start with an immediate task
 
@@ -154,8 +350,15 @@ Claude reads your project files to understand context. You can give it more cont
 
 Claude Code works in the **current directory** when you start it. Always `cd` into your project first:
 
+**macOS / Linux / WSL:**
 ```bash
 cd ~/projects/my-app
+claude
+```
+
+**Windows (PowerShell):**
+```powershell
+cd C:\Users\YourName\projects\my-app
 claude
 ```
 
@@ -202,6 +405,35 @@ claude
 /help        # Show all available commands
 /status      # Show version and account info
 /doctor      # Diagnose any issues with your setup
+```
+
+---
+
+## PATH and Shell Setup Notes
+
+After installing Claude Code, if running `claude` gives you "command not found":
+
+**macOS / Linux / WSL:**
+```bash
+# Check where npm installed it
+npm config get prefix
+
+# Add that path to your shell config
+# For bash (~/.bashrc or ~/.bash_profile):
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# For zsh (~/.zshrc):
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Windows (PowerShell):**
+```powershell
+# npm global bin is usually already in PATH after Node.js install
+# If not, find it with:
+npm config get prefix
+# Then add that path to your system environment variables
 ```
 
 ---

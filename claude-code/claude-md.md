@@ -1,14 +1,18 @@
 # CLAUDE.md — Project Instructions
 
-`CLAUDE.md` is a special markdown file that Claude Code reads automatically when you start a session in your project. Use it to teach Claude about your project so it doesn't need to re-learn everything each time.
-
----
-
 ## What is CLAUDE.md?
 
-Think of it as a README for Claude — instructions that get injected into every conversation automatically.
+Think of it like the briefing note you hand to a new contractor before their first day. You wouldn't want them to discover your coding standards by accident, or waste time asking "how do I run the tests?" You'd write it all down — tech stack, commands, rules, quirks — and hand it over so they can hit the ground running.
 
-Without CLAUDE.md, you'd have to tell Claude things like "we use TypeScript", "run tests with `npm test`", or "never use `var`" every single time. With CLAUDE.md, Claude knows all of this from the start.
+CLAUDE.md is exactly that. It's a plain text file that Claude reads automatically every time you start a session in your project. Without it, Claude starts fresh each time. With it, Claude already knows your stack, your conventions, and your preferences before you type a single word.
+
+```
+Without CLAUDE.md:                With CLAUDE.md:
+> we use TypeScript               > fix the login bug
+> tests run with npm test
+> never use var, always const     Claude: [already knows all this]
+> fix the login bug               [fixes the bug correctly]
+```
 
 ---
 
@@ -24,8 +28,16 @@ Claude analyzes your project and generates a CLAUDE.md for you.
 
 ### Or create one manually
 
+**macOS / Linux / WSL:**
 ```bash
 touch CLAUDE.md
+```
+
+**Windows (PowerShell):**
+```powershell
+New-Item CLAUDE.md -ItemType File
+# or simply:
+echo $null > CLAUDE.md
 ```
 
 Then add instructions:
@@ -55,11 +67,20 @@ Then add instructions:
 
 Claude loads CLAUDE.md files from multiple locations, in order of priority:
 
+**macOS / Linux / WSL:**
 ```
 ~/.claude/CLAUDE.md           ← Your personal rules (all projects)
 ./CLAUDE.md                   ← Project root (most common)
 ./.claude/CLAUDE.md           ← Hidden project config
 ./CLAUDE.local.md             ← Local overrides (add to .gitignore)
+```
+
+**Windows (PowerShell / WSL):**
+```
+C:\Users\YourName\.claude\CLAUDE.md    ← Personal rules (all projects)
+.\CLAUDE.md                            ← Project root
+.\.claude\CLAUDE.md                    ← Hidden project config
+.\CLAUDE.local.md                      ← Local overrides
 ```
 
 **Sub-directory CLAUDE.md files** are loaded on demand — when Claude accesses files in that folder.
@@ -182,8 +203,14 @@ globs: ["src/components/**/*.tsx", "src/pages/**/*.tsx"]
 
 Put personal instructions that apply to ALL your projects in:
 
+**macOS / Linux / WSL:**
 ```
 ~/.claude/CLAUDE.md
+```
+
+**Windows:**
+```
+C:\Users\YourName\.claude\CLAUDE.md
 ```
 
 Example:
@@ -201,11 +228,18 @@ Example:
 
 ## Local CLAUDE.md (gitignored)
 
-For instructions you don't want to commit (personal preferences, secrets):
+For instructions you don't want to commit (personal preferences, local config, secrets):
 
+**macOS / Linux / WSL:**
 ```bash
 echo "CLAUDE.local.md" >> .gitignore
 touch CLAUDE.local.md
+```
+
+**Windows (PowerShell):**
+```powershell
+Add-Content .gitignore "CLAUDE.local.md"
+New-Item CLAUDE.local.md -ItemType File
 ```
 
 ```markdown
@@ -217,7 +251,113 @@ touch CLAUDE.local.md
 
 ---
 
-## Real-World Example
+## Real-World Examples by Project Type
+
+### React + TypeScript App
+
+```markdown
+# Acme Dashboard — Claude Instructions
+
+## Project
+Internal admin dashboard. React 18 + TypeScript. No backend — calls external APIs.
+
+## Tech Stack
+- React 18, TypeScript 5
+- Vite for bundling
+- React Query for data fetching
+- Zustand for global state
+- Tailwind CSS + shadcn/ui components
+
+## Commands
+- `npm run dev` — start Vite dev server (port 5173)
+- `npm test` — Vitest unit tests
+- `npm run build` — production build
+- `npm run storybook` — component development
+
+## Conventions
+- All components in `src/components/` — PascalCase filenames
+- Pages in `src/pages/` — each page has its own folder
+- Named exports only — no default exports
+- Always type props with an interface, never inline
+- Use `cn()` from `src/lib/utils` for conditional Tailwind classes
+
+## Do Not
+- Don't use `any` — use `unknown` and narrow the type
+- Don't use `useEffect` for data fetching — use React Query
+- Don't import from `@mui/material` — we use shadcn/ui only
+```
+
+### Python Django API
+
+```markdown
+# Acme API — Claude Instructions
+
+## Project
+REST API for a logistics platform. Django 4.2 + Django REST Framework.
+
+## Tech Stack
+- Python 3.11, Django 4.2, DRF 3.14
+- PostgreSQL 15 (via psycopg2)
+- Celery + Redis for async tasks
+- pytest + pytest-django for testing
+
+## Commands
+- `python manage.py runserver` — dev server
+- `pytest` — run tests
+- `python manage.py migrate` — apply migrations
+- `python manage.py makemigrations` — create new migrations
+- `celery -A config worker -l info` — start task queue
+
+## Conventions
+- Views: use class-based views (CBV) — not function-based
+- Serializers live in `app/serializers.py`
+- Business logic goes in `app/services.py` — keep views thin
+- All dates/times in UTC — convert at serialization time
+- Use `get_object_or_404()` in views — never manual try/except
+
+## Do Not
+- Never run `python manage.py flush` — drops all data
+- Don't put business logic in models — use services
+- Don't expose stack traces in API error responses
+```
+
+### React Native Mobile App
+
+```markdown
+# Acme Mobile — Claude Instructions
+
+## Project
+iOS + Android app for a food delivery service. React Native + Expo.
+
+## Tech Stack
+- React Native 0.73, Expo SDK 50
+- TypeScript
+- React Navigation 6
+- Zustand for state
+- React Native Paper for UI components
+
+## Commands
+- `npx expo start` — start Metro bundler
+- `npx expo start --ios` — open iOS simulator
+- `npx expo start --android` — open Android emulator
+- `npm test` — Jest tests
+
+## Conventions
+- Screens in `src/screens/` — one file per screen
+- Shared components in `src/components/`
+- Navigation types defined in `src/navigation/types.ts`
+- Always use `StyleSheet.create()` — no inline styles
+- Platform-specific code: use `.ios.ts` / `.android.ts` extensions
+
+## Do Not
+- Don't use web-only APIs (localStorage, window, document)
+- Don't hardcode pixel values — use `useWindowDimensions()` for responsive sizing
+- Don't commit `*.keystore` or `*.p12` files
+```
+
+---
+
+## Real-World Example (Full)
 
 Here's a complete, practical CLAUDE.md:
 
@@ -269,6 +409,44 @@ php artisan serve
 - Don't commit `.env` or any credentials
 - Don't use jQuery — project uses Vue
 ```
+
+---
+
+## Common Mistakes
+
+**Mistake 1: Making it too long**
+
+Claude reads the whole CLAUDE.md on every session start. A 500-line file slows things down and dilutes the important stuff. Keep it under 100 lines. Link to other docs with `@` imports if you need more detail.
+
+**Mistake 2: Letting it go stale**
+
+An outdated CLAUDE.md is worse than none. If it says "we use Redux" but you migrated to Zustand six months ago, Claude will confidently write Redux code. Update CLAUDE.md whenever the project changes.
+
+```
+# Quick update from inside a session:
+> /memory
+# This opens your CLAUDE.md for editing
+```
+
+**Mistake 3: Vague instructions**
+
+```markdown
+# Bad:
+- Write clean code
+
+# Good:
+- Max 40 lines per function
+- Every function must have a JSDoc comment
+- No nested ternaries
+```
+
+**Mistake 4: Forgetting local config**
+
+If your local environment differs from the project defaults (different port, local test credentials, etc.), put that in `CLAUDE.local.md` and gitignore it. Don't pollute the shared CLAUDE.md with machine-specific settings.
+
+**Mistake 5: Not using subdirectory CLAUDE.md files**
+
+In a large monorepo, different parts of the codebase have very different rules. Put a CLAUDE.md in `frontend/`, `backend/`, and `infra/` with rules specific to each area. Claude loads them automatically when working in those directories.
 
 ---
 
