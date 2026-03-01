@@ -40,16 +40,11 @@ claude --ide --resume "auth-refactor"
 
 ## Naming Sessions
 
-Name a session so you can find it later:
+Name a session so you can find it later.
 
-Inside a session:
+Inside a session, use the `/rename` command:
 ```
 > /rename auth-refactor
-```
-
-Or when starting:
-```bash
-claude --ide --session-name "auth-refactor"
 ```
 
 Good naming conventions:
@@ -61,24 +56,21 @@ Good naming conventions:
 
 ## Resuming Sessions in VS Code
 
-You don't have to remember session names — the VS Code extension shows a list of recent sessions.
+You don't have to remember session names — the VS Code extension shows a list of recent sessions in the Claude Code panel.
 
-From the Command Palette:
-
-| OS | Shortcut |
-|----|----------|
-| macOS | `Cmd+Shift+P` → "Claude Code: Resume Session" |
-| Windows / Linux | `Ctrl+Shift+P` → "Claude Code: Resume Session" |
+Use the **Past Conversations dropdown** in the Claude Code panel to browse and resume previous sessions. Select any entry to pick up where you left off.
 
 ![Session list in VS Code](./images/session-list.png)
-> What to expect: The session picker shows a list of your recent sessions, sorted by last activity. Each entry shows the session name (or a truncated preview of the first message if unnamed), and the date/time it was last active. Select one to resume.
+> What to expect: The Past Conversations dropdown shows your recent sessions sorted by last activity. Each entry shows the session name (or a truncated preview of the first message if unnamed), and the date/time it was last active. Select one to resume.
 
-Or from the terminal:
+Or from the terminal, use `--resume` (or `-r`) with no argument to open an interactive session picker:
 ```bash
-# List recent sessions
-claude --list-sessions
+# Open interactive session picker
+claude --resume
+# or
+claude -r
 
-# Resume by name
+# Resume a specific session by name
 claude --ide -r "session-name"
 ```
 
@@ -86,13 +78,9 @@ claude --ide -r "session-name"
 
 ## Viewing Session History
 
-Inside an active session:
+To review what was covered in a session, use the **Past Conversations dropdown** in the VS Code Claude Code panel to reopen a previous session and scroll through it.
 
-```
-> /history
-```
-
-Shows the full conversation history for the current session — useful when picking up where you left off after a few days away.
+When resuming a session from the terminal with `-c` or `-r`, Claude will have access to the full prior conversation history and can summarize what was previously discussed if you ask.
 
 ---
 

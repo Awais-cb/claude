@@ -12,7 +12,7 @@ Type `/` at the prompt and a searchable list of commands appears. Start typing t
 
 ```
 > /          ← shows all commands
-> /cl        ← filters to /clear, /clone, /changelog...
+> /cl        ← filters to /clear, /clone, /compact...
 > /clear     ← runs the clear command
 ```
 
@@ -218,7 +218,7 @@ These change what Claude is *allowed* to do.
 | Command | Description |
 |---------|-------------|
 | `/plan` | Switch to Plan Mode (read-only, no edits) |
-| `/permission` | View or update permission settings |
+| `/permissions` | View or update permission settings (alias: `/allowed-tools`) |
 | `/fast` | Toggle Fast Mode on/off (2.5× faster) |
 | `/fast on` | Turn Fast Mode on |
 | `/fast off` | Turn Fast Mode off |
@@ -394,6 +394,8 @@ Lists connected MCP servers and lets you add or remove them. See [mcp-servers.md
 | `/statusline` | Configure the status line display |
 | `/output-style` | Switch output style (default, explanatory, learning) |
 | `/tasks` | View and manage background tasks |
+| `/copy` | Copy the last assistant response to clipboard |
+| `/export [filename]` | Export conversation as plain text |
 
 ### `/output-style` — How Claude explains things
 
@@ -422,7 +424,6 @@ Options:
 | `/insights` | Usage insights and analytics |
 | `/doctor` | Diagnose installation and configuration issues |
 | `/release-notes` | View recent changelog |
-| `/changelog` | Same as `/release-notes` |
 
 ### `/cost` — Check your spending
 

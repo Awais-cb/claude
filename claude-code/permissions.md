@@ -20,7 +20,7 @@ New employee (day 1)         Trusted dev (6 months in)    Automated CI bot
 
 ## The Three Permission Modes
 
-Switch modes with `Shift+Tab` at any time during a session.
+Switch modes with `Shift+Tab` at any time during a session. The cycle order is: **Normal → Auto-Accept → Plan**.
 
 ### 1. Normal Mode (default)
 

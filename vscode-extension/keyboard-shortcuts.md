@@ -2,7 +2,7 @@
 
 Two categories of shortcuts apply when using Claude Code in VS Code: **VS Code-level shortcuts** (open panels, start sessions) and **session-level shortcuts** (control Claude's behavior while it's running).
 
-Learning these shortcuts is like learning your editor's keybindings — a small investment that pays back every time you use it. The most important ones to internalize: `Ctrl+Shift+A` to open a session, `Shift+Tab` to change permission mode, and `Esc Esc` to undo Claude's last change.
+Learning these shortcuts is like learning your editor's keybindings — a small investment that pays back every time you use it. The most important ones to internalize: `Cmd+N` / `Ctrl+N` for a new conversation, `Shift+Tab` to change permission mode, and `Esc Esc` to undo Claude's last change.
 
 ---
 
@@ -13,7 +13,10 @@ These work anywhere in VS Code, even when Claude Code is not running:
 | Action | macOS | Windows / Linux |
 |--------|-------|-----------------|
 | Open Command Palette | `Cmd+Shift+P` | `Ctrl+Shift+P` |
-| Open new Claude Code session | `Cmd+Shift+A` | `Ctrl+Shift+A` |
+| New Conversation (Claude Code focused) | `Cmd+N` | `Ctrl+N` |
+| Open in New Tab | `Cmd+Shift+Esc` | `Ctrl+Shift+Esc` |
+| Focus Input | `Cmd+Esc` | `Ctrl+Esc` |
+| Insert @-mention with file path and line number | `Option+K` | `Alt+K` |
 | Open Extensions sidebar | `Cmd+Shift+X` | `Ctrl+Shift+X` |
 | Open integrated terminal | `Ctrl+`` ` `` ` | `Ctrl+`` ` `` ` |
 | New terminal panel | `Ctrl+Shift+`` ` `` ` | `Ctrl+Shift+`` ` `` ` |
@@ -43,6 +46,7 @@ These work while you're inside an active Claude Code session (in the prompt box 
 | New line without submitting | `Shift+Enter` | For multi-line prompts |
 | Navigate prompt history (back) | `↑` | Cycles through previous prompts |
 | Navigate prompt history (forward) | `↓` | Moves forward in history |
+| Reverse search command history | `Ctrl+R` | Incremental reverse search through history |
 | Cancel current operation | `Ctrl+C` | Stops Claude mid-response |
 | Clear input (when prompt is empty) | `Ctrl+C` | Same key, different context |
 | Exit the session | `Ctrl+D` | Ends the session cleanly |
@@ -239,7 +243,10 @@ Cut this out and keep it handy:
 ├─────────────────────────┬───────────────────────────────┤
 │ macOS                   │ Windows / Linux               │
 ├─────────────────────────┼───────────────────────────────┤
-│ Cmd+Shift+A             │ Ctrl+Shift+A   New session    │
+│ Cmd+N                   │ Ctrl+N         New conversation│
+│ Cmd+Esc                 │ Ctrl+Esc       Focus input    │
+│ Cmd+Shift+Esc           │ Ctrl+Shift+Esc Open new tab   │
+│ Option+K                │ Alt+K          Insert @-mention│
 │ Cmd+Shift+P             │ Ctrl+Shift+P   Command palette│
 ├─────────────────────────┴───────────────────────────────┤
 │              (All platforms)                            │
@@ -248,6 +255,7 @@ Cut this out and keep it handy:
 │ Shift+Enter             │ New line (no submit)          │
 │ Ctrl+C                  │ Cancel / clear                │
 │ Ctrl+D                  │ Exit session                  │
+│ Ctrl+R                  │ Reverse search history        │
 │ Shift+Tab               │ Cycle permission mode         │
 │ Esc Esc                 │ Undo last change              │
 │ Ctrl+G                  │ Open in $EDITOR               │

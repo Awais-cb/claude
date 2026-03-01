@@ -127,7 +127,7 @@ tools:                            # Allowlist of tools
 disallowedTools:                  # Tools explicitly denied
   - Bash
   - Write
-permissionMode: plan              # plan, auto-accept, or normal
+permissionMode: plan              # default, acceptEdits, bypassPermissions, plan, dontAsk
 maxTurns: 20                      # Max agentic turns before stopping
 memory: project                   # user, project, local, or omit
 isolation: worktree               # Run in isolated git worktree
@@ -383,26 +383,6 @@ Opens an interactive menu to:
 
 ![The /agents interactive menu showing a list of available agents](./images/agents-menu.png)
 > *What to expect: Typing `/agents` opens a menu with all your configured agents listed by name and description. You can navigate with arrow keys, press Enter to select, and use the options to create, edit, or delete agents.*
-
----
-
-## Agent Teams (Experimental)
-
-For very complex tasks, you can have multiple Claude sessions working as a team:
-
-```
-> /team
-```
-
-Each "teammate" is a full Claude Code session with:
-- Its own context window
-- Access to a shared task list
-- The ability to communicate with other teammates
-- Parallel execution
-
-**Example use case:** Implementing a large feature where three teammates simultaneously work on the backend, frontend, and tests.
-
-> **Note:** Agent Teams is an experimental feature. Enable it in settings first.
 
 ---
 

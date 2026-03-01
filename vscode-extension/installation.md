@@ -1,8 +1,8 @@
 # Installing the Claude Code VS Code Extension
 
-The Claude Code extension is published by Anthropic on the VS Code Marketplace. Installation takes under a minute — but you need a few things in place first.
+The Claude Code extension is published by Anthropic on the VS Code Marketplace. Installation takes under a minute.
 
-Think of this like setting up a new power tool: before you can use the drill (the extension), you need electricity (Node.js), and the drill bit (the Claude Code CLI). This guide walks through getting everything ready on any operating system.
+> **Note:** The extension bundles the Claude Code CLI. You don't need to install Node.js or the CLI separately to use the extension. If you only want to use Claude Code through VS Code, skip straight to [Step 1: Install the VS Code Extension](#step-1-install-the-vs-code-extension). The Node.js and CLI installation steps below are only needed if you also want to use the Claude Code CLI directly in your terminal.
 
 ---
 
@@ -10,17 +10,20 @@ Think of this like setting up a new power tool: before you can use the drill (th
 
 Before installing the extension, make sure you have:
 
-| Requirement | Minimum Version | Check Command |
-|-------------|----------------|---------------|
-| VS Code | 1.80+ | `code --version` |
-| Node.js | 18+ | `node --version` |
-| npm | 8+ | `npm --version` |
-| Claude Code CLI | Latest | `claude --version` |
+| Requirement | Minimum Version | Notes |
+|-------------|----------------|-------|
+| VS Code | 1.98.0+ | `code --version` to check |
 | Anthropic account | — | [claude.ai](https://claude.ai) |
+| Node.js *(CLI only)* | 18+ | Only needed for terminal CLI use; not required for the extension |
+| npm *(CLI only)* | 8+ | Only needed for terminal CLI use |
 
 ---
 
-## Step 1: Install Node.js
+## CLI-Only Installation (Optional)
+
+The steps in this section — installing Node.js and the Claude Code CLI via npm — are only required if you want to use the Claude Code CLI directly in your terminal. **If you only plan to use Claude Code through the VS Code extension, skip to [Step 1: Install the VS Code Extension](#step-1-install-the-vs-code-extension).** The extension bundles everything it needs.
+
+### Install Node.js (CLI use only)
 
 Node.js powers the Claude Code CLI. Here's how to install it on each OS.
 
@@ -131,9 +134,9 @@ node --version
 
 ---
 
-## Step 2: Install the Claude Code CLI
+### Install the Claude Code CLI (CLI use only)
 
-Once Node.js is installed, install the Claude Code CLI globally:
+Once Node.js is installed, install the Claude Code CLI globally for terminal access:
 
 **macOS / Linux / WSL:**
 ```bash
@@ -154,7 +157,7 @@ You should see a version number like `1.2.3`. If you get "command not found," se
 
 ---
 
-## Step 3: Install the VS Code Extension
+## Step 1: Install the VS Code Extension
 
 ### Method 1: VS Code Marketplace (Recommended for beginners)
 
@@ -199,7 +202,7 @@ If you need to install without internet access or from a specific version:
 
 ---
 
-## Step 4: Authenticate
+## Step 2: Authenticate
 
 If you haven't already authenticated Claude Code CLI, do it now:
 

@@ -5,7 +5,37 @@ Think of Chrome integration like having Claude look over your shoulder while you
 This is powerful for testing web apps, extracting data from pages, automating repetitive form filling, and debugging frontend issues in a real browser environment.
 
 ![Claude Code controlling a Chrome browser window](./images/chrome-integration.png)
-> *What to expect: A Chrome browser window opens (or runs invisibly in headless mode), Claude navigates to pages, clicks buttons, fills fields, and reports back what it sees.*
+> *What to expect: Claude connects to your running Chrome browser via the browser extension, navigates to pages, clicks buttons, fills fields, and reports back what it sees.*
+
+---
+
+## Prerequisites and Requirements
+
+Before enabling Chrome integration, make sure you meet all of the following requirements:
+
+### Required: "Claude in Chrome" Browser Extension
+
+Chrome integration does **not** work by launching Chrome in headless mode or controlling it like Selenium/Playwright. Instead, it works through the **"Claude in Chrome" browser extension**, which enables native messaging between Claude Code CLI and your browser.
+
+- Install the extension from the Chrome Web Store (search for **"Claude in Chrome"**)
+- **Minimum versions required:** Chrome extension version 1.0.36+ and Claude Code CLI version 2.0.73+
+- The extension shares your logged-in browser session — Claude interacts with the same browser you are using, rather than opening a fresh isolated instance
+
+### Supported Browsers
+
+| Browser | Supported |
+|---------|-----------|
+| Google Chrome | Yes |
+| Microsoft Edge | Yes |
+| Brave | No |
+| Arc | No |
+| Other Chromium-based browsers | No |
+
+Only Google Chrome and Microsoft Edge are officially supported.
+
+### WSL Is Not Supported
+
+Chrome integration does **not** work when Claude Code is running inside WSL (Windows Subsystem for Linux). If you need browser integration on Windows, run Claude Code natively in PowerShell or Command Prompt — not inside WSL.
 
 ---
 
@@ -53,13 +83,8 @@ sudo apt install chromium-browser
 ```
 
 **Windows (WSL):**
-```bash
-# Chrome on Windows is accessible from WSL
-# Check if the Chrome executable exists at the typical Windows path
-ls /mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe 2>/dev/null && echo "Chrome found" || echo "Chrome not found"
-```
 
-If Chrome is not found, install it in Windows (not inside WSL) from https://www.google.com/chrome/
+> Chrome integration is not supported when running Claude Code inside WSL. Use the Windows (PowerShell) setup below instead.
 
 **Windows (PowerShell):**
 ```powershell
@@ -106,12 +131,7 @@ claude --chrome
 
 ### Windows (WSL) Setup
 
-1. Chrome must be installed on the Windows side (not inside WSL)
-2. Claude Code running in WSL can use the Windows Chrome binary
-3. Start Claude with Chrome:
-   ```bash
-   claude --chrome
-   ```
+> **WSL is not supported for Chrome integration.** If you are running Claude Code inside WSL, Chrome integration will not work. Use Claude Code natively in PowerShell or Command Prompt instead (see Windows (PowerShell) Setup below).
 
 ### Windows (PowerShell) Setup
 
@@ -327,10 +347,8 @@ echo $DISPLAY
 ```
 
 **Windows (WSL):**
-```bash
-# Confirm the Windows Chrome path is accessible from WSL
-ls /mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe
-```
+
+> Chrome integration is not supported in WSL. Switch to running Claude Code natively in PowerShell.
 
 ### "No display" error on Linux server
 
@@ -380,8 +398,11 @@ claude -p "test the login form" --chrome
 
 ## Requirements
 
-- **Chrome** must be installed
-- Works on macOS, Windows, and Linux
+- **Chrome** or **Microsoft Edge** must be installed
+- **"Claude in Chrome" browser extension** must be installed (version 1.0.36+)
+- **Claude Code CLI** version 2.0.73+
+- Works on macOS, Windows (native/PowerShell), and Linux
+- WSL is **not** supported
 - For CI/CD: use headless Chrome mode
 
 ### Headless Chrome in CI

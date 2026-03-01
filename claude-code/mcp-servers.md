@@ -54,6 +54,28 @@ Claude gives you a useful answer
 
 ## Setting Up MCP Servers
 
+### The `claude mcp` CLI (Primary Method)
+
+The fastest way to add, list, and remove MCP servers is the `claude mcp` CLI — no manual JSON editing required:
+
+```bash
+# Add a local (stdio) server, passing environment variables and the command
+claude mcp add my-server -e API_KEY=abc123 -- /path/to/server args
+
+# Add an HTTP or streamable-HTTP server
+claude mcp add --transport http my-server https://example.com/mcp
+
+# List all configured servers
+claude mcp list
+
+# Remove a server
+claude mcp remove my-server
+```
+
+> **Note on SSE transport:** The `--transport sse` option is deprecated. Use `--transport http` (streamable-HTTP) instead for remote servers — it is faster, more reliable, and the current standard.
+
+---
+
 ### How to Add Your First MCP Server in 3 Steps
 
 **Step 1: Choose a server**
@@ -62,7 +84,7 @@ Pick one from the popular list below (e.g., the GitHub server).
 
 **Step 2: Create the config file**
 
-Create a file called `.mcp.json` in your project folder (or `~/.claude/.mcp.json` for all projects):
+Create a file called `.mcp.json` in your project folder (for all projects, user-scope MCP config is stored in `~/.claude.json`):
 
 ```json
 {
@@ -130,10 +152,11 @@ claude --mcp-config ./mcp-servers.json
 Config files are loaded in priority order. A project-level config overrides your user-wide config:
 
 ```
-.mcp.json                        ← Project-local (highest priority)
-.claude/.mcp.json                ← Project config
-~/.claude/.mcp.json              ← User-wide (all projects)
+.mcp.json          ← Project root (highest priority, shared with team via git)
+~/.claude.json     ← User-wide (all projects, personal)
 ```
+
+> **Important:** User-scope MCP configuration is stored inside `~/.claude.json` — not in a separate `~/.claude/.mcp.json` file. Project-scope configuration lives in `.mcp.json` at your project root.
 
 ### Where to find these files by OS
 
@@ -141,7 +164,7 @@ Config files are loaded in priority order. A project-level config overrides your
 
 | Scope | Path |
 |-------|------|
-| All projects (user-wide) | `~/.claude/.mcp.json` (e.g., `/Users/yourname/.claude/.mcp.json`) |
+| All projects (user-wide) | `~/.claude.json` (e.g., `/Users/yourname/.claude.json`) |
 | Current project only | `.mcp.json` in your project root |
 | Enterprise policy | `/Library/Application Support/ClaudeCode/mcp.json` |
 
@@ -149,7 +172,7 @@ Config files are loaded in priority order. A project-level config overrides your
 
 | Scope | Path |
 |-------|------|
-| All projects (user-wide) | `~/.claude/.mcp.json` (e.g., `/home/yourname/.claude/.mcp.json`) |
+| All projects (user-wide) | `~/.claude.json` (e.g., `/home/yourname/.claude.json`) |
 | Current project only | `.mcp.json` in your project root |
 | Enterprise policy | `/etc/claude-code/mcp.json` |
 
@@ -157,20 +180,20 @@ Config files are loaded in priority order. A project-level config overrides your
 
 | Scope | Path |
 |-------|------|
-| All projects (user-wide) | `~/.claude/.mcp.json` inside your WSL home (e.g., `/home/yourname/.claude/.mcp.json`) |
+| All projects (user-wide) | `~/.claude.json` inside your WSL home (e.g., `/home/yourname/.claude.json`) |
 | Current project only | `.mcp.json` in your project root (inside WSL filesystem) |
 | Windows native path | `%APPDATA%\ClaudeCode\mcp.json` (if using native Windows Claude) |
 
-To open or create the user-wide config:
+The easiest way to manage user-wide servers is with the CLI (see above). To edit the file directly:
 
 **macOS / Linux (Ubuntu):**
 ```bash
-mkdir -p ~/.claude && $EDITOR ~/.claude/.mcp.json
+$EDITOR ~/.claude.json
 ```
 
 **Windows (WSL):**
 ```bash
-mkdir -p ~/.claude && nano ~/.claude/.mcp.json
+nano ~/.claude.json
 ```
 
 ---

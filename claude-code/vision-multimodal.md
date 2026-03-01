@@ -5,7 +5,7 @@ Think of this like sending a photo to a knowledgeable friend and asking "what do
 This changes the way you work. Instead of typing out a long description of what is wrong with your layout, you just show it. Instead of explaining what a diagram says, you paste it and ask Claude to generate code from it.
 
 ![Image being pasted into a Claude Code terminal session](./images/image-paste-demo.png)
-> *What to expect: After copying a screenshot, pressing Ctrl+V or Cmd+V in the terminal pastes the image inline. Claude acknowledges it and begins analyzing the visual content.*
+> *What to expect: After copying a screenshot, pressing Ctrl+V in the terminal pastes the image inline. Claude acknowledges it and begins analyzing the visual content.*
 
 ---
 
@@ -27,7 +27,7 @@ Cmd+Ctrl+Shift+4    # Capture region to clipboard (no file saved)
 
 Paste into Claude Code:
 ```
-Cmd+V
+Ctrl+V
 ```
 
 **Linux (Ubuntu):**

@@ -210,21 +210,18 @@ This is the equivalent of pulling the plug — use it when a task is going in th
 
 For agent teams or cross-session task coordination:
 
-**macOS / Linux (Ubuntu):**
+**macOS / Linux (Ubuntu) / Windows (WSL):**
 ```bash
-CLAUDE_CODE_TASK_LIST_ID=/path/to/shared/tasks claude
-```
-
-**Windows (WSL):**
-```bash
-CLAUDE_CODE_TASK_LIST_ID=/mnt/c/path/to/shared/tasks claude
+CLAUDE_CODE_TASK_LIST_ID=my-project claude
 ```
 
 **Windows (PowerShell):**
 ```powershell
-$env:CLAUDE_CODE_TASK_LIST_ID = "C:\path\to\shared\tasks"
+$env:CLAUDE_CODE_TASK_LIST_ID = "my-project"
 claude
 ```
+
+The value is a **name**, not a file path. Claude Code uses it to reference a named directory under `~/.claude/tasks/` (e.g., `~/.claude/tasks/my-project`). Use a short, descriptive name that identifies the project or agent team.
 
 Multiple Claude sessions can see and update the same task list — useful for agent teams working on different parts of the same project.
 

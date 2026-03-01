@@ -93,6 +93,8 @@ You don't need thinking mode for everything. Here's a practical guide:
 
 ## How to Enable/Disable
 
+> **Note:** Typing phrases like "think", "think hard", "think more", or "ultrathink" in your prompt does **not** activate extended thinking or allocate extra thinking tokens. These are treated as ordinary text. Thinking is only activated through the dedicated mechanisms below: the keyboard shortcut, the `/config` settings toggle, or the `alwaysThinkingEnabled` setting.
+
 ### Toggle in a session
 
 **macOS:**

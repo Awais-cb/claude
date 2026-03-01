@@ -4,6 +4,8 @@ Think of Fast Mode like choosing express checkout at the grocery store versus th
 
 When you're in the middle of a debugging session and need answers quickly, waiting 25 seconds per response breaks your concentration. Fast Mode cuts that to roughly 4–12 seconds, keeping you in the flow.
 
+> **Note: Research Preview** — Fast Mode is currently in research preview. Features, pricing, availability, and rate limits may change as the feature evolves. Check the official Claude Code documentation for the latest details before relying on it for production workflows.
+
 ---
 
 ## What is Fast Mode?

@@ -116,17 +116,17 @@ Control what Claude is allowed to do without asking:
       "Write(secrets/*)",
       "Bash(rm -rf *)"
     ],
-    "defaultMode": "normal"
+    "defaultMode": "acceptEdits"
   }
 }
 ```
 
 | Value for `defaultMode` | Meaning |
 |------------------------|---------|
-| `"normal"` | Claude asks before risky actions (default) |
+| *(unset)* | Ask mode — Claude asks before risky actions (default) |
 | `"acceptEdits"` | Auto-approve file edits, ask for commands |
-| `"bypassPermissions"` | Auto-approve everything (use carefully) |
-| `"plan"` | Read-only — no modifications |
+| `"bypassPermissions"` | Skip all prompts — auto-approve everything (use carefully) |
+| `"plan"` | Plan-only — read-only, no modifications |
 
 ### Model preference
 
@@ -150,13 +150,7 @@ Set to `true` to always use extended thinking (slower but more thorough).
 
 ### Fast mode
 
-```json
-{
-  "fastMode": false
-}
-```
-
-Set to `true` to enable fast mode by default (2.5x faster responses).
+Fast mode is not controlled by a settings key. To toggle it, use the `/fast` command inside a session, or set the environment variable `CLAUDE_CODE_DISABLE_FAST_MODE=true` to disable it system-wide.
 
 ### Auto-memory
 
@@ -168,30 +162,20 @@ Set to `true` to enable fast mode by default (2.5x faster responses).
 
 Claude automatically extracts and saves key facts about your project to memory. Set to `false` to disable.
 
-### CLAUDE.md exclusions
-
-```json
-{
-  "claudeMdExcludes": [
-    "node_modules/*",
-    "vendor/*",
-    "dist/*",
-    ".git/*"
-  ]
-}
-```
-
-File patterns to exclude when Claude reads CLAUDE.md files throughout the directory tree.
-
 ### Co-authorship in commits
 
+Co-authorship attribution is configured via the `attribution` object:
+
 ```json
 {
-  "includeCoAuthoredBy": true
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
 }
 ```
 
-Adds a `Co-Authored-By: Claude` line to commits Claude creates.
+`attribution.commit` adds a `Co-Authored-By: Claude` line to commits Claude creates. `attribution.pr` adds a note to pull requests.
 
 ---
 
@@ -204,16 +188,18 @@ Save to `~/.claude/settings.json`:
 ```json
 {
   "permissions": {
-    "defaultMode": "normal"
+    "defaultMode": "acceptEdits"
   },
   "model": "claude-sonnet-4-6",
-  "fastMode": false,
   "autoMemoryEnabled": true,
-  "includeCoAuthoredBy": true
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
 }
 ```
 
-This uses normal mode (Claude asks before every action), a balanced model, and auto-memory to help Claude learn your project.
+This uses `acceptEdits` mode (Claude asks before running commands but auto-accepts file edits), a balanced model, and auto-memory to help Claude learn your project. Leave `defaultMode` unset entirely to use the default ask mode where Claude prompts before every action.
 
 ### Power user (speed-optimized for trusted personal projects)
 
@@ -235,12 +221,11 @@ This uses normal mode (Claude asks before every action), a balanced model, and a
     "defaultMode": "acceptEdits"
   },
   "model": "claude-opus-4-6",
-  "fastMode": true,
   "autoMemoryEnabled": true
 }
 ```
 
-Auto-accepts file edits, pre-approves common commands, but still protects sensitive files.
+Auto-accepts file edits, pre-approves common commands, but still protects sensitive files. To enable fast mode, use `/fast` inside a session or set `CLAUDE_CODE_DISABLE_FAST_MODE` in your environment.
 
 ### Team lead (shared project config)
 
@@ -263,15 +248,12 @@ Save to `.claude/settings.json` in your project root (commit this to git):
       "Write(config/secrets*)",
       "Bash(rm -rf *)"
     ],
-    "defaultMode": "normal"
+    "defaultMode": "acceptEdits"
   },
-  "claudeMdExcludes": [
-    "node_modules/*",
-    "vendor/*",
-    "dist/*",
-    ".git/*"
-  ],
-  "includeCoAuthoredBy": true
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
 }
 ```
 
@@ -358,13 +340,12 @@ Share settings with your team by committing `.claude/settings.json`:
       "Write(.env*)",
       "Write(config/secrets*)"
     ],
-    "defaultMode": "normal"
+    "defaultMode": "acceptEdits"
   },
-  "claudeMdExcludes": [
-    "node_modules/*",
-    "vendor/*"
-  ],
-  "includeCoAuthoredBy": true
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
 }
 ```
 
@@ -372,8 +353,7 @@ Keep personal preferences in `.claude/settings.local.json` (add to `.gitignore`)
 
 ```json
 {
-  "model": "claude-haiku-4-5-20251001",
-  "fastMode": true
+  "model": "claude-haiku-4-5-20251001"
 }
 ```
 

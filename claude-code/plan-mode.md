@@ -55,7 +55,7 @@ The command is identical on all platforms — only the terminal you run it from 
 ### Toggle during a session
 
 ```
-Shift+Tab    # cycles: Normal → Plan → Auto-Accept
+Shift+Tab    # cycles: Normal → Auto-Accept → Plan
 ```
 
 > **Keyboard note:** `Shift+Tab` means hold Shift and press Tab. This works in all terminals on macOS, Linux, and Windows (including WSL and PowerShell). It cycles through the three modes — keep pressing until you see "Plan Mode" in the status bar.
@@ -215,24 +215,6 @@ Safe exploration — Claude reads and explains, but touches nothing.
 
 5. Execute the plan
    > Now go ahead and implement it
-```
-
----
-
-## Plan Mode in `EnterPlanMode` (SDK)
-
-If you're using Claude Code as an SDK or writing custom agents, you can use the `EnterPlanMode` and `ExitPlanMode` tools to programmatically enter and exit plan mode.
-
-**EnterPlanMode** — transitions Claude into plan mode so it explores and designs a solution.
-
-**ExitPlanMode** — presents the plan to the user for approval before any code is written.
-
-```
-# Example agent behavior:
-1. User: "Add user authentication to the app"
-2. Claude enters plan mode → explores codebase
-3. Claude calls ExitPlanMode → user sees and approves plan
-4. User approves → Claude implements
 ```
 
 ---

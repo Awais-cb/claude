@@ -111,7 +111,7 @@ Change what Claude is allowed to do without opening any menu.
 
 | Shortcut | Action |
 |----------|--------|
-| `Shift+Tab` | Cycle permission modes: Normal → Plan → Auto-Accept |
+| `Shift+Tab` | Cycle permission modes: Normal → Auto-Accept → Plan |
 | `Alt+M` | Same as `Shift+Tab` |
 | `Option+P` / `Alt+P` | Switch model without clearing your prompt |
 | `Option+T` / `Alt+T` | Toggle extended thinking mode |
@@ -121,7 +121,7 @@ Change what Claude is allowed to do without opening any menu.
 > **Analogy:** Like a camera mode dial: Auto → Manual → Burst. Each mode gives you a different level of control vs. speed.
 
 ```
-Normal → Plan → Auto-Accept → Normal → ...
+Normal → Auto-Accept → Plan → Normal → ...
 ```
 
 The current mode is shown in the footer at the bottom of your terminal:
@@ -191,7 +191,7 @@ Claude can see images. Paste them directly from your clipboard.
 |----------|--------|
 | `Ctrl+V` | Paste image from clipboard |
 | `Cmd+V` | Paste image from clipboard (macOS) |
-| `Alt+V` | Paste image from clipboard (Linux) |
+| `Ctrl+V` | Paste image from clipboard (Linux) |
 | `Cmd+Click` | Open image in viewer |
 | `Ctrl+Click` | Open image in viewer (Linux/Windows) |
 
