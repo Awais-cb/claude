@@ -96,7 +96,7 @@ Esc Esc         Rewind last change
 ## Folder Structure of These Docs
 
 ```
-docs/
+claude-code/
 ├── README.md                  ← You are here
 ├── getting-started.md
 ├── cli-commands.md
