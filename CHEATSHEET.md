@@ -9,10 +9,12 @@ Full docs: [`claude-code/`](claude-code/) · VS Code: [`vscode-extension/`](vsco
 
 | OS | Command |
 |----|---------|
-| **macOS / Linux** | `npm install -g @anthropic-ai/claude-code` |
-| **Windows (WSL)** | Install WSL first, then: `npm install -g @anthropic-ai/claude-code` |
+| **macOS** | `curl -fsSL https://claude.ai/install.sh \| bash` or `brew install claude` |
+| **Linux / WSL** | `curl -fsSL https://claude.ai/install.sh \| bash` |
+| **Windows** | `winget install Anthropic.Claude` |
+| **npm (alt)** | `npm install -g @anthropic-ai/claude-code` (requires Node.js 18+) |
 | **All** | `claude auth login` — authenticate once, stays logged in |
-| **Verify** | `claude --version` |
+| **Verify** | `claude --version` or `claude update` to update |
 
 ---
 
@@ -49,9 +51,9 @@ Switch mid-session: `/model` → pick from menu, or `Alt+P` / `Option+P`
 | `Enter` | Submit prompt |
 | `Ctrl+C` | Cancel / stop Claude |
 | `Ctrl+D` | Exit session |
-| `Shift+Tab` | Cycle permission mode (Normal → Plan → Auto-Accept) |
+| `Shift+Tab` | Cycle permission mode (Normal → Auto-Accept → Plan) |
 | `Esc Esc` | Undo Claude's last file change |
-| `Ctrl+V` / `Cmd+V` | Paste image from clipboard |
+| `Ctrl+V` | Paste image from clipboard (all platforms, including macOS) |
 | `Ctrl+G` | Open current prompt in `$EDITOR` |
 | `Ctrl+L` | Clear screen (keeps conversation) |
 | `Ctrl+O` | Toggle verbose output (see Claude's reasoning) |
@@ -298,7 +300,7 @@ Use it: `> use the test-writer agent on src/services/UserService.ts`
 
 ## Skills — Custom Slash Commands
 
-Create (`.claude/skills/my-skill.md`):
+Create (`.claude/skills/changelog/SKILL.md`):
 ```yaml
 ---
 name: changelog
@@ -319,7 +321,14 @@ List all: `> /skills`
 > /mcp                          # manage connections
 ```
 
-Config (`~/.claude/mcp.json` on macOS/Linux, `%USERPROFILE%\.claude\mcp.json` on Windows):
+Add via CLI (recommended):
+```bash
+claude mcp add github -e GITHUB_TOKEN=ghp_... -- npx -y @modelcontextprotocol/server-github
+claude mcp list     # see configured servers
+claude mcp remove github
+```
+
+Or edit `.mcp.json` at project root manually:
 ```json
 {
   "mcpServers": {
@@ -337,18 +346,17 @@ Config (`~/.claude/mcp.json` on macOS/Linux, `%USERPROFILE%\.claude\mcp.json` on
 ## VS Code Extension
 
 ```bash
-code --install-extension anthropic.claude-code   # install
-claude --ide                                      # connect
+code --install-extension anthropic.claude-code   # install (requires VS Code 1.98.0+)
 ```
 
-**Alias (add to `~/.zshrc` / `~/.bashrc` / PowerShell `$PROFILE`):**
-```bash
-alias cc='claude --ide'
-```
+Open Claude via the **Spark icon** or status bar in VS Code — no terminal command needed. From a terminal session, use `claude --ide` to auto-connect to your open editor.
 
 | VS Code shortcut | Action |
 |-----------------|--------|
-| `Ctrl+Shift+A` (`Cmd+Shift+A`) | New Claude session |
+| `Cmd+N` / `Ctrl+N` | New conversation (Claude focused) |
+| `Cmd+Esc` / `Ctrl+Esc` | Focus input |
+| `Cmd+Shift+Esc` / `Ctrl+Shift+Esc` | Open in new tab |
+| `Option+K` / `Alt+K` | Insert @-mention with line reference |
 | `Ctrl+Shift+P` → "Claude Code" | Open command palette |
 
 - Highlight code → ask Claude → selection is automatic context
@@ -392,7 +400,7 @@ alias cc='claude --ide'
 
 | Problem | Fix |
 |---------|-----|
-| `claude: command not found` | Re-run `npm install -g @anthropic-ai/claude-code`; check PATH |
+| `claude: command not found` | Re-run the installer; restart terminal; check PATH |
 | Auth fails | `claude auth logout` then `claude auth login` |
 | Claude stops mid-task | Press `Enter` to nudge, or `Ctrl+C` and re-ask |
 | Context full / drifting | `/compact` or `/clear` |
