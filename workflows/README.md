@@ -25,6 +25,19 @@ This covers how to configure Claude for the whole team: shared CLAUDE.md, permis
 | [testing.md](testing.md) | All Devs | Unit, integration, E2E, and TDD workflows |
 | [code-review.md](code-review.md) | All Devs | PR review, security, performance audits |
 
+## Laravel-Specific Workflows
+
+For Laravel projects, use the dedicated guides in [laravel/](laravel/):
+
+| Guide | Who it's for | What it covers |
+|-------|-------------|----------------|
+| [laravel/fullstack.md](laravel/fullstack.md) | Fullstack Devs | Migration → Eloquent → Service → Controller → Livewire → Tests |
+| [laravel/backend.md](laravel/backend.md) | Backend Devs | Service layer, FormRequests, jobs, queues, artisan, auth |
+| [laravel/frontend.md](laravel/frontend.md) | Frontend Devs | Blade, Livewire, Alpine.js, Inertia.js, Vite, Tailwind |
+| [laravel/database.md](laravel/database.md) | All Devs | Migrations, Eloquent, relationships, seeders, query optimization |
+| [laravel/testing.md](laravel/testing.md) | All Devs | Pest/PHPUnit, feature tests, unit tests, mocking, Dusk |
+| [laravel/pr-review.md](laravel/pr-review.md) | All Devs | Laravel PR review — N+1s, ownership, migrations, security |
+
 ---
 
 ## How to Use These Guides
