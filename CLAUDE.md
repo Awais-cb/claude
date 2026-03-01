@@ -40,4 +40,8 @@ Each directory (`claude-code/`, `vscode-extension/`, `workflows/`) has its own `
 
 ## Skills
 
-The `.claude/skills/update-readme.md` skill (`/update-readme`) analyzes recent git changes and makes targeted updates to `README.md` to keep it in sync with the codebase. Run it after adding or removing doc files.
+The `.claude/skills/update-readme/SKILL.md` skill (`/update-readme`) analyzes recent git changes and makes targeted updates to `README.md` to keep it in sync with the codebase. Run it after adding or removing doc files.
+
+## Keeping Docs Accurate
+
+All guides document real Claude Code behavior. The authoritative source is **code.claude.com/docs**. When verifying or updating a guide, fetch the relevant official page before making changes — do not guess at behavior.
