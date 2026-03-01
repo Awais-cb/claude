@@ -20,6 +20,8 @@ Settings are loaded in this order (later entries override earlier ones):
 3. Project settings     .claude/settings.json
 
 4. Local settings       .claude/settings.local.json  ← add to .gitignore
+
+5. CLI flags            --model, --allowedTools, etc. (highest priority, session-only)
 ```
 
 **Most developers use:**
@@ -69,6 +71,8 @@ When the same setting exists in multiple files, the more specific one wins. Thin
 ```
 Priority (highest to lowest):
 ─────────────────────────────────────────────────────────────────────
+5. CLI flags                        ← --model, --allowedTools, etc. (session-only)
+         │  wins over
 4. .claude/settings.local.json      ← YOU (local overrides, not committed)
          │  wins over
 3. .claude/settings.json            ← PROJECT TEAM (committed to repo)
@@ -100,13 +104,26 @@ Example: If enterprise policy denies "Bash(sudo *)",
       "Read(*)",               // Auto-approve all file reads
       "Write(src/*)"           // Auto-approve writes in src/
     ],
+    "ask": [
+      "Bash(git push *)"       // Always prompt before pushing
+    ],
     "deny": [
       "Bash(rm -rf *)",        // Block dangerous deletions
       "Bash(sudo *)",          // Block sudo commands
       "Write(.env*)"           // Block editing .env files
     ],
-    "defaultMode": "normal"    // "normal", "plan", or "auto-accept"
+    "defaultMode": "normal",   // "normal", "plan", or "auto-accept"
+    "additionalDirectories": [ // Extra directories Claude can access
+      "../shared-lib"
+    ]
   },
+
+  // ── Model ──────────────────────────────────────────────────────
+  "model": "claude-sonnet-4-6",       // Default model for this scope
+  "availableModels": [                 // Restrict which models users can pick
+    "claude-sonnet-4-6",
+    "claude-haiku-4-5-20251001"
+  ],
 
   // ── Hooks ──────────────────────────────────────────────────────
   "hooks": {
@@ -121,6 +138,19 @@ Example: If enterprise policy denies "Bash(sudo *)",
         "command": "osascript -e 'display notification \"Claude needs you\" with title \"Claude Code\"'"
       }
     ]
+  },
+
+  // ── Environment Variables ──────────────────────────────────────
+  "env": {
+    "NODE_ENV": "development",         // Set env vars for every session
+    "MY_CUSTOM_VAR": "value"
+  },
+
+  // ── Language & Attribution ─────────────────────────────────────
+  "language": "en",                    // Preferred response language
+  "attribution": {
+    "gitAuthorName": "Claude Code",    // Name in git commits
+    "gitAuthorEmail": "noreply@example.com"
   },
 
   // ── Model & Behavior ───────────────────────────────────────────

@@ -189,7 +189,7 @@ Each rules file has a YAML frontmatter that specifies which files it applies to:
 
 ```markdown
 ---
-globs: ["src/components/**/*.tsx", "src/pages/**/*.tsx"]
+paths: ["src/components/**/*.tsx", "src/pages/**/*.tsx"]
 ---
 
 # Frontend Rules

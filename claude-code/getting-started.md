@@ -28,41 +28,23 @@ You stay in control the whole time. Claude asks before doing anything risky, and
 
 ### Prerequisites
 
-- **Node.js** 18 or higher
 - An **Anthropic account** (claude.ai)
 
-### Step 1: Install Node.js
+### Step 1: Install Claude Code
 
-Claude Code runs on Node.js. Here's how to get it on each operating system:
-
-**macOS (using Homebrew — recommended):**
+**macOS (recommended — native installer):**
 ```bash
-# Install Homebrew first if you don't have it
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Then install Node.js
-brew install node
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-**macOS (using nvm — for managing multiple Node versions):**
+**macOS (Homebrew):**
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-# Restart your terminal, then:
-nvm install 20
-nvm use 20
+brew install claude
 ```
 
 **Linux / Ubuntu:**
 ```bash
-# Option 1: via apt (easiest)
-sudo apt update
-sudo apt install nodejs npm
-
-# Option 2: via nvm (recommended for developers)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-# Restart your terminal, then:
-nvm install 20
-nvm use 20
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 **Windows (WSL — recommended):**
@@ -77,49 +59,21 @@ wsl --install
 ```
 
 ```bash
-# Step 2: Inside WSL (Ubuntu), install nvm and Node
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-# Close and reopen your WSL terminal, then:
-nvm install 20
-nvm use 20
+# Step 2: Inside WSL (Ubuntu), run the installer
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-**Windows (without WSL — PowerShell):**
+**Windows (native PowerShell):**
 ```powershell
-# Install Node.js via winget
-winget install OpenJS.NodeJS
-
-# Or download the installer from https://nodejs.org
-# Then restart PowerShell and verify:
-node --version
+winget install Anthropic.Claude
 ```
 
-Verify Node.js is installed correctly:
-```bash
-node --version   # Should print v18.x.x or higher
-npm --version    # Should print a version number
-```
-
-### Step 2: Install Claude Code
-
-**macOS / Linux / WSL:**
+**Alternative — install via npm** (requires Node.js 18+):
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-**Windows (PowerShell):**
-```powershell
-npm install -g @anthropic-ai/claude-code
-```
-
-> If you get a permissions error on macOS/Linux, avoid using `sudo`. Instead, fix your npm prefix:
-> ```bash
-> npm config set prefix ~/.npm-global
-> echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
-> source ~/.bashrc
-> ```
-
-### Step 3: Verify installation
+### Step 2: Verify installation
 
 ```bash
 claude --version
@@ -413,7 +367,15 @@ claude
 
 After installing Claude Code, if running `claude` gives you "command not found":
 
-**macOS / Linux / WSL:**
+**macOS / Linux / WSL (native installer):**
+
+The installer sets up your PATH automatically. If it didn't take effect, restart your terminal or run:
+```bash
+source ~/.bashrc    # for bash
+source ~/.zshrc     # for zsh
+```
+
+**macOS / Linux / WSL (npm install):**
 ```bash
 # Check where npm installed it
 npm config get prefix
@@ -430,10 +392,10 @@ source ~/.zshrc
 
 **Windows (PowerShell):**
 ```powershell
-# npm global bin is usually already in PATH after Node.js install
-# If not, find it with:
-npm config get prefix
-# Then add that path to your system environment variables
+# The winget installer sets PATH automatically.
+# For npm install, the global bin is usually already in PATH after Node.js install.
+# If not, find the npm prefix with: npm config get prefix
+# Then add that path to your system environment variables.
 ```
 
 ---

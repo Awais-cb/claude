@@ -47,10 +47,9 @@ These flags decide which conversation you're opening — a new one, or an existi
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--continue` | `-c` | Resume the most recent conversation |
-| `--resume <name>` | `-r` | Resume a session by name or ID |
+| `--resume <name>` | `-r` | Resume a session by name or ID (or show picker) |
 | `--worktree <name>` | `-w` | Start session in an isolated git worktree |
-| `--rename <name>` | | Name the current session |
-| `--fork-session` | | Create new session instead of resuming original |
+| `--fork-session` | | Create new session instead of resuming original (use with `--resume` or `--continue`) |
 | `--session-id <uuid>` | | Use a specific session ID |
 | `--from-pr <number>` | | Resume session linked to a GitHub PR |
 
@@ -150,9 +149,10 @@ These control what Claude is allowed to do. By default, Claude asks before doing
 |------|-------------|
 | `--permission-mode plan` | Start in Plan Mode (read-only, no edits) |
 | `--dangerously-skip-permissions` | Skip all permission prompts |
-| `--allowedTools <tools>` | Comma-separated list of tools that auto-approve |
-| `--disallowedTools <tools>` | Tools to explicitly deny |
-| `--tools <tools>` | Restrict Claude to only these tools |
+| `--allow-dangerously-skip-permissions` | Enable permission bypassing as an option (without activating it — composable with `--permission-mode`) |
+| `--allowedTools <tools>` | Tools that execute without prompting for permission |
+| `--disallowedTools <tools>` | Tools to explicitly deny (removed from Claude's context) |
+| `--tools <tools>` | Restrict Claude to only these built-in tools (use `""` for none, `"default"` for all) |
 
 ### `--permission-mode plan` — Explore safely
 
@@ -392,9 +392,20 @@ claude --verbose
 | Flag | Description |
 |------|-------------|
 | `--settings <path or JSON>` | Load additional settings |
-| `--setting-sources <sources>` | Specify which setting sources to load |
+| `--setting-sources <sources>` | Specify which setting sources to load (`user`, `project`, `local`) |
 | `--init` | Run initialization hooks then start |
 | `--init-only` | Run initialization hooks then exit |
+| `--maintenance` | Run maintenance hooks then exit |
+
+---
+
+## Session Behavior
+
+| Flag | Description |
+|------|-------------|
+| `--teammate-mode <mode>` | Set how agent team teammates display: `auto` (default), `in-process`, or `tmux` |
+| `--disable-slash-commands` | Disable all skills and commands for this session |
+| `--include-partial-messages` | Include partial streaming events in output (requires `--print` and `--output-format=stream-json`) |
 
 ---
 
@@ -407,6 +418,31 @@ claude auth status              # Check whether you're logged in
 ```
 
 Run `claude auth login` once when setting up. It opens a browser window to authenticate. After that, you don't need to log in again unless you explicitly sign out.
+
+---
+
+## Update & Maintenance
+
+```bash
+claude update                   # Update Claude Code to the latest version
+```
+
+---
+
+## Subagents & MCP
+
+```bash
+claude agents                   # List all configured subagents
+claude mcp                      # Configure MCP servers
+```
+
+---
+
+## Remote Control
+
+```bash
+claude remote-control           # Start a remote control session (control from claude.ai)
+```
 
 ---
 
@@ -436,4 +472,10 @@ claude -p "task" --output-format json   # Get JSON output
 
 # ── IDE & remote ──────────────────────────────────────
 claude --ide                            # Connect to VS Code
+claude remote-control                   # Control from claude.ai
+
+# ── Updates & info ────────────────────────────────────
+claude update                           # Update to latest version
+claude agents                           # List configured subagents
+claude mcp                              # Configure MCP servers
 ```

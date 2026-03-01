@@ -93,20 +93,23 @@ Hooks are event listeners for Claude Code. Common uses:
 
 | Event | When it fires |
 |-------|--------------|
-| `PreToolUse` | Before any tool runs (can block the action) |
-| `PostToolUse` | After a tool successfully completes |
-| `PostToolUseFailure` | After a tool fails |
 | `SessionStart` | When a session starts or resumes |
 | `UserPromptSubmit` | Before Claude processes your message |
-| `Stop` | When Claude finishes responding |
-| `Notification` | When Claude needs your attention (waiting for input) |
+| `PreToolUse` | Before any tool runs (can block the action) |
+| `PermissionRequest` | When a permission dialog appears |
+| `PostToolUse` | After a tool successfully completes |
+| `PostToolUseFailure` | After a tool fails |
+| `Notification` | When Claude needs your attention |
 | `SubagentStart` | When a subagent is spawned |
 | `SubagentStop` | When a subagent finishes |
+| `Stop` | When Claude finishes responding |
+| `TeammateIdle` | When an agent team teammate is about to go idle |
 | `TaskCompleted` | When a task is marked complete |
-| `PreCompact` | Before context compaction happens |
+| `ConfigChange` | When a config file changes |
 | `WorktreeCreate` | When a worktree is created |
 | `WorktreeRemove` | When a worktree is removed |
-| `ConfigChange` | When a config file changes |
+| `PreCompact` | Before context compaction happens |
+| `SessionEnd` | When a session terminates |
 
 ---
 
@@ -247,7 +250,26 @@ Run Prettier automatically after Claude edits any JS/TS file:
 
 ### 4. Block edits to sensitive files
 
-Prevent Claude from ever editing `.env` or credentials files:
+Prevent Claude from ever editing `.env` or credentials files. Save this as a script (e.g., `~/.claude/hooks/block-sensitive.sh`):
+
+```bash
+#!/bin/bash
+FILE_PATH=$(jq -r '.tool_input.file_path // .tool_input.path // ""')
+
+if echo "$FILE_PATH" | grep -qE '\.(env|key|pem|cert)$'; then
+  jq -n '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "Cannot edit sensitive files"
+    }
+  }'
+else
+  exit 0
+fi
+```
+
+Then reference it in your hook:
 
 ```json
 {
@@ -255,7 +277,7 @@ Prevent Claude from ever editing `.env` or credentials files:
     "PreToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "echo $CLAUDE_TOOL_INPUT_FILE_PATH | grep -qE '\\.(env|key|pem|cert)$' && echo '{\"decision\": \"block\", \"reason\": \"Cannot edit sensitive files\"}' || echo '{\"decision\": \"allow\"}'"
+        "command": "~/.claude/hooks/block-sensitive.sh"
       }
     ]
   }
@@ -316,18 +338,24 @@ When Claude compacts the conversation, important notes might be lost. Re-inject 
 
 ## Hook Decision Control (PreToolUse)
 
-`PreToolUse` hooks can **allow** or **block** an action by returning JSON:
+`PreToolUse` hooks can **allow** or **block** an action. To block, output a JSON object with `hookSpecificOutput`. To allow, simply exit with code 0:
 
 ```bash
 #!/bin/bash
 # Block rm -rf commands
 
-COMMAND="$CLAUDE_TOOL_INPUT_COMMAND"
+COMMAND=$(jq -r '.tool_input.command')
 
 if echo "$COMMAND" | grep -q "rm -rf"; then
-  echo '{"decision": "block", "reason": "Refusing to run rm -rf. Use rm with specific paths instead."}'
+  jq -n '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "Refusing to run rm -rf. Use rm with specific paths instead."
+    }
+  }'
 else
-  echo '{"decision": "allow"}'
+  exit 0  # Allow the command
 fi
 ```
 
@@ -488,13 +516,16 @@ Symptoms: You expect the hook to block an action but Claude proceeds anyway.
 
 Cause: The JSON output from your hook is malformed, or the script exits with an error before printing the JSON.
 
-Fix: Test your blocking script directly. The output must be exactly valid JSON:
+Fix: Test your blocking script directly. The output must be valid JSON with the `hookSpecificOutput` structure:
 
 ```bash
 # Good - this will block:
-echo '{"decision": "block", "reason": "Not allowed"}'
+jq -n '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "Not allowed"}}'
 
-# Bad - extra whitespace or quotes around the JSON will fail:
+# Allow by simply exiting 0 (no JSON output needed):
+exit 0
+
+# Bad - old format no longer works:
 echo "{ decision: block }"
 ```
 
@@ -564,7 +595,7 @@ Here's a complete `.claude/settings.json` for a Node.js project:
     "PreToolUse": [
       {
         "matcher": "Bash(rm *)",
-        "command": "echo '{\"decision\": \"block\", \"reason\": \"Use trash-cli instead of rm\"}'"
+        "command": "jq -n '{hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"deny\",permissionDecisionReason:\"Use trash-cli instead of rm\"}}'"
       }
     ],
     "Notification": [
