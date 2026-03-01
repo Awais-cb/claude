@@ -4,7 +4,7 @@ A complete, beginner-friendly reference for every feature of **Claude Code** —
 
 ## What's Inside
 
-25 markdown guides covering everything from getting started to advanced automation:
+24 guides covering everything from getting started to advanced automation:
 
 | Guide | Description |
 |-------|-------------|
@@ -53,11 +53,29 @@ A complete, beginner-friendly reference for every feature of **Claude Code** —
 | [Settings & Configuration](vscode-extension/settings-configuration.md) | Settings files, options, and environment variables |
 | [Workflow Tips](vscode-extension/workflow-tips.md) | Best practices, layouts, and productivity patterns |
 
+## Workflows
+
+Role-based guides for teams — how each role uses Claude Code day-to-day:
+
+| Guide | Who it's for |
+|-------|-------------|
+| [Team Lead Setup](workflows/team-lead-setup.md) | Configure Claude for the whole team |
+| [Backend](workflows/backend.md) | APIs, databases, migrations, backend testing |
+| [Frontend](workflows/frontend.md) | Components, styling, state, frontend testing |
+| [Fullstack](workflows/fullstack.md) | End-to-end feature development |
+| [Figma to Frontend](workflows/figma-to-frontend.md) | Convert Figma designs to code |
+| [Frontend to Backend](workflows/frontend-to-backend.md) | API integration, type sharing |
+| [Testing](workflows/testing.md) | Unit, integration, E2E, and TDD |
+| [Code Review](workflows/code-review.md) | PR review, security, performance audits |
+
+**Laravel teams:** see [workflows/laravel/](workflows/laravel/) for Laravel-specific guides (service layer, Eloquent, Livewire, Blade, testing, PR review).
+
 ## Quick Start
 
 ```bash
 # Install Claude Code
-npm install -g @anthropic-ai/claude-code
+curl -fsSL https://claude.ai/install.sh | bash
+# macOS: brew install claude  |  Windows: winget install Anthropic.Claude
 
 # Log in
 claude auth login
@@ -65,6 +83,13 @@ claude auth login
 # Start a session
 claude
 ```
+
+## Other Resources
+
+| File | What it is |
+|------|-----------|
+| [OVERVIEW.md](OVERVIEW.md) | One-liner feature map with analogies — skim to discover what's possible |
+| [CHEATSHEET.md](CHEATSHEET.md) | Single-page command reference — print this for your desk |
 
 ## Who This Is For
 
