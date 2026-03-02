@@ -9,6 +9,21 @@
       "Bash(git *)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:code.claude.com)"
+    ],
+    "ask": [
+      "Bash(npm *)",
+      "Bash(rm *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "WebFetch"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f *)",
+      "Bash(chmod *)",
+      "Bash(sudo *)"
     ]
   }
 }
