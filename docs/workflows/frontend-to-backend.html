@@ -24,6 +24,22 @@
     <main class="content">
       <article class="article">
         <h1 id="frontend-to-backend-integration-workflow">Frontend to Backend Integration Workflow<a href="#frontend-to-backend-integration-workflow" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#1-understanding-an-existing-api-before-building-ui"><span class="qrc-label">1. Understanding an Existing API</span><span class="qrc-d">Read endpoints, shapes, and auth first</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#2-type-sharing-between-frontend-and-backend"><span class="qrc-label">2. Type Sharing</span><span class="qrc-d">Generate frontend types from backend models</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#3-building-the-api-client-layer"><span class="qrc-label">3. Building the API Client</span><span class="qrc-d">Typed client with auth and error handling</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#4-building-integration-aware-components"><span class="qrc-label">4. Integration-Aware Components</span><span class="qrc-d">Connect mocks to real API</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#5-api-contract-testing"><span class="qrc-label">5. API Contract Testing</span><span class="qrc-d">Verify frontend and backend stay in sync</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#6-handling-api-changes"><span class="qrc-label">6. Handling API Changes</span><span class="qrc-d">Find and update all affected frontend code</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#7-environment-configuration"><span class="qrc-label">7. Environment &amp; Configuration</span><span class="qrc-d">Multi-env setup and CORS debugging</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#8-end-to-end-feature-integration"><span class="qrc-label">8. End-to-End Feature Integration</span><span class="qrc-d">Plan then build backend and frontend together</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>How to use Claude when connecting your frontend to your backend — API contracts, type sharing, error handling, and integration testing.</p>
 <hr>
 <h2 id="the-integration-problem">The Integration Problem<a href="#the-integration-problem" class="anchor-link">#</a></h2>

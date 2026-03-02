@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="context-management">Context Management<a href="#context-management" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Monitoring</div>
+    <a class="qrc-item" href="#visualizing-context-usage"><code class="qrc-k">/context</code><span class="qrc-d">Visualize how full the context window is</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#signs-your-context-is-getting-full"><code class="qrc-k">Warning signs</code><span class="qrc-d">Symptoms of a full context window</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Managing Context</div>
+    <a class="qrc-item" href="#auto-compaction"><code class="qrc-k">Auto-compact at 95%</code><span class="qrc-d">How automatic compaction works</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#manual-compaction"><code class="qrc-k">/compact [instructions]</code><span class="qrc-d">Summarize conversation on demand</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#starting-fresh"><code class="qrc-k">/clear</code><span class="qrc-d">Wipe context for a new task</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#checkpoints-rewind"><code class="qrc-k">/checkpoint</code><span class="qrc-d">Save and restore conversation state</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Strategies</div>
+    <a class="qrc-item" href="#context-saving-strategies"><code class="qrc-k">CLAUDE.md</code><span class="qrc-d">Keep context lean with persistent rules</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#pre-compaction-hooks"><code class="qrc-k">PreCompact hook</code><span class="qrc-d">Inject critical notes before compaction</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#session-vs-context"><code class="qrc-k">Session vs context</code><span class="qrc-d">Difference between disk history and active window</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#large-file-handling"><code class="qrc-k">Large files</code><span class="qrc-d">Tips for working with big codebases</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Imagine a whiteboard in a meeting room. It's big, but it has a fixed amount of space. As the meeting goes on, you fill it with diagrams, notes, decisions, and code snippets. Eventually the whiteboard gets full — and when you need to write something new, you have to erase something old to make room. You choose carefully: erase the stuff from two hours ago that you've already acted on, keep the current plan clearly visible.</p>
 <p>Claude's context window works the same way. Everything in your conversation — your messages, Claude's replies, files it read, command output — gets written onto this whiteboard. When it fills up, older information has to be erased or compressed to make room for new work. Understanding how to manage this whiteboard is the key to working on long, complex tasks without Claude losing important information.</p>
 <p>Claude Code has a limited context window — the amount of conversation history and file content it can hold at once. Understanding and managing context helps you work on long tasks without losing important information.</p>

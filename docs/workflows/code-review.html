@@ -24,6 +24,24 @@
     <main class="content">
       <article class="article">
         <h1 id="code-review-workflow">Code Review Workflow<a href="#code-review-workflow" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Pre-Commit</div>
+    <a class="qrc-item" href="#1-pre-commit-review-every-developer-every-commit"><code class="qrc-k">/diff → /team-review → /check → /pr</code><span class="qrc-d">Full pre-commit sequence</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Review Types</div>
+    <a class="qrc-item" href="#2-self-review-before-opening-a-pr"><span class="qrc-label">2. Self-Review</span><span class="qrc-d">Logic, errors, performance, fragility</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#3-reviewing-a-pull-request-as-the-reviewer"><span class="qrc-label">3. Reviewing a PR</span><span class="qrc-d">Review another dev's PR with context</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#4-security-review"><span class="qrc-label">4. Security Review</span><span class="qrc-d">Auth, injection, dependency audit</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#5-performance-review"><span class="qrc-label">5. Performance Review</span><span class="qrc-d">N+1, caching, frontend re-renders</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#6-code-quality-review"><span class="qrc-label">6. Code Quality Review</span><span class="qrc-d">Complexity, TypeScript, consistency</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#7-review-checklist-as-a-skill"><span class="qrc-label">7. Review as a Skill</span><span class="qrc-d">Team-specific /team-review checklist</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#8-post-merge-review-retrospective"><span class="qrc-label">8. Post-Merge Retrospective</span><span class="qrc-d">Churn, patterns, and tech debt</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>How to use Claude to review code before a human ever sees it — catching bugs, security issues, and style violations automatically.</p>
 <hr>
 <h2 id="why-review-with-claude-first">Why Review with Claude First?<a href="#why-review-with-claude-first" class="anchor-link">#</a></h2>

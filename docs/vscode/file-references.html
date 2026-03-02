@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="file-references-with-">File References with <code>@</code><a href="#file-references-with-" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Syntax</div>
+    <a class="qrc-item" href="#basic-usage"><code class="qrc-k">@src/file.ts</code><span class="qrc-d">Reference a specific file</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#referencing-folders"><code class="qrc-k">@src/services/</code><span class="qrc-d">Reference an entire folder</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#line-range-references"><code class="qrc-k">@src/app.ts#5-10</code><span class="qrc-d">Reference a specific line range</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#multiple-references-in-one-prompt"><code class="qrc-k">@file1 @file2</code><span class="qrc-d">Multiple references in one prompt</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Autocomplete</div>
+    <a class="qrc-item" href="#autocomplete"><code class="qrc-k">@auth</code><span class="qrc-d">Fuzzy match — finds AuthService, auth.js</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#line-range-references"><code class="qrc-k">Option+K / Alt+K</code><span class="qrc-d">Insert line-range @-mention</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Patterns</div>
+    <a class="qrc-item" href="#when-to-use--vs-just-asking"><code class="qrc-k">@ vs. selection</code><span class="qrc-d">When to use each approach</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#path-separators-a-note-for-windows-users"><code class="qrc-k">Forward slashes</code><span class="qrc-d">Path separator note for Windows</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-in-the-terminal"><code class="qrc-k">@ in terminal</code><span class="qrc-d">Works outside the prompt box too</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#practical-examples"><code class="qrc-k">Practical Examples</code><span class="qrc-d">Real-world @ reference patterns</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>The <code>@</code> syntax lets you reference specific files or folders in your prompts. VS Code autocompletes the paths as you type, so you can point Claude at exactly the right code without copy-pasting paths or opening files first.</p>
 <p>Think of it like tagging someone in a message. When you type <code>@src/services/AuthService.ts</code>, you're saying "hey Claude, look at <em>this specific file</em> when answering." Without <code>@</code>, Claude uses whatever context it currently has — which might be enough, but <code>@</code> makes it precise.</p>
 <hr>

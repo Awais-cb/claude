@@ -24,6 +24,41 @@
     <main class="content">
       <article class="article">
         <h1 id="cli-commands-flags">CLI Commands &amp; Flags<a href="#cli-commands-flags" class="anchor-link">#</a></h1>
+
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Session</div>
+    <a class="qrc-item" href="#session-management"><code class="qrc-k">claude -c</code><span class="qrc-d">Resume last session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#session-management"><code class="qrc-k">claude -r "name"</code><span class="qrc-d">Resume named session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#session-management"><code class="qrc-k">claude -w "branch"</code><span class="qrc-d">Isolated git worktree</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#basic-usage"><code class="qrc-k">claude "task"</code><span class="qrc-d">Start with a prompt</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Model</div>
+    <a class="qrc-item" href="#model-selection"><code class="qrc-k">--model opus</code><span class="qrc-d">Most capable model</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#model-selection"><code class="qrc-k">--model haiku</code><span class="qrc-d">Fastest / cheapest</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Permissions</div>
+    <a class="qrc-item" href="#permission-safety"><code class="qrc-k">--permission-mode plan</code><span class="qrc-d">Read-only exploration</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#permission-safety"><code class="qrc-k">--allowedTools "…"</code><span class="qrc-d">Pre-approve specific tools</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#permission-safety"><code class="qrc-k">--disallowedTools "…"</code><span class="qrc-d">Block specific tools</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#permission-safety"><code class="qrc-k">--dangerously-skip-permissions</code><span class="qrc-d">Skip all prompts (CI/CD)</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Print / Scripting</div>
+    <a class="qrc-item" href="#print-non-interactive-mode"><code class="qrc-k">claude -p "task"</code><span class="qrc-d">Non-interactive, print &amp; exit</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#print-non-interactive-mode"><code class="qrc-k">--output-format json</code><span class="qrc-d">Machine-readable output</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#print-non-interactive-mode"><code class="qrc-k">--max-budget-usd 0.10</code><span class="qrc-d">Limit session cost</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Integrations</div>
+    <a class="qrc-item" href="#ide-integrations"><code class="qrc-k">--ide</code><span class="qrc-d">Connect to VS Code / JetBrains</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#mcp-model-context-protocol"><code class="qrc-k">--mcp-config &lt;path&gt;</code><span class="qrc-d">Load MCP server config</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#system-prompt-customization"><code class="qrc-k">--append-system-prompt</code><span class="qrc-d">Add persistent instructions</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Other</div>
+    <a class="qrc-item" href="#authentication"><code class="qrc-k">claude auth login</code><span class="qrc-d">Sign in to Anthropic account</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#update-maintenance"><code class="qrc-k">claude update</code><span class="qrc-d">Update to latest version</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#debugging-logging"><code class="qrc-k">--verbose</code><span class="qrc-d">Full turn-by-turn debug output</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
+
 <p>CLI flags are options you add when starting Claude Code from your terminal. They let you control what session to open, which AI model to use, what Claude is allowed to do, and more.</p>
 <blockquote><p><strong>Analogy:</strong> Think of flags like options when ordering coffee. <code>claude</code> is "I'd like a coffee." <code>claude --model opus "fix the auth bug"</code> is "I'd like a large, strong coffee in a to-go cup, and here's the exact order." The flags customize what you get before you even start.</p></blockquote>
 <p>Flags always come after <code>claude</code> and before or after your prompt:</p>
@@ -334,35 +369,6 @@ claude mcp                      # Configure MCP servers</code></pre>
 <h2 id="remote-control">Remote Control<a href="#remote-control" class="anchor-link">#</a></h2>
 <pre data-lang="bash"><code>claude remote-control           # Start a remote control session (control from claude.ai)</code></pre>
 <hr>
-<h2 id="quick-reference-card">Quick Reference Card<a href="#quick-reference-card" class="anchor-link">#</a></h2>
-<p>The patterns you'll use 90% of the time:</p>
-<pre data-lang="bash"><code># ── Starting sessions ──────────────────────────────────
-claude                                  # New interactive session
-claude -c                               # Resume last session
-claude -r "session-name"               # Resume named session
-claude "fix the bug in app.js"          # Start with a task
-
-# ── Choosing models ───────────────────────────────────
-claude --model haiku                    # Fast, cheap (simple tasks)
-claude --model opus                     # Powerful (hard problems)
-
-# ── Controlling permissions ───────────────────────────
-claude --permission-mode plan           # Read-only exploration
-claude --allowedTools "Bash(git *)"     # Pre-approve git commands
-
-# ── Scripting &amp; automation ────────────────────────────
-claude -p "summarize README.md"         # Non-interactive, print result
-cat file.txt | claude -p "explain this" # Pipe input to Claude
-claude -p "task" --output-format json   # Get JSON output
-
-# ── IDE &amp; remote ──────────────────────────────────────
-claude --ide                            # Connect to VS Code
-claude remote-control                   # Control from claude.ai
-
-# ── Updates &amp; info ────────────────────────────────────
-claude update                           # Update to latest version
-claude agents                           # List configured subagents
-claude mcp                              # Configure MCP servers</code></pre>
       </article>
     </main>
   </div>

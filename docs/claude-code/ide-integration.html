@@ -24,6 +24,26 @@
     <main class="content">
       <article class="article">
         <h1 id="ide-integration">IDE Integration<a href="#ide-integration" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Connecting</div>
+    <a class="qrc-item" href="#auto-connect-on-startup"><code class="qrc-k">claude --ide</code><span class="qrc-d">Connect Claude to your open IDE</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#vs-code-extension"><code class="qrc-k">VS Code Extension install</code><span class="qrc-d">Install the Claude Code extension in VS Code</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#jetbrains-ides"><code class="qrc-k">JetBrains Plugin install</code><span class="qrc-d">Install via Marketplace in any JetBrains IDE</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#wsl-configuration-detailed"><code class="qrc-k">WSL + JetBrains setup</code><span class="qrc-d">Bridge Windows IDE to WSL Claude instance</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">IDE Features</div>
+    <a class="qrc-item" href="#selected-code-as-context"><code class="qrc-k">Selected code context</code><span class="qrc-d">Highlighted code sent automatically as context</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#file-references-with"><code class="qrc-k">@filename</code><span class="qrc-d">Reference files directly in your prompts</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#clickable-links-in-responses"><code class="qrc-k">Clickable file links</code><span class="qrc-d">Jump to exact lines from Claude's responses</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#vs-code-keyboard-shortcuts"><code class="qrc-k">Ctrl+Shift+A / Cmd+Shift+A</code><span class="qrc-d">Open new Claude session from VS Code</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#remote-development"><code class="qrc-k">Remote SSH / Codespaces</code><span class="qrc-d">Use Claude with remote dev environments</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#tips"><code class="qrc-k">alias cc="claude --ide"</code><span class="qrc-d">Shortcut alias for quick IDE connection</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Picture having a brilliant colleague sitting at a second monitor right next to you. They can see exactly what file you have open, what code you've highlighted, and what you're working on — and you can talk to them in plain English without switching screens. That's what Claude Code's IDE integration provides. The Claude Code CLI runs in your terminal (or a panel inside your editor), while the IDE plugin creates a live connection so Claude always knows your current context: which file you're in, what you've selected, and where errors are appearing.</p>
 <p>Claude Code integrates directly with VS Code and JetBrains IDEs, letting you use Claude alongside your editor without switching windows.</p>
 <hr>

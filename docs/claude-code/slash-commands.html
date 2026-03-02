@@ -24,6 +24,29 @@
     <main class="content">
       <article class="article">
         <h1 id="slash-commands">Slash Commands<a href="#slash-commands" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Session</div>
+    <a class="qrc-item" href="#session-commands"><code class="qrc-k">/clear</code><span class="qrc-d">Wipe conversation and start fresh</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-compact-free-up-memory-without-losing-everything"><code class="qrc-k">/compact</code><span class="qrc-d">Summarize conversation to free space</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-rename-and--resume-save-and-continue-later"><code class="qrc-k">/rename &lt;name&gt;</code><span class="qrc-d">Name session for later resumption</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-rewind-and--checkpoint-undo-and-save-points"><code class="qrc-k">/checkpoint</code><span class="qrc-d">Save current state as a restore point</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Code Operations</div>
+    <a class="qrc-item" href="#-diff-see-what-changed"><code class="qrc-k">/diff</code><span class="qrc-d">Interactive diff of recent changes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-review-code-review-on-any-pr"><code class="qrc-k">/review &lt;PR#&gt;</code><span class="qrc-d">Full code review on a pull request</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-security-review-find-vulnerabilities-in-your-changes"><code class="qrc-k">/security-review</code><span class="qrc-d">Scan branch changes for vulnerabilities</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-commit-push-pr-ship-in-one-command"><code class="qrc-k">/commit-push-pr</code><span class="qrc-d">Commit, push, and open a PR at once</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Mode &amp; Config</div>
+    <a class="qrc-item" href="#-plan-look-before-you-leap"><code class="qrc-k">/plan</code><span class="qrc-d">Switch to read-only Plan Mode</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-model-choose-your-ai-brain"><code class="qrc-k">/model</code><span class="qrc-d">Switch between opus/sonnet/haiku</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-init-teach-claude-about-your-project"><code class="qrc-k">/init</code><span class="qrc-d">Auto-generate CLAUDE.md for project</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#-cost-check-your-spending"><code class="qrc-k">/cost</code><span class="qrc-d">Token usage and cost for this session</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Slash commands are special instructions you type inside an active Claude Code session. They start with <code>/</code> and control how Claude behaves — like a set of buttons on a dashboard that change what Claude is doing or how it's set up.</p>
 <blockquote><p><strong>Think of it like a chat app:</strong> In WhatsApp or Slack, you type your message and hit send. Slash commands are the <em>settings</em> behind that chat — they let you clear the conversation, switch modes, check costs, or connect new tools, all without leaving the chat.</p></blockquote>
 <hr>

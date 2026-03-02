@@ -24,6 +24,29 @@
     <main class="content">
       <article class="article">
         <h1 id="hooks-automate-actions-on-events">Hooks — Automate Actions on Events<a href="#hooks-automate-actions-on-events" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Hook Events</div>
+    <a class="qrc-item" href="#hook-events"><code class="qrc-k">PreToolUse</code><span class="qrc-d">Fires before any tool runs; can block</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#hook-events"><code class="qrc-k">PostToolUse</code><span class="qrc-d">Fires after a tool successfully completes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#hook-events"><code class="qrc-k">Notification</code><span class="qrc-d">Fires when Claude needs your attention</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#hook-events"><code class="qrc-k">PreCompact</code><span class="qrc-d">Fires before context compaction</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#hook-events"><code class="qrc-k">SessionStart / Stop</code><span class="qrc-d">Session lifecycle events</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Configuration</div>
+    <a class="qrc-item" href="#hook-configuration"><code class="qrc-k">matcher: "Edit|Write"</code><span class="qrc-d">Filter which tools trigger the hook</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#environment-variables-in-hooks"><code class="qrc-k">$CLAUDE_TOOL_NAME</code><span class="qrc-d">Env vars available inside hook commands</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#matchers-filtering-which-tools-trigger"><code class="qrc-k">Bash(git *)</code><span class="qrc-d">Match specific commands with glob patterns</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#async-hooks"><code class="qrc-k">"async": true</code><span class="qrc-d">Run hook in background without blocking</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#http-hooks"><code class="qrc-k">"http": { "url": "..." }</code><span class="qrc-d">Call an HTTP endpoint instead of a command</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#hook-decision-control-pretooluse"><code class="qrc-k">permissionDecision: "deny"</code><span class="qrc-d">Block an action from a PreToolUse hook</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#managing-hooks"><code class="qrc-k">/hooks</code><span class="qrc-d">Interactive hook management UI</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#disable-all-hooks"><code class="qrc-k">"disableAllHooks": true</code><span class="qrc-d">Disable all hooks for debugging</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of hooks like IFTTT or Zapier, but for your coding assistant. "When Claude edits a file, automatically run the formatter." "When Claude finishes responding, send me a desktop notification." "When Claude tries to run a dangerous command, block it." You define the trigger (the Claude Code event) and the action (a shell command), and it happens automatically every time.</p>
 <p>Without hooks, you have to manually run your linter after Claude makes changes, manually check if files were formatted, manually remember to test after edits. With hooks, these things just happen — you stay in the flow.</p>
 <pre><code>Hook Lifecycle:

@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="cost-tracking-usage-monitoring">Cost Tracking &amp; Usage Monitoring<a href="#cost-tracking-usage-monitoring" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Checking Costs</div>
+    <a class="qrc-item" href="#current-session-cost"><code class="qrc-k">/cost</code><span class="qrc-d">Token usage and cost for this session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#account-usage-limits"><code class="qrc-k">/usage</code><span class="qrc-d">Monthly plan limits and rate status</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#usage-statistics"><code class="qrc-k">/stats</code><span class="qrc-d">Daily usage charts and streaks</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#cost-insights"><code class="qrc-k">/insights</code><span class="qrc-d">Efficiency trends and recommendations</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Controlling Costs</div>
+    <a class="qrc-item" href="#setting-a-budget-limit"><code class="qrc-k">--max-budget-usd</code><span class="qrc-d">Stop task if cost exceeds a threshold</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#1-use-the-right-model-for-the-task"><code class="qrc-k">--model haiku</code><span class="qrc-d">Use cheaper model for simple tasks</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#2-use-lower-effort-levels"><code class="qrc-k">CLAUDE_CODE_EFFORT_LEVEL=low</code><span class="qrc-d">Reduce thinking tokens on routine work</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#3-compact-the-conversation"><code class="qrc-k">/compact</code><span class="qrc-d">Shrink long context to cut input costs</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Reference</div>
+    <a class="qrc-item" href="#token-pricing-approximate"><code class="qrc-k">Token pricing</code><span class="qrc-d">Approximate rates for each model</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#practical-cost-comparison"><code class="qrc-k">Task cost estimates</code><span class="qrc-d">Typical cost range by task type</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of the cost meter like a taxi meter — you want to know what the ride costs before you get somewhere expensive. Claude Code shows you exactly how many tokens you have used and what it is costing you, so you can manage your usage, set limits, and avoid surprises on your bill.</p>
 <p>Understanding costs also helps you make smarter choices: use a cheaper model for simple tasks, use a powerful model for hard problems, and compact the conversation when it gets long.</p>
 <hr>

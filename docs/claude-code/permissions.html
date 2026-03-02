@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="permissions-safety">Permissions &amp; Safety<a href="#permissions-safety" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Permission Modes</div>
+    <a class="qrc-item" href="#the-three-permission-modes"><code class="qrc-k">Shift+Tab</code><span class="qrc-d">Cycle between permission modes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#1-normal-mode-default"><code class="qrc-k">Normal Mode</code><span class="qrc-d">Claude asks before risky actions</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#2-plan-mode-read-only"><code class="qrc-k">Plan Mode</code><span class="qrc-d">Read-only, no edits or commands</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#3-auto-accept-mode"><code class="qrc-k">Auto-Accept</code><span class="qrc-d">All actions approved automatically</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Tool Flags</div>
+    <a class="qrc-item" href="#allow-specific-tools-without-prompting"><code class="qrc-k">--allowedTools</code><span class="qrc-d">Pre-approve specific tools</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#deny-specific-tools-entirely"><code class="qrc-k">--disallowedTools</code><span class="qrc-d">Block specific tools entirely</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#tool-permission-patterns"><code class="qrc-k">Bash(git *)</code><span class="qrc-d">Wildcard patterns for fine-grained control</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Configuration</div>
+    <a class="qrc-item" href="#settings-file-permissions"><code class="qrc-k">.claude/settings.json</code><span class="qrc-d">Permanent allow/deny rules</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#skip-all-permissions-dangerous"><code class="qrc-k">--dangerously-skip-permissions</code><span class="qrc-d">Disable all prompts (CI only)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#sandboxing-enterprise"><code class="qrc-k">/sandbox</code><span class="qrc-d">OS-level filesystem isolation</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <h2 id="what-are-permissions">What are Permissions?<a href="#what-are-permissions" class="anchor-link">#</a></h2>
 <p>Think of Claude's permissions like the access badge you give a new employee on their first day. A junior contractor might only get a key to their desk — they can look at things but can't modify production systems. A trusted senior developer gets broader access, but you'd still want to know before they push to main. A fully automated CI bot might have unrestricted access to run scripts — but only in a sandboxed environment where nothing important can break.</p>
 <p>Claude works the same way. By default, it asks for your approval before doing anything that could have consequences — running commands, editing files, making network requests. As you build trust, you can expand its access. And you can always restrict specific actions, no matter what mode you're in.</p>

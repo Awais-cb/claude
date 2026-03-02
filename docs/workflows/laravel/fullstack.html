@@ -24,6 +24,24 @@
     <main class="content">
       <article class="article">
         <h1 id="laravel-fullstack-developer-workflow">Laravel Fullstack Developer Workflow<a href="#laravel-fullstack-developer-workflow" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#starting-a-feature"><span class="qrc-label">Starting a Feature</span><span class="qrc-d">Name session and give full spec upfront</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-1-database-migration"><span class="qrc-label">Phase 1: Database Migration</span><span class="qrc-d">Review migration before running</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-2-eloquent-model"><span class="qrc-label">Phase 2: Eloquent Model</span><span class="qrc-d">BaseModel, DatabaseOperation, scopes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-3-service-layer"><span class="qrc-label">Phase 3: Service Layer</span><span class="qrc-d">Static methods and GenericResponse</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-4-form-requests-controller"><span class="qrc-label">Phase 4: Form Requests &amp; Controller</span><span class="qrc-d">Validate, call service, use JsonResponse</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-5-routes"><span class="qrc-label">Phase 5: Routes</span><span class="qrc-d">Add routes with correct middleware</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-6-livewire-component-frontend"><span class="qrc-label">Phase 6: Livewire Component</span><span class="qrc-d">Bell, dropdown, polling, mark-as-read</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-7-events-broadcasting-optional-real-time"><span class="qrc-label">Phase 7: Events &amp; Broadcasting</span><span class="qrc-d">ShouldBroadcast on private channels</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-8-testing"><span class="qrc-label">Phase 8: Testing</span><span class="qrc-d">Feature and unit tests with fakes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#phase-9-review-ship"><span class="qrc-label">Phase 9: Review &amp; Ship</span><span class="qrc-d">Pint, test, Claude review, commit</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>End-to-end feature development with Claude in a Laravel project — from database migration to Blade/Livewire/Inertia UI, as a single developer owning the whole stack.</p>
 <hr>
 <h2 id="the-laravel-fullstack-advantage">The Laravel Fullstack Advantage<a href="#the-laravel-fullstack-advantage" class="anchor-link">#</a></h2>

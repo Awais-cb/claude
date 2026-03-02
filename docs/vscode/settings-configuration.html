@@ -24,6 +24,29 @@
     <main class="content">
       <article class="article">
         <h1 id="settings-and-configuration">Settings and Configuration<a href="#settings-and-configuration" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Settings Files</div>
+    <a class="qrc-item" href="#settings-file-locations"><code class="qrc-k">~/.claude/settings.json</code><span class="qrc-d">User-level settings (all projects)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#settings-file-locations"><code class="qrc-k">.claude/settings.json</code><span class="qrc-d">Project-level (commit to git)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#settings-file-locations"><code class="qrc-k">.claude/settings.local.json</code><span class="qrc-d">Local overrides (not committed)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#opening-and-editing-settings"><code class="qrc-k">/config</code><span class="qrc-d">Visual interactive settings editor</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Key Settings Keys</div>
+    <a class="qrc-item" href="#permissions"><code class="qrc-k">permissions.allow / deny</code><span class="qrc-d">Whitelist and blacklist tool actions</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#permissions"><code class="qrc-k">permissions.defaultMode</code><span class="qrc-d">acceptEdits, bypassPermissions, plan</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#model-preference"><code class="qrc-k">model</code><span class="qrc-d">Set preferred Claude model</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#auto-memory"><code class="qrc-k">autoMemoryEnabled</code><span class="qrc-d">Auto-extract and save project facts</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Environment Variables</div>
+    <a class="qrc-item" href="#environment-variables"><code class="qrc-k">ANTHROPIC_API_KEY</code><span class="qrc-d">Your API key (required)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#environment-variables"><code class="qrc-k">CLAUDE_CODE_EFFORT_LEVEL</code><span class="qrc-d">Set thinking effort: low / medium / high</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#keybindings-configuration"><code class="qrc-k">~/.claude/keybindings.json</code><span class="qrc-d">Remap session keyboard shortcuts</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#viewing-current-configuration"><code class="qrc-k">/status</code><span class="qrc-d">View current model, mode, and settings</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Claude Code's behavior in VS Code is controlled through settings files and environment variables. Settings apply at different scopes — user-wide, project-wide, or local-only — so teams can share project-level config while keeping personal preferences separate.</p>
 <p>Think of it like a layered system: the bottom layer is system defaults, then your personal preferences sit on top, then project-wide team settings, and finally your private local overrides on the very top. Each layer can add to or override what's below it.</p>
 <hr>

@@ -24,6 +24,28 @@
     <main class="content">
       <article class="article">
         <h1 id="settings-configuration">Settings &amp; Configuration<a href="#settings-configuration" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">File Locations</div>
+    <a class="qrc-item" href="#settings-file-locations"><code class="qrc-k">~/.claude/settings.json</code><span class="qrc-d">User-wide settings (all projects)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#settings-file-locations"><code class="qrc-k">.claude/settings.json</code><span class="qrc-d">Project settings (commit to git)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#settings-file-locations"><code class="qrc-k">.claude/settings.local.json</code><span class="qrc-d">Local overrides (not committed)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#managed-policy-enterprise"><code class="qrc-k">/etc/claude-code/settings.json</code><span class="qrc-d">Enterprise policy (highest priority)</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Key Settings</div>
+    <a class="qrc-item" href="#full-settings-reference"><code class="qrc-k">permissions.allow / deny</code><span class="qrc-d">Auto-approve or block tool use</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#full-settings-reference"><code class="qrc-k">permissions.defaultMode</code><span class="qrc-d">Set normal, plan, or auto-accept mode</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#full-settings-reference"><code class="qrc-k">model</code><span class="qrc-d">Set the default model for this scope</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#environment-variables"><code class="qrc-k">ANTHROPIC_API_KEY</code><span class="qrc-d">Key environment variables reference</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#settings-hierarchy-which-settings-win"><code class="qrc-k">Priority order</code><span class="qrc-d">Which settings file wins when they conflict</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#editing-settings"><code class="qrc-k">/config · /settings</code><span class="qrc-d">Edit settings from inside a session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#editing-settings"><code class="qrc-k">claude --init</code><span class="qrc-d">Interactive setup wizard</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#troubleshooting-my-settings-arent-being-applied"><code class="qrc-k">Troubleshooting</code><span class="qrc-d">Settings not applied — how to diagnose</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of Claude Code's settings like the Preferences panel in any app you use — your browser, your code editor, your email client. You open it once, set your preferences, and from then on the app behaves exactly the way you want without you having to re-explain yourself every time. Claude Code's <code>settings.json</code> works the same way: you define what commands Claude can run without asking, which files it should never touch, and how it should behave in your team's projects — and those rules apply automatically every time you open a session.</p>
 <p>Claude Code is configured through <code>settings.json</code> files and environment variables. This covers every available option.</p>
 <hr>

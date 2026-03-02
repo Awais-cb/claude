@@ -24,6 +24,25 @@
     <main class="content">
       <article class="article">
         <h1 id="laravel-pr-review-workflow">Laravel PR Review Workflow<a href="#laravel-pr-review-workflow" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Before Opening a PR</div>
+    <a class="qrc-item" href="#1-quick-pr-review-before-opening-the-pr"><code class="qrc-k">php artisan pint &amp;&amp; php artisan test</code><span class="qrc-d">Format and test before review</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#1-quick-pr-review-before-opening-the-pr"><code class="qrc-k">/review</code><span class="qrc-d">Run the self-review skill</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Review Types</div>
+    <a class="qrc-item" href="#2-reviewing-a-colleagues-pr"><span class="qrc-label">2. Reviewing a Colleague's PR</span><span class="qrc-d">gh pr checkout then full review</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#3-laravel-specific-review-checklist"><span class="qrc-label">3. Laravel Review Checklist</span><span class="qrc-d">Security, DB, service layer, jobs, tests</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#4-focused-security-review"><span class="qrc-label">4. Security Review</span><span class="qrc-d">Ownership, SQL injection, mass assignment</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#5-performance-review"><span class="qrc-label">5. Performance Review</span><span class="qrc-d">N+1 detection and migration safety</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#6-reading-pr-comments-and-fixing-them"><span class="qrc-label">6. Fixing PR Comments</span><span class="qrc-d">Read reviewer comments and apply fixes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#7-post-review-summary"><span class="qrc-label">7. Post-Review Summary</span><span class="qrc-d">Generate a structured GitHub review comment</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#8-making-review-part-of-the-laravel-team-culture"><span class="qrc-label">8. Team Culture</span><span class="qrc-d">PR template and shared /pr-review skill</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>How to use Claude Code to review pull requests in Laravel projects — catching Laravel-specific issues that generic code review misses: N+1 queries, unsafe migrations, mass assignment, missing ownership checks, and broken conventions.</p>
 <hr>
 <h2 id="why-review-laravel-prs-with-claude-first">Why Review Laravel PRs with Claude First?<a href="#why-review-laravel-prs-with-claude-first" class="anchor-link">#</a></h2>

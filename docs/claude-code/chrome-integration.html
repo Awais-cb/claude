@@ -24,6 +24,22 @@
     <main class="content">
       <article class="article">
         <h1 id="chrome-browser-integration">Chrome Browser Integration<a href="#chrome-browser-integration" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#prerequisites-and-requirements"><span class="qrc-label">Prerequisites</span><span class="qrc-d">"Claude in Chrome" extension required (v1.0.36+)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#enabling-chrome-integration"><span class="qrc-label">Enable Chrome</span><span class="qrc-d">claude --chrome or /chrome to start integration</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#step-by-step-setup"><span class="qrc-label">Step-by-Step Setup</span><span class="qrc-d">Platform-specific install guide for macOS / Linux / Windows</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#what-you-can-do"><span class="qrc-label">What You Can Do</span><span class="qrc-d">Test apps, fill forms, scrape data, debug JS</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#debugging-with-chrome"><span class="qrc-label">Debugging with Chrome</span><span class="qrc-d">View console logs and inspect network requests</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#site-permissions"><span class="qrc-label">Site Permissions</span><span class="qrc-d">Configure per-domain camera, clipboard, and other access</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#troubleshooting-common-issues"><span class="qrc-label">Troubleshooting</span><span class="qrc-d">Chrome won't open, no display error, control issues</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#combining-with-code"><span class="qrc-label">Combining with Code</span><span class="qrc-d">Find bug in browser, fix in code, verify — all in one session</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of Chrome integration like having Claude look over your shoulder while you browse — it can see what's on screen and help you interact with it. Instead of writing Selenium or Playwright automation scripts, you just describe what you want in plain English and Claude drives the browser.</p>
 <p>This is powerful for testing web apps, extracting data from pages, automating repetitive form filling, and debugging frontend issues in a real browser environment.</p>
 <blockquote><p>What to expect: Claude connects to your running Chrome browser via the browser extension, navigates to pages, clicks buttons, fills fields, and reports back what it sees.</p></blockquote>

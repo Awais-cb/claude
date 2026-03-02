@@ -24,6 +24,30 @@
     <main class="content">
       <article class="article">
         <h1 id="mcp-servers-model-context-protocol">MCP Servers — Model Context Protocol<a href="#mcp-servers-model-context-protocol" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">CLI Commands</div>
+    <a class="qrc-item" href="#the-claude-mcp-cli-primary-method"><code class="qrc-k">claude mcp add</code><span class="qrc-d">Add a new MCP server</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#the-claude-mcp-cli-primary-method"><code class="qrc-k">claude mcp list</code><span class="qrc-d">List all configured servers</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#the-claude-mcp-cli-primary-method"><code class="qrc-k">claude mcp remove</code><span class="qrc-d">Remove a configured server</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#method-3-cli-flag"><code class="qrc-k">--mcp-config ./file.json</code><span class="qrc-d">Load servers from a specific file</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#mcp-security"><code class="qrc-k">--strict-mcp-config</code><span class="qrc-d">Only allow explicitly configured servers</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#debugging-mcp"><code class="qrc-k">--debug mcp</code><span class="qrc-d">Show MCP debug output</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Setup &amp; Config</div>
+    <a class="qrc-item" href="#mcp-config-locations"><code class="qrc-k">.mcp.json</code><span class="qrc-d">Project-level config (committed to git)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#mcp-config-locations"><code class="qrc-k">~/.claude.json</code><span class="qrc-d">User-wide MCP config (all projects)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#server-types"><code class="qrc-k">stdio / http / sse</code><span class="qrc-d">Three server transport types</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#popular-mcp-servers"><code class="qrc-k">GitHub / PostgreSQL / Slack</code><span class="qrc-d">Popular ready-to-use MCP servers</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#using-mcp-tools-in-a-session"><code class="qrc-k">@server:resource</code><span class="qrc-d">Reference an MCP resource in a prompt</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#building-a-custom-mcp-server"><code class="qrc-k">McpServer SDK</code><span class="qrc-d">Build your own custom MCP server</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#environment-variables-in-mcp-config"><code class="qrc-k">${VAR_NAME}</code><span class="qrc-d">Inject secrets via environment variables</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#debugging-mcp"><code class="qrc-k">/mcp</code><span class="qrc-d">Interactive MCP management in session</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Imagine your smartphone before you discovered the App Store. It could call, text, and browse the web — but that was it. Then you installed apps: a map, a bank, a camera with filters, a food delivery service. Suddenly it could do almost anything. MCP servers work the same way for Claude. Out of the box, Claude can read files, write code, and run terminal commands. But with MCP servers installed, it can query your live database, open GitHub pull requests, post to Slack, browse the web, and much more — each server gives Claude a new superpower.</p>
 <p>MCP stands for <strong>Model Context Protocol</strong> — an open standard that defines how AI assistants communicate with external tools and data sources. You install an MCP server once, and Claude can use its capabilities in any conversation.</p>
 <hr>

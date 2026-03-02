@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="skills-custom-slash-commands">Skills — Custom Slash Commands<a href="#skills-custom-slash-commands" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Built-in Skills</div>
+    <a class="qrc-item" href="#built-in-skills"><code class="qrc-k">/simplify</code><span class="qrc-d">Review changed code for quality</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#built-in-skills"><code class="qrc-k">/review</code><span class="qrc-d">Full PR quality and security review</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#built-in-skills"><code class="qrc-k">/commit-push-pr</code><span class="qrc-d">Commit, push, and open PR at once</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Creating Skills</div>
+    <a class="qrc-item" href="#creating-a-custom-skill"><code class="qrc-k">.claude/skills/name/SKILL.md</code><span class="qrc-d">Required directory + file structure</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#create-your-first-skill-in-5-minutes"><code class="qrc-k">/standup skill walkthrough</code><span class="qrc-d">5-minute beginner tutorial</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#skill-file-format"><code class="qrc-k">YAML frontmatter</code><span class="qrc-d">name, description, and trigger fields</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Advanced Options</div>
+    <a class="qrc-item" href="#trigger-auto-invocation"><code class="qrc-k">trigger:</code><span class="qrc-d">Auto-invoke skill on matching phrases</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#context-fork-run-in-isolation"><code class="qrc-k">context: fork</code><span class="qrc-d">Run skill in isolated subagent context</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#organizing-skills"><code class="qrc-k">Skill directories</code><span class="qrc-d">Group skills in nested subdirectories</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#viewing-available-skills"><code class="qrc-k">/skills</code><span class="qrc-d">List all available skills with descriptions</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of skills like keyboard macros or TextExpander shortcuts. Instead of typing out a long, repetitive set of instructions every time you want Claude to do something, you define it once as a skill — and then trigger it with a short <code>/command</code>. One short command, full workflow.</p>
 <p>For example, instead of typing "Please review my code for security issues, check for hardcoded credentials, validate all SQL queries use parameterized inputs, and check that authentication is required on protected routes" every time, you create a <code>/security-check</code> skill and just type that.</p>
 <p>Skills are markdown files with instructions. When you type <code>/skill-name</code>, Claude loads and executes those instructions as if you had written them out in full.</p>

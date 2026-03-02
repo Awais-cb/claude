@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="git-integration">Git Integration<a href="#git-integration" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Core Workflow</div>
+    <a class="qrc-item" href="#creating-commits"><code class="qrc-k">commit these changes</code><span class="qrc-d">Claude stages, messages, and commits</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#creating-pull-requests"><code class="qrc-k">create a PR for this branch</code><span class="qrc-d">Auto-generate title, description, and open PR</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#commit-push-and-pr-in-one-step"><code class="qrc-k">/commit-push-pr</code><span class="qrc-d">Commit, push, and open PR in one step</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Review &amp; Feedback</div>
+    <a class="qrc-item" href="#reviewing-pull-requests"><code class="qrc-k">/review &lt;PR#&gt;</code><span class="qrc-d">Full review for correctness and security</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#fetching-pr-comments"><code class="qrc-k">/pr-comments &lt;PR#&gt;</code><span class="qrc-d">Fetch and address review comments</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#viewing-diffs"><code class="qrc-k">/diff</code><span class="qrc-d">Interactive diff of recent changes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#security-review"><code class="qrc-k">/security-review</code><span class="qrc-d">Scan branch changes for vulnerabilities</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Advanced</div>
+    <a class="qrc-item" href="#git-worktrees-parallel-work"><code class="qrc-k">claude -w "name"</code><span class="qrc-d">Isolated worktree for parallel work</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#github-app-integration"><code class="qrc-k">/install-github-app</code><span class="qrc-d">Set up Claude as a GitHub Actions bot</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#troubleshooting-common-git-issues"><code class="qrc-k">Troubleshooting</code><span class="qrc-d">Fix common git errors with Claude</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Imagine having a seasoned git expert sitting right next to you. You don't have to remember the exact flags for an interactive rebase, or the right way to write a commit message, or the <code>gh</code> CLI syntax to open a pull request. You just describe what you want — "commit this, push it, and open a PR against main" — and they handle all the commands while you stay focused on writing code. That's what Claude Code's git integration feels like.</p>
 <p>Claude Code has deep integration with Git and GitHub — from making commits to reviewing PRs to running parallel experiments in isolated worktrees.</p>
 <hr>

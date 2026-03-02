@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="output-formats-styles">Output Formats &amp; Styles<a href="#output-formats-styles" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Interactive Styles</div>
+    <a class="qrc-item" href="#output-styles-interactive"><code class="qrc-k">/output-style</code><span class="qrc-d">Change response style in a live session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#output-styles-interactive"><code class="qrc-k">explanatory</code><span class="qrc-d">Adds educational why-it-works insights</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#output-styles-interactive"><code class="qrc-k">learning</code><span class="qrc-d">Interactive mode with practice exercises</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Print Mode Formats</div>
+    <a class="qrc-item" href="#text-default"><code class="qrc-k">--output-format text</code><span class="qrc-d">Plain text (default); best for humans</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#json"><code class="qrc-k">--output-format json</code><span class="qrc-d">Full conversation as a JSON array</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#stream-json"><code class="qrc-k">--output-format stream-json</code><span class="qrc-d">Stream JSON objects as they're generated</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#structured-json-output"><code class="qrc-k">--json-schema '{...}'</code><span class="qrc-d">Enforce a specific output data structure</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Piping &amp; Scripting</div>
+    <a class="qrc-item" href="#piping-scripting"><code class="qrc-k">cat file | claude -p "..."</code><span class="qrc-d">Pipe any input into Claude</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#controlling-claudes-response"><code class="qrc-k">--max-turns / --max-budget-usd</code><span class="qrc-d">Limit turns or cost in automation</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#decision-guide-which-format-should-i-use"><code class="qrc-k">Decision guide</code><span class="qrc-d">How to pick the right format for your use case</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of output formats like choosing between reading a report yourself versus having it piped into a spreadsheet. The information is the same either way — but the format determines what you can do with it next. A human reading a summary wants clear prose. A script pulling data out of Claude wants structured JSON it can parse. Claude Code supports both, and everything in between.</p>
 <p>This matters most when you move beyond interactive chat into automation: CI pipelines, shell scripts, daily reports, pre-commit hooks. The right output format is what makes Claude composable with the rest of your toolchain.</p>
 <blockquote><p>What to expect: Text appearing progressively in the terminal as Claude generates it, with JSON delimiters visible when using stream-json mode.</p></blockquote>

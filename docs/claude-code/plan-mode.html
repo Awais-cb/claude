@@ -24,6 +24,21 @@
     <main class="content">
       <article class="article">
         <h1 id="plan-mode">Plan Mode<a href="#plan-mode" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#what-is-plan-mode"><span class="qrc-label">What is Plan Mode?</span><span class="qrc-d">Read-only exploration before any changes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#enabling-plan-mode"><span class="qrc-label">Enabling Plan Mode</span><span class="qrc-d">CLI flag and in-session toggle</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#the-plan-review-execute-workflow"><span class="qrc-label">Plan → Review → Execute</span><span class="qrc-d">Step-by-step workflow with diagram</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#why-use-plan-mode"><span class="qrc-label">Why Use Plan Mode?</span><span class="qrc-d">Understand scope before committing</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#when-would-a-beginner-use-this"><span class="qrc-label">Beginner Use Cases</span><span class="qrc-d">Inherited code, feature scoping, safety</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#example-big-refactor-planning"><span class="qrc-label">Refactor Planning Example</span><span class="qrc-d">Full session transcript for a refactor</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#plan-mode-vs-review"><span class="qrc-label">Plan Mode vs /review</span><span class="qrc-d">Before vs after — when to use each</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <h2 id="what-is-plan-mode">What is Plan Mode?<a href="#what-is-plan-mode" class="anchor-link">#</a></h2>
 <p>Imagine you're renovating your kitchen. You wouldn't want the contractor to start tearing out cabinets the moment they walk in the door. First, you'd want them to look around, measure everything, and draw up blueprints. Only once you've reviewed the plan and said "yes, this is what I want" would construction begin.</p>
 <p>Plan Mode works the same way. When you activate it, Claude can look at everything — read your files, trace through your code, research approaches — but it cannot touch anything. No edits, no commands, no changes of any kind. It draws up the blueprints first. You review them. Then you decide whether to proceed.</p>

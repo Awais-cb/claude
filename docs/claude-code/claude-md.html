@@ -24,6 +24,23 @@
     <main class="content">
       <article class="article">
         <h1 id="claudemd-project-instructions">CLAUDE.md — Project Instructions<a href="#claudemd-project-instructions" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#what-is-claudemd"><span class="qrc-label">What is CLAUDE.md?</span><span class="qrc-d">Why it beats re-explaining every session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#quick-start"><span class="qrc-label">Quick Start</span><span class="qrc-d">Generate with /init or create manually</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#where-claude-looks-for-claudemd"><span class="qrc-label">File Locations</span><span class="qrc-d">Global, project, local, and subdirectory files</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#what-to-put-in-claudemd"><span class="qrc-label">What to Put In It</span><span class="qrc-d">Stack, commands, conventions, do-nots</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#including-other-files"><span class="qrc-label">@ File Imports</span><span class="qrc-d">Pull in other docs with @ syntax</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#claudemd-vs-clauderules"><span class="qrc-label">CLAUDE.md vs .claude/rules/</span><span class="qrc-d">Apply rules only to specific file paths</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#user-level-claudemd"><span class="qrc-label">User-Level File</span><span class="qrc-d">Personal rules that apply across all projects</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#real-world-examples-by-project-type"><span class="qrc-label">Real-World Examples</span><span class="qrc-d">React, Django, and React Native templates</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#common-mistakes"><span class="qrc-label">Common Mistakes</span><span class="qrc-d">Avoid stale, vague, or oversized files</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <h2 id="what-is-claudemd">What is CLAUDE.md?<a href="#what-is-claudemd" class="anchor-link">#</a></h2>
 <p>Think of it like the briefing note you hand to a new contractor before their first day. You wouldn't want them to discover your coding standards by accident, or waste time asking "how do I run the tests?" You'd write it all down — tech stack, commands, rules, quirks — and hand it over so they can hit the ground running.</p>
 <p>CLAUDE.md is exactly that. It's a plain text file that Claude reads automatically every time you start a session in your project. Without it, Claude starts fresh each time. With it, Claude already knows your stack, your conventions, and your preferences before you type a single word.</p>

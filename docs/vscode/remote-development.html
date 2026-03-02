@@ -24,6 +24,21 @@
     <main class="content">
       <article class="article">
         <h1 id="remote-development">Remote Development<a href="#remote-development" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#how-remote-development-works"><span class="qrc-label">How Remote Development Works</span><span class="qrc-d">Claude runs where your files live</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#vs-code-remote-ssh"><span class="qrc-label">Remote SSH</span><span class="qrc-d">Connect to a remote Linux server</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#dev-containers"><span class="qrc-label">Dev Containers</span><span class="qrc-d">Run Claude inside a Docker container</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#wsl-windows-subsystem-for-linux"><span class="qrc-label">WSL</span><span class="qrc-d">Recommended setup for Windows users</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#github-codespaces"><span class="qrc-label">GitHub Codespaces</span><span class="qrc-d">Cloud VM with no local setup needed</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#remote--additional-directories"><span class="qrc-label">Additional Directories</span><span class="qrc-d">Grant Claude access to extra paths</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#summary-table"><span class="qrc-label">Summary Table</span><span class="qrc-d">Where Claude runs for each setup type</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Claude Code works with all of VS Code's remote development modes — SSH, Dev Containers, WSL, and GitHub Codespaces. The key principle: <strong>Claude Code runs where your code lives</strong>, and the VS Code extension renders the output locally.</p>
 <p>Think of it like a remote-controlled car: you hold the controller (VS Code on your local machine), but the car (Claude Code + your files) is running somewhere else. The extension is the radio signal connecting them.</p>
 <hr>

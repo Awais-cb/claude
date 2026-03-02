@@ -24,6 +24,22 @@
     <main class="content">
       <article class="article">
         <h1 id="task-list-progress-tracking">Task List &amp; Progress Tracking<a href="#task-list-progress-tracking" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#what-is-the-task-list"><span class="qrc-label">What is the Task List?</span><span class="qrc-d">Real-time progress board Claude maintains automatically</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#viewing-the-task-list"><span class="qrc-label">View Tasks</span><span class="qrc-d">Ctrl+T or /tasks to toggle the task list view</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#task-states"><span class="qrc-label">Task States</span><span class="qrc-d">Pending, in-progress, and completed icons explained</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#when-claude-creates-tasks-and-when-it-doesnt"><span class="qrc-label">When Tasks Are Created</span><span class="qrc-d">Auto-created for 3+ distinct steps; not for simple requests</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#background-tasks"><span class="qrc-label">Background Tasks</span><span class="qrc-d">Ctrl+B to background; work on something else while Claude runs</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#killing-background-agents"><span class="qrc-label">Kill Background Agents</span><span class="qrc-d">Ctrl+F to cancel a running background task</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#shared-task-lists"><span class="qrc-label">Shared Task Lists</span><span class="qrc-d">CLAUDE_CODE_TASK_LIST_ID for multi-agent coordination</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#task-list-persistence"><span class="qrc-label">Persistence</span><span class="qrc-d">Task lists survive context compaction and session pauses</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of the task list like a sticky note board that Claude keeps updated while it works — you can see exactly what's done, what's in progress, and what's coming next. When you hand Claude a big job, it doesn't just dive in blindly. It first pins up a set of sticky notes (tasks), then works through them one at a time, moving each from "todo" to "done" as it goes. You always know where it is and how much is left.</p>
 <p>This is especially valuable for complex work that takes several minutes. Instead of staring at a blank terminal wondering "is it still going?", you get a live progress board.</p>
 <blockquote><p>What to expect: A sidebar or inline panel listing task steps with icons showing pending, in-progress, and completed states updating in real time.</p></blockquote>

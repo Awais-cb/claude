@@ -24,6 +24,27 @@
     <main class="content">
       <article class="article">
         <h1 id="subagents-parallel-specialized-workers">Subagents — Parallel &amp; Specialized Workers<a href="#subagents-parallel-specialized-workers" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Getting Started</div>
+    <a class="qrc-item" href="#built-in-subagents"><code class="qrc-k">Explore / Plan agents</code><span class="qrc-d">Built-in read-only specialist agents</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#when-to-use-subagents-vs-just-asking-claude-directly"><code class="qrc-k">When to use subagents</code><span class="qrc-d">Parallel vs sequential task guidance</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#step-by-step-create-your-first-subagent"><code class="qrc-k">Create your first agent</code><span class="qrc-d">Step-by-step file-summarizer walkthrough</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Configuration</div>
+    <a class="qrc-item" href="#creating-custom-subagents"><code class="qrc-k">.claude/agents/name.md</code><span class="qrc-d">Where agent files live and their format</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#agent-configuration-frontmatter"><code class="qrc-k">YAML frontmatter</code><span class="qrc-d">model, tools, permissionMode, memory options</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#managing-agents"><code class="qrc-k">/agents</code><span class="qrc-d">List, create, edit, and delete agents</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Advanced Use</div>
+    <a class="qrc-item" href="#running-agents-in-parallel"><code class="qrc-k">Parallel agents</code><span class="qrc-d">Run multiple agents simultaneously</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#worktree-isolation"><code class="qrc-k">isolation: worktree</code><span class="qrc-d">Each agent gets its own repo copy</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#persistent-memory-for-agents"><code class="qrc-k">memory: project</code><span class="qrc-d">Agents build knowledge across sessions</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#foreground-vs-background-agents"><code class="qrc-k">Ctrl+T</code><span class="qrc-d">Toggle task list for background agents</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Imagine you're a project manager with a big deliverable. You could do every task yourself — the research, the writing, the review, the testing — one by one, slowly. Or you could delegate: send the researcher off to gather information, the writer to draft content, and the tester to run tests, all at the same time. You check in when each finishes and combine the results.</p>
 <p>That's exactly how subagents work in Claude Code. Your main Claude session acts as the project manager, spawning specialized Claude instances (subagents) to handle specific tasks — sometimes in parallel — and collecting their results.</p>
 <pre><code>                    Your Main Claude Session

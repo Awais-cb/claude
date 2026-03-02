@@ -24,6 +24,23 @@
     <main class="content">
       <article class="article">
         <h1 id="memory-system">Memory System<a href="#memory-system" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#what-is-the-memory-system"><span class="qrc-label">What is Memory?</span><span class="qrc-d">How Claude remembers across sessions</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#what-gets-saved"><span class="qrc-label">What Gets Saved</span><span class="qrc-d">Decisions, preferences, and patterns Claude notes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#viewing-your-memory"><span class="qrc-label">Viewing Memory</span><span class="qrc-d">Use /memory to view and edit saved notes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#the-memorymd-file"><span class="qrc-label">The MEMORY.md File</span><span class="qrc-d">Structure, 200-line limit, and format</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#topic-files"><span class="qrc-label">Topic Files</span><span class="qrc-d">Link to separate files for detailed notes</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#how-memory-claudemd-and-session-context-relate"><span class="qrc-label">Memory vs CLAUDE.md vs Context</span><span class="qrc-d">How the three knowledge sources differ</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#manually-saving-a-memory"><span class="qrc-label">Manually Saving</span><span class="qrc-d">Ask Claude to remember something explicitly</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#enabling-disabling"><span class="qrc-label">Enabling / Disabling</span><span class="qrc-d">Toggle auto-memory in settings or env var</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#subagent-memory"><span class="qrc-label">Subagent Memory</span><span class="qrc-d">Give specialized agents their own memory</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <h2 id="what-is-the-memory-system">What is the Memory System?<a href="#what-is-the-memory-system" class="anchor-link">#</a></h2>
 <p>Imagine you have a notepad on your desk that you keep between meetings with a colleague. After each conversation, you jot down the decisions you made, the preferences they expressed, the problems you solved together. Next time they come back, you glance at your notes first — so you never start from scratch.</p>
 <p>Claude's memory system works exactly like that notepad. At the end of a session (or during one), Claude saves important notes to a file on your machine. The next time you open Claude in the same project, it reads those notes automatically. You don't have to re-explain anything it already learned.</p>

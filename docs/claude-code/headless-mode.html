@@ -24,6 +24,29 @@
     <main class="content">
       <article class="article">
         <h1 id="headless-mode-non-interactive-automation">Headless Mode — Non-Interactive / Automation<a href="#headless-mode-non-interactive-automation" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Core Flags</div>
+    <a class="qrc-item" href="#the-p-flag"><code class="qrc-k">-p "prompt"</code><span class="qrc-d">Run non-interactively and print output</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#output-formats"><code class="qrc-k">--output-format json</code><span class="qrc-d">Return full conversation as JSON</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#output-formats"><code class="qrc-k">--output-format stream-json</code><span class="qrc-d">Stream JSON objects in real time</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#output-formats"><code class="qrc-k">--json-schema '{...}'</code><span class="qrc-d">Enforce a structured JSON output shape</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#controlling-execution"><code class="qrc-k">--max-turns N</code><span class="qrc-d">Limit agentic tool-use turns</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#controlling-execution"><code class="qrc-k">--max-budget-usd N</code><span class="qrc-d">Stop if cost exceeds a dollar cap</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#controlling-execution"><code class="qrc-k">--no-session-persistence</code><span class="qrc-d">Skip saving session to disk</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">CI/CD &amp; Automation</div>
+    <a class="qrc-item" href="#basic-examples"><code class="qrc-k">cat file | claude -p "..."</code><span class="qrc-d">Pipe file contents into Claude</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#cicd-integration"><code class="qrc-k">GitHub Actions example</code><span class="qrc-d">Complete workflow for PR review automation</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#environment-setup-for-ci"><code class="qrc-k">ANTHROPIC_API_KEY</code><span class="qrc-d">Required env var for CI environments</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#using-the-agent-sdk"><code class="qrc-k">Agent SDK (TypeScript / Python)</code><span class="qrc-d">Programmatic integration in your own app</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#practical-automation-scripts"><code class="qrc-k">Automation scripts</code><span class="qrc-d">Daily quality checks, doc updates, test gen</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#rate-limiting-in-automation"><code class="qrc-k">Rate limiting</code><span class="qrc-d">Avoid hitting limits in batch automation</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>Think of headless mode like setting up an automatic assembly line. You define the steps once — "take this input, run Claude on it, produce this output" — and it runs without anyone watching, pressing buttons, or waiting at a prompt. This is how you integrate Claude Code into scripts, scheduled jobs, CI pipelines, and any other system where there is no human in the loop.</p>
 <p>The opposite of headless mode is the interactive terminal session where you type back and forth with Claude. Headless mode is for when you want Claude to be a tool your other tools call.</p>
 <blockquote><p>What to expect: In a CI log, you will see Claude Code run, output its result as text or JSON, and exit with a success or failure code — just like any other CLI tool in your pipeline.</p></blockquote>

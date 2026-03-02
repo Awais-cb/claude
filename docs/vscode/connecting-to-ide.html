@@ -24,6 +24,21 @@
     <main class="content">
       <article class="article">
         <h1 id="connecting-claude-code-to-vs-code">Connecting Claude Code to VS Code<a href="#connecting-claude-code-to-vs-code" class="anchor-link">#</a></h1>
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body">
+    <a class="qrc-item" href="#the---ide-flag-for-external-terminal-sessions"><span class="qrc-label">The <code>--ide</code> Flag</span><span class="qrc-d">Connect an external terminal to VS Code</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#step-by-step-connecting-a-terminal-session-to-vs-code"><span class="qrc-label">Step-by-Step Connection</span><span class="qrc-d">Four steps to connect a terminal session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#what-connected-looks-like"><span class="qrc-label">What "Connected" Looks Like</span><span class="qrc-d">Status bar and panel indicators</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#auto-connect-on-every-terminal-session-optional"><span class="qrc-label">Auto-Connect Setup</span><span class="qrc-d">Shell alias and VS Code task options</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#combining-with-other-flags"><span class="qrc-label">Combining Flags</span><span class="qrc-d">Use <code>--ide</code> with <code>-c</code>, <code>--model</code>, and more</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#disconnecting-and-reconnecting"><span class="qrc-label">Disconnect and Reconnect</span><span class="qrc-d">Exit cleanly and resume with context</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#troubleshooting"><span class="qrc-label">Troubleshooting</span><span class="qrc-d">Fixes for common connection failures</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
 <p>The Claude Code VS Code extension opens natively inside your editor — no terminal command required. Once the extension is installed, click the <strong>Spark icon</strong> in the Activity Bar (left sidebar) or click <strong>"✱ Claude Code"</strong> in the status bar to open the Claude Code panel directly.</p>
 <p>The <code>--ide</code> flag is a separate, optional workflow for users who launch Claude from an <strong>external terminal</strong> (outside VS Code) and want that terminal session to connect to and communicate with their open VS Code editor. If you're working entirely within VS Code, you don't need <code>--ide</code> at all.</p>
 <hr>
