@@ -226,6 +226,192 @@ function scrollActiveLink() {
   }
 }
 
+// ── Full-Text Search Modal ────────────────────────────────────
+
+let _searchIndex = null;
+
+async function loadIndex() {
+  if (_searchIndex) return _searchIndex;
+  try {
+    const res = await fetch(getPrefix() + "search-index.json");
+    _searchIndex = await res.json();
+  } catch (e) {
+    _searchIndex = [];
+  }
+  return _searchIndex;
+}
+
+function scoreAndSearch(query) {
+  if (!_searchIndex || !query.trim()) return [];
+  const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+  if (!words.length) return [];
+  return _searchIndex
+    .map(page => {
+      const tl = page.title.toLowerCase();
+      const cl = page.content.toLowerCase();
+      let score = 0;
+      for (const w of words) {
+        if (tl === w)           score += 50;
+        else if (tl.startsWith(w)) score += 30;
+        else if (tl.includes(w))   score += 20;
+        let i = 0;
+        while ((i = cl.indexOf(w, i)) !== -1) { score++; i += w.length; }
+      }
+      return { ...page, score };
+    })
+    .filter(p => p.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10);
+}
+
+function makeSnippet(content, words, len = 180) {
+  const lo = content.toLowerCase();
+  let pos = content.length;
+  for (const w of words) {
+    const i = lo.indexOf(w);
+    if (i !== -1 && i < pos) pos = i;
+  }
+  const start = Math.max(0, pos - 60);
+  const end   = Math.min(content.length, start + len);
+  return (start > 0 ? "…" : "") + content.slice(start, end) + (end < content.length ? "…" : "");
+}
+
+function hlText(text, words) {
+  let out = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  for (const w of words) {
+    const re = new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+    out = out.replace(re, "<mark>$1</mark>");
+  }
+  return out;
+}
+
+let _selIdx = -1;
+
+function renderSearchResults(results, query) {
+  const box = document.getElementById("smResults");
+  if (!box) return;
+  _selIdx = -1;
+
+  if (!query.trim()) {
+    box.innerHTML = `<p class="sm-hint">Type to search across all docs…</p>`;
+    return;
+  }
+  if (!results.length) {
+    box.innerHTML = `<p class="sm-hint">No results for <strong>${query}</strong></p>`;
+    return;
+  }
+
+  const words  = query.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+  const prefix = getPrefix();
+  box.innerHTML = results.map((p, i) => {
+    const snip  = makeSnippet(p.content, words);
+    const crumb = p.url.replace(/\.html$/, "").replace(/\//g, " › ");
+    return `<a class="sm-result" href="${prefix + p.url}" data-idx="${i}">
+      <div class="sm-result-title">${hlText(p.title, words)}</div>
+      <div class="sm-result-crumb">${crumb}</div>
+      <div class="sm-result-snip">${hlText(snip, words)}</div>
+    </a>`;
+  }).join("");
+
+  box.querySelectorAll(".sm-result").forEach(el =>
+    el.addEventListener("click", closeSearchModal)
+  );
+}
+
+function updateSearchSel() {
+  const items = document.querySelectorAll(".sm-result");
+  items.forEach((el, i) => el.classList.toggle("selected", i === _selIdx));
+  if (_selIdx >= 0) items[_selIdx]?.scrollIntoView({ block: "nearest" });
+}
+
+function openSearchModal() {
+  const modal = document.getElementById("searchModal");
+  if (!modal) return;
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+  const input = document.getElementById("smInput");
+  if (input) { input.value = ""; input.focus(); }
+  const box = document.getElementById("smResults");
+  if (box) box.innerHTML = `<p class="sm-hint">Type to search across all docs…</p>`;
+  loadIndex();
+}
+
+function closeSearchModal() {
+  const modal = document.getElementById("searchModal");
+  if (!modal) return;
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function injectSearchModal() {
+  // ── Trigger button injected into sidebar ──
+  const sidebarSearch = document.querySelector(".sidebar-search");
+  if (sidebarSearch) {
+    const btn = document.createElement("button");
+    btn.id = "searchTrigger";
+    btn.className = "search-trigger";
+    btn.setAttribute("aria-label", "Search documentation");
+    btn.innerHTML = `<svg class="st-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg><span class="st-label">Search docs…</span><kbd class="st-kbd">⌘K</kbd>`;
+    btn.addEventListener("click", openSearchModal);
+    sidebarSearch.parentNode.insertBefore(btn, sidebarSearch);
+  }
+
+  // ── Modal markup ──
+  const modal = document.createElement("div");
+  modal.id = "searchModal";
+  modal.setAttribute("aria-hidden", "true");
+  modal.innerHTML = `
+    <div class="sm-backdrop" id="smBackdrop"></div>
+    <div class="sm-dialog" role="dialog" aria-modal="true" aria-label="Search documentation">
+      <div class="sm-input-row">
+        <svg class="sm-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg>
+        <input id="smInput" type="search" placeholder="Search documentation…" autocomplete="off" spellcheck="false">
+        <button class="sm-close" id="smClose" aria-label="Close search">✕</button>
+      </div>
+      <div class="sm-results" id="smResults">
+        <p class="sm-hint">Type to search across all docs…</p>
+      </div>
+      <div class="sm-footer">
+        <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> open</span>
+        <span><kbd>Esc</kbd> close</span>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  // ── Events ──
+  document.getElementById("smBackdrop")?.addEventListener("click", closeSearchModal);
+  document.getElementById("smClose")?.addEventListener("click", closeSearchModal);
+
+  let _debounce;
+  document.getElementById("smInput")?.addEventListener("input", e => {
+    clearTimeout(_debounce);
+    const q = e.target.value;
+    _debounce = setTimeout(async () => {
+      await loadIndex();
+      renderSearchResults(scoreAndSearch(q), q);
+    }, 120);
+  });
+
+  document.getElementById("smInput")?.addEventListener("keydown", e => {
+    const items = document.querySelectorAll(".sm-result");
+    if      (e.key === "ArrowDown")              { e.preventDefault(); _selIdx = Math.min(_selIdx + 1, items.length - 1); updateSearchSel(); }
+    else if (e.key === "ArrowUp")                { e.preventDefault(); _selIdx = Math.max(_selIdx - 1, -1); updateSearchSel(); }
+    else if (e.key === "Enter" && _selIdx >= 0)  { closeSearchModal(); items[_selIdx]?.click(); }
+    else if (e.key === "Escape")                 { closeSearchModal(); }
+  });
+
+  document.addEventListener("keydown", e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      document.getElementById("searchModal")?.classList.contains("open")
+        ? closeSearchModal() : openSearchModal();
+    } else if (e.key === "Escape") {
+      closeSearchModal();
+    }
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -233,4 +419,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initMobileMenu();
   initSearch();
   scrollActiveLink();
+  injectSearchModal();
 });
