@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="2">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laravel PR Review Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="laravel-pr-review-workflow">Laravel PR Review Workflow<a href="#laravel-pr-review-workflow" class="anchor-link">#</a></h1>
+<p>How to use Claude Code to review pull requests in Laravel projects — catching Laravel-specific issues that generic code review misses: N+1 queries, unsafe migrations, mass assignment, missing ownership checks, and broken conventions.</p>
+<hr>
+<h2 id="why-review-laravel-prs-with-claude-first">Why Review Laravel PRs with Claude First?<a href="#why-review-laravel-prs-with-claude-first" class="anchor-link">#</a></h2>
+<p>Human code review is valuable but limited by time. Claude catches the categories of bugs that are most common in Laravel:</p>
+<ul>
+<li><strong>N+1 queries</strong> that look fine but destroy performance at scale</li>
+<li><strong>Missing <code>is_deleted</code> / <code>is_active</code> scope</strong> on Eloquent queries</li>
+<li><strong>Mass assignment</strong> vulnerabilities from a missing or too-broad <code>$fillable</code></li>
+<li><strong>Missing ownership checks</strong> — a user accessing another user's records</li>
+<li><strong>Unsafe migrations</strong> — adding a NOT NULL column without a default on a live table</li>
+<li><strong>Broken service layer conventions</strong> — exceptions thrown instead of <code>GenericResponse::fail()</code></li>
+<li><strong>Queue jobs that aren't idempotent</strong> — jobs that fail badly on retry</li>
+</ul>
+<p>The goal: <strong>zero review comments about things Claude could have caught.</strong></p>
+<hr>
+<h2 id="1-quick-pr-review-before-opening-the-pr">1. Quick PR Review (Before Opening the PR)<a href="#1-quick-pr-review-before-opening-the-pr" class="anchor-link">#</a></h2>
+<h3 id="review-your-own-changes">Review your own changes<a href="#review-your-own-changes" class="anchor-link">#</a></h3>
+<pre><code>&gt; compare my current branch to main using git diff.
+  I've been working on the order cancellation feature.
+  Review the changes for:
+  - missing ownership checks (can a user cancel another user's order?)
+  - N+1 queries in the controller or service
+  - any column not in $fillable that's being mass-assigned
+  - any thrown exceptions that should be GenericResponse::fail() instead
+  - migrations that could fail on a live database
+  Be specific with file names and line numbers. Rate each finding as CRITICAL / WARNING / SUGGESTION.</code></pre>
+<h3 id="run-the-pre-review-sequence">Run the pre-review sequence<a href="#run-the-pre-review-sequence" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Format code first
+php artisan pint
+
+# Run tests
+php artisan test
+
+# Then ask Claude to review</code></pre>
+<pre><code>&gt; /review</code></pre>
+<p>Or manually:</p>
+<pre><code>&gt; review all my staged changes (git diff --cached).
+  Apply the Laravel review checklist:
+  1. Every model query on a user-owned resource must have a user_id WHERE clause
+  2. All DB writes must be in transactions (beginTransaction/commit/rollBack)
+  3. Services must return GenericResponse — never throw exceptions for business logic
+  4. No raw DB queries with string interpolation (SQL injection risk)
+  5. New migrations must have a working down() method
+  Rate: CRITICAL / WARNING / SUGGESTION.</code></pre>
+<hr>
+<h2 id="2-reviewing-a-colleagues-pr">2. Reviewing a Colleague's PR<a href="#2-reviewing-a-colleagues-pr" class="anchor-link">#</a></h2>
+<h3 id="pull-the-pr-and-review-it">Pull the PR and review it<a href="#pull-the-pr-and-review-it" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Using the GitHub CLI
+gh pr checkout 247</code></pre>
+<pre><code>&gt; review this PR (branch: feat/order-cancellation).
+  Context: this PR adds the ability for patients to cancel upcoming sessions.
+
+  Read the changed files using: git diff main...HEAD
+
+  Focus on:
+  - Does the cancellation check that the session belongs to the requesting patient?
+  - Is there a 24-hour cancellation window enforced, and is it tested?
+  - Are any jobs/events dispatched for refunds or therapist notification?
+  - Does the migration have a safe rollback?
+  - Does the test cover the &quot;wrong user&quot; scenario?
+
+  List findings as CRITICAL (must fix), WARNING (should fix), SUGGESTION (nice to have).</code></pre>
+<h3 id="review-multiple-prs-in-parallel">Review multiple PRs in parallel<a href="#review-multiple-prs-in-parallel" class="anchor-link">#</a></h3>
+<pre><code>&gt; review these 3 PRs in parallel using subagents:
+  - PR #241: feat/coupon-system — adds coupon codes to checkout
+  - PR #243: fix/notification-badge-count — fixes the unread badge not updating
+  - PR #245: feat/therapist-availability-api — new API for fetching available slots
+
+  For each:
+  1. Run: gh pr diff [number]
+  2. Apply the Laravel review checklist (ownership, N+1, GenericResponse, migrations, tests)
+  3. Report: what it does, CRITICAL issues, WARNING issues, overall assessment
+
+  Give me a summary table at the end.</code></pre>
+<hr>
+<h2 id="3-laravel-specific-review-checklist">3. Laravel-Specific Review Checklist<a href="#3-laravel-specific-review-checklist" class="anchor-link">#</a></h2>
+<p>Use this checklist for every Laravel PR. Ask Claude to check each item:</p>
+<pre><code>&gt; review PR #[number] against this Laravel-specific checklist:
+
+  SECURITY:
+  □ Ownership check: every query for user-owned data includes a WHERE user_id = auth()-&gt;id()
+  □ Mass assignment: $fillable is explicitly defined (not $guarded = [])
+  □ Input validation: all user input goes through a FormRequest or validated()
+  □ No raw SQL with string interpolation — bindings only
+  □ Auth middleware applied to all new routes that require it
+  □ Role middleware applied where role-specific access is needed
+
+  DATABASE:
+  □ No N+1 queries — related models are eager loaded
+  □ NotDeleted and IsActive scopes applied where appropriate
+  □ New migrations have a complete and tested down() method
+  □ Adding NOT NULL column to existing table → has a DEFAULT or is nullable first
+  □ Large table migrations use chunking or are done without locking
+
+  SERVICE LAYER:
+  □ Services return GenericResponse — never throw exceptions for business logic
+  □ DB writes are wrapped in DB::beginTransaction() / commit() / rollBack()
+  □ SystemMessage is passed to GenericResponse::fail() for logging
+
+  JOBS &amp; QUEUES:
+  □ Jobs implement ShouldQueue correctly
+  □ Jobs are idempotent (safe to retry)
+  □ Jobs have appropriate retry limits and backoff
+
+  TESTS:
+  □ New endpoint has a feature test covering happy path, validation errors, auth, and ownership
+  □ New service method has a unit test covering happy path and failure cases
+  □ Factories updated if new model columns were added
+
+  CONVENTIONS:
+  □ Controllers use JsonResponse class for all responses
+  □ Models extend BaseModel and use DatabaseOperation
+  □ Enums use UPPER_SNAKE_CASE with static accessor methods
+  □ No logic in controllers that belongs in services</code></pre>
+<hr>
+<h2 id="4-focused-security-review">4. Focused Security Review<a href="#4-focused-security-review" class="anchor-link">#</a></h2>
+<h3 id="ownership-and-authorization-audit">Ownership and authorization audit<a href="#ownership-and-authorization-audit" class="anchor-link">#</a></h3>
+<pre><code>&gt; read all new or changed controller methods in this PR (git diff main...HEAD -- app/Http/Controllers/).
+  For each method:
+  1. Does it fetch a model by ID? If so, does it verify the authenticated user owns it?
+  2. Does it update or delete a record? Does it check ownership before modifying?
+  3. Are there any admin-only operations that could be accessed by a regular user?
+  Create a table: Method | Fetches By ID | Ownership Checked | Risk</code></pre>
+<h3 id="sql-injection-check">SQL injection check<a href="#sql-injection-check" class="anchor-link">#</a></h3>
+<pre><code>&gt; scan all changed PHP files for raw SQL queries.
+  Find any DB::statement(), DB::select(), or whereRaw() calls that use string interpolation
+  (e.g., &quot;WHERE id = $id&quot; or &quot;WHERE id = &quot; . $id).
+  Flag each one as CRITICAL.
+  Show the line and the safe fix using query bindings.</code></pre>
+<h3 id="mass-assignment-audit">Mass assignment audit<a href="#mass-assignment-audit" class="anchor-link">#</a></h3>
+<pre><code>&gt; read all Eloquent models added or changed in this PR.
+  For each model:
+  1. Is $fillable explicitly defined?
+  2. Are there any sensitive fields (is_admin, role, balance, is_deleted) in $fillable?
+  3. Is create() or update() called anywhere with unfiltered request data?
+  Flag issues as CRITICAL.</code></pre>
+<hr>
+<h2 id="5-performance-review">5. Performance Review<a href="#5-performance-review" class="anchor-link">#</a></h2>
+<h3 id="n1-query-detection">N+1 query detection<a href="#n1-query-detection" class="anchor-link">#</a></h3>
+<pre><code>&gt; read the controllers and services changed in this PR.
+  Find any place where:
+  - a loop calls a model method or relationship on each iteration
+  - -&gt;get() or -&gt;all() is called and then relationships are accessed without eager loading
+  - a Livewire component loads related models inside a loop
+
+  For each N+1 found: show the problematic code and the fix using with() eager loading.</code></pre>
+<h3 id="migration-performance-check">Migration performance check<a href="#migration-performance-check" class="anchor-link">#</a></h3>
+<pre><code>&gt; read the new migration files in this PR.
+  For each migration:
+  1. Does it add an index to a column that will be queried?
+  2. Does it modify a large table in a way that could lock it during deployment?
+     (e.g., adding a NOT NULL column without a default, renaming a column)
+  3. Is the operation safe to run on production during business hours?
+  Flag any risky operations as WARNING with a suggested safe alternative.</code></pre>
+<hr>
+<h2 id="6-reading-pr-comments-and-fixing-them">6. Reading PR Comments and Fixing Them<a href="#6-reading-pr-comments-and-fixing-them" class="anchor-link">#</a></h2>
+<h3 id="see-what-reviewers-said">See what reviewers said<a href="#see-what-reviewers-said" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>gh pr view 247 --comments</code></pre>
+<p>Then:</p>
+<pre><code>&gt; the reviewer left these comments on PR #247:
+  [paste comments from gh pr view output]
+
+  Read the files mentioned and fix each comment.
+  For each fix, explain what you changed and why.
+  Don't change anything that isn't directly addressed by a comment.</code></pre>
+<h3 id="address-all-comments-at-once">Address all comments at once<a href="#address-all-comments-at-once" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>gh api repos/{owner}/{repo}/pulls/247/comments</code></pre>
+<pre><code>&gt; read all review comments on PR #247 (from the gh api output above).
+  Group them by file. Fix each one in order.
+  After fixing, list what was changed per comment.</code></pre>
+<hr>
+<h2 id="7-post-review-summary">7. Post-Review Summary<a href="#7-post-review-summary" class="anchor-link">#</a></h2>
+<p>After a review, ask Claude to generate a structured summary you can post as a PR comment:</p>
+<pre><code>&gt; I've reviewed PR #247 (feat/order-cancellation). Write a PR review comment
+  that I can post on GitHub. Include:
+  - 1-sentence summary of what the PR does
+  - CRITICAL issues (blocking, must fix before merge)
+  - WARNING issues (should fix, non-blocking)
+  - SUGGESTIONS (optional improvements)
+  - Overall assessment: Approve / Request Changes / Needs Discussion
+
+  Be specific with file names and line numbers.
+  Keep the tone constructive and professional.</code></pre>
+<p>Post it:</p>
+<pre data-lang="bash"><code>gh pr review 247 --comment --body &quot;$(cat review.md)&quot;
+# or to formally request changes:
+gh pr review 247 --request-changes --body &quot;$(cat review.md)&quot;</code></pre>
+<hr>
+<h2 id="8-making-review-part-of-the-laravel-team-culture">8. Making Review Part of the Laravel Team Culture<a href="#8-making-review-part-of-the-laravel-team-culture" class="anchor-link">#</a></h2>
+<p>As a team lead, enforce Claude review as part of the PR process:</p>
+<h3 id="pr-template-githubpull_request_templatemd">PR template (<code>.github/pull_request_template.md</code>)<a href="#pr-template-githubpull_request_templatemd" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>## What this PR does
+&lt;!-- 1-2 sentences --&gt;
+
+## Pre-Review Checklist
+- [ ] Ran `php artisan pint` — code formatted
+- [ ] Ran `php artisan test` — all tests pass
+- [ ] Ran Claude review — no CRITICAL findings unaddressed
+- [ ] All new endpoints have feature tests (happy path + auth + ownership)
+- [ ] Migrations have a working `down()` method
+- [ ] No raw SQL with string interpolation
+
+## Laravel Checklist
+- [ ] Ownership checks on all user-owned resources
+- [ ] Services return `GenericResponse` — no thrown exceptions
+- [ ] DB writes wrapped in transactions
+- [ ] No N+1 queries (eager loading used)</code></pre>
+<h3 id="add-a-shared-pr-review-skill">Add a shared <code>/pr-review</code> skill<a href="#add-a-shared-pr-review-skill" class="anchor-link">#</a></h3>
+<p>Create <code>.claude/skills/pr-review.md</code> in your project:</p>
+<pre data-lang="markdown"><code>---
+name: pr-review
+description: Reviews the current branch against main using the Laravel PR review checklist
+---
+
+Run: git diff main...HEAD
+
+Review all changed files against this checklist:
+
+CRITICAL (blocking):
+- Missing ownership checks on user-owned resources
+- Mass assignment with sensitive fields in $fillable
+- Raw SQL with string interpolation
+- Services throwing exceptions instead of returning GenericResponse::fail()
+- Migrations adding NOT NULL without DEFAULT to existing tables
+
+WARNING (should fix):
+- N+1 queries (loops accessing unloaded relationships)
+- Missing NotDeleted / IsActive scopes on Eloquent queries
+- Jobs not idempotent (unsafe to retry)
+- New endpoints without feature tests
+
+SUGGESTION (nice to have):
+- Missing eager loading optimizations
+- Verbose code that could use existing helpers
+- Inconsistent naming vs. codebase conventions
+
+Report format:
+1. Summary of changes
+2. CRITICAL issues with file:line references
+3. WARNING issues with file:line references
+4. SUGGESTIONS
+5. Overall: Approve / Request Changes</code></pre>
+<p>Then every developer runs:</p>
+<pre><code>&gt; /pr-review</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Task</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>Self-review</td><td><code>review git diff main...HEAD. apply Laravel checklist: ownership, N+1, GenericResponse, mass assignment, migrations.</code></td></tr>
+<tr><td>PR review</td><td><code>review PR #[n]. context: [feature]. focus on: [areas]. rate CRITICAL/WARNING/SUGGESTION.</code></td></tr>
+<tr><td>Security audit</td><td><code>read changed controllers. for each method: ownership checked? role enforced? raw SQL safe? rate as CRITICAL/WARNING.</code></td></tr>
+<tr><td>N+1 hunt</td><td><code>find N+1 queries in changed controllers and services. show fix for each using with() eager loading.</code></td></tr>
+<tr><td>Migration check</td><td><code>read new migrations. flag: NOT NULL without DEFAULT, missing down(), missing indexes, locking risk.</code></td></tr>
+<tr><td>Fix comments</td><td><code>reviewer left comments: [comments]. read mentioned files and fix each. explain what changed.</code></td></tr>
+<tr><td>Post review</td><td><code>write a professional PR review comment: summary, CRITICAL issues, WARNING issues, SUGGESTIONS, overall verdict.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Always pull the branch before reviewing</strong> — <code>gh pr checkout [n]</code> gives Claude the actual diff to read</li>
+<li><strong>Give context for every PR review</strong> — "this PR adds coupon codes to checkout" gets better review than reviewing blind</li>
+<li><strong>Ask for severity ratings</strong> — always include "rate as CRITICAL/WARNING/SUGGESTION" so the output is actionable</li>
+<li><strong>Run tests before asking Claude to review</strong> — if tests are failing, fix them first; Claude's review focuses on logic, not broken builds</li>
+<li><strong>Use subagents for multiple PRs</strong> — parallel review of 3-4 small PRs takes the same time as 1</li>
+<li><strong>Save reviews as comments</strong> — post Claude's findings as a PR comment so the team sees the automated review</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../../assets/main.js"></script>
+</body>
+</html>

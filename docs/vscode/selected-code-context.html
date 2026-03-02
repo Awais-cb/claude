@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selected Code as Context — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="selected-code-as-context">Selected Code as Context<a href="#selected-code-as-context" class="anchor-link">#</a></h1>
+<p>When Claude Code is connected to VS Code, any code you highlight in the editor is automatically sent to Claude as context. You don't need to copy-paste, reference a file with <code>@</code>, or describe what you're looking at — Claude just sees it.</p>
+<p>Think of it like showing your colleague something on your screen by pointing at it. Normally you'd have to describe it or paste it into a chat. With IDE integration, you just highlight the code and ask your question — Claude already has eyes on what you're pointing at.</p>
+<hr>
+<h2 id="how-it-works">How It Works<a href="#how-it-works" class="anchor-link">#</a></h2>
+<ol>
+<li><strong>Select code</strong> in your VS Code editor (click and drag, or use keyboard selection)</li>
+<li><strong>Ask Claude anything</strong> in the prompt box</li>
+<li>Claude receives your selection as part of the prompt automatically</li>
+</ol>
+<pre><code>[You highlight a 40-line function in payment.ts]
+
+&gt; Why does this throw an error when the currency is EUR?
+
+Claude analyzes the selected function and answers directly.</code></pre>
+<p>No extra steps. No copying. The selection is the context.</p>
+<hr>
+<h2 id="how-to-select-code">How to Select Code<a href="#how-to-select-code" class="anchor-link">#</a></h2>
+<h3 id="macos">macOS<a href="#macos" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Method</th><th>How</th></tr></thead>
+<tbody>
+<tr><td>Click and drag</td><td>Click at the start, drag to end</td></tr>
+<tr><td>Keyboard selection</td><td>Hold <code>Shift</code> + arrow keys</td></tr>
+<tr><td>Select a line</td><td><code>Cmd+Shift+K</code> selects the line; or click line number</td></tr>
+<tr><td>Select a block</td><td><code>Option+Shift+Click</code> for column selection</td></tr>
+<tr><td>Select matching</td><td><code>Cmd+D</code> to select word, repeat for next match</td></tr>
+<tr><td>Select all in file</td><td><code>Cmd+A</code></td></tr>
+</tbody>
+</table>
+<h3 id="windows-linux">Windows / Linux<a href="#windows-linux" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Method</th><th>How</th></tr></thead>
+<tbody>
+<tr><td>Click and drag</td><td>Click at the start, drag to end</td></tr>
+<tr><td>Keyboard selection</td><td>Hold <code>Shift</code> + arrow keys</td></tr>
+<tr><td>Select a line</td><td><code>Ctrl+Shift+K</code> selects/deletes a line</td></tr>
+<tr><td>Select a block</td><td><code>Alt+Shift+Click</code> for column selection</td></tr>
+<tr><td>Select matching</td><td><code>Ctrl+D</code> to select word, repeat for next match</td></tr>
+<tr><td>Select all in file</td><td><code>Ctrl+A</code></td></tr>
+</tbody>
+</table>
+<h3 id="efficient-selection-techniques-for-code">Efficient selection techniques for code<a href="#efficient-selection-techniques-for-code" class="anchor-link">#</a></h3>
+<ul>
+<li><strong>Select a function</strong>: Place cursor inside it, then use <code>Ctrl+Shift+[</code> (or <code>Cmd+Shift+[</code> on macOS) to collapse/expand, or manually select from the function signature to its closing brace</li>
+<li><strong>Select a block by indentation</strong>: Click the opening line, then <code>Shift+Click</code> the closing line</li>
+<li><strong>Select to end of line</strong>: <code>Shift+End</code> (Windows/Linux) or <code>Shift+Cmd+Right</code> (macOS)</li>
+</ul>
+<hr>
+<h2 id="what-gets-sent">What Gets Sent<a href="#what-gets-sent" class="anchor-link">#</a></h2>
+<p>When you have a selection active:</p>
+<ul>
+<li><strong>The selected text</strong> is included verbatim</li>
+<li><strong>The file name and path</strong> are included (so Claude knows where the code lives)</li>
+<li><strong>Your prompt</strong> is combined with the selection</li>
+</ul>
+<p>If you have no active selection, Claude falls back to the <strong>currently open file</strong> as context.</p>
+<h3 id="visibility-toggle">Visibility toggle<a href="#visibility-toggle" class="anchor-link">#</a></h3>
+<p>The prompt box footer shows a <strong>selection indicator</strong> with the number of lines currently selected. You can click this indicator to <strong>toggle whether Claude sees the highlighted text</strong>. When the eye-slash icon is shown, the selection is hidden from Claude even though it remains highlighted in the editor. Click again to re-enable it. This is useful when you want to highlight code for your own reference without including it in Claude's context.</p>
+<h3 id="insert-a-line-range-reference-with-optionk--altk">Insert a line-range reference with <code>Option+K</code> / <code>Alt+K</code><a href="#insert-a-line-range-reference-with-optionk--altk" class="anchor-link">#</a></h3>
+<p>With code selected, pressing <code>Option+K</code> (Mac) or <code>Alt+K</code> (Windows/Linux) inserts an @-mention reference into the prompt box pointing at the exact line range — for example, <code>@src/payment.ts#45-82</code>. This creates a permanent, shareable reference to those specific lines rather than relying on the transient selection state.</p>
+<pre><code>┌──────────────────────────────────────────────────┐
+│  What Claude receives when you ask a question    │
+│                                                  │
+│  ┌──────────────────────────────────────────┐    │
+│  │  File: src/services/PaymentService.ts    │    │
+│  │  Lines: 45-82 (your selection)           │    │
+│  │                                          │    │
+│  │  [selected code appears here]            │    │
+│  └──────────────────────────────────────────┘    │
+│  +                                               │
+│  ┌──────────────────────────────────────────┐    │
+│  │  Your prompt: "Why does this throw..."   │    │
+│  └──────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────┘</code></pre>
+<blockquote><p>What to expect: When you highlight code in the editor, the VS Code extension automatically includes it as context in your next prompt. You'll see the selection highlighted in blue (or your theme's highlight color), and Claude's response will reference the specific lines you selected.</p></blockquote>
+<hr>
+<h2 id="practical-use-cases">Practical Use Cases<a href="#practical-use-cases" class="anchor-link">#</a></h2>
+<h3 id="debug-a-specific-piece-of-code">Debug a specific piece of code<a href="#debug-a-specific-piece-of-code" class="anchor-link">#</a></h3>
+<pre><code>[Select the problematic function]
+&gt; This is throwing a NaN — what's wrong?</code></pre>
+<h3 id="get-an-explanation">Get an explanation<a href="#get-an-explanation" class="anchor-link">#</a></h3>
+<pre><code>[Select an unfamiliar block of code]
+&gt; Explain what this does in plain English</code></pre>
+<h3 id="ask-for-improvements">Ask for improvements<a href="#ask-for-improvements" class="anchor-link">#</a></h3>
+<pre><code>[Select a function]
+&gt; How would you refactor this to be more readable?</code></pre>
+<h3 id="write-a-test-for-selected-code">Write a test for selected code<a href="#write-a-test-for-selected-code" class="anchor-link">#</a></h3>
+<pre><code>[Select a function]
+&gt; Write a unit test for this</code></pre>
+<h3 id="check-for-bugs-or-edge-cases">Check for bugs or edge cases<a href="#check-for-bugs-or-edge-cases" class="anchor-link">#</a></h3>
+<pre><code>[Select a function]
+&gt; What edge cases does this not handle?</code></pre>
+<h3 id="ask-about-performance">Ask about performance<a href="#ask-about-performance" class="anchor-link">#</a></h3>
+<pre><code>[Select a loop or query]
+&gt; Is this efficient? How could it be faster?</code></pre>
+<h3 id="get-security-feedback">Get security feedback<a href="#get-security-feedback" class="anchor-link">#</a></h3>
+<pre><code>[Select form handling or auth code]
+&gt; Is there any security issue with this?</code></pre>
+<h3 id="translate-a-pattern-to-another-approach">Translate a pattern to another approach<a href="#translate-a-pattern-to-another-approach" class="anchor-link">#</a></h3>
+<pre><code>[Select a callback-based function]
+&gt; Rewrite this using async/await instead of callbacks</code></pre>
+<h3 id="ask-claude-to-document-it">Ask Claude to document it<a href="#ask-claude-to-document-it" class="anchor-link">#</a></h3>
+<pre><code>[Select a function with no comments]
+&gt; Write JSDoc comments for this function</code></pre>
+<hr>
+<h2 id="no-selection-claude-uses-the-open-file">No Selection? Claude Uses the Open File<a href="#no-selection-claude-uses-the-open-file" class="anchor-link">#</a></h2>
+<p>If nothing is selected, Claude is still IDE-aware — it knows which file you have open and can use that as context:</p>
+<pre><code>[No selection, auth.ts is your active tab]
+&gt; What does this file do?
+&gt; Add error handling to the login function</code></pre>
+<p>Claude reads the file directly, but having a selection focuses it on exactly what you care about. Think of the difference between asking "what's in this room?" versus pointing at a specific drawer and asking "what's in here?"</p>
+<hr>
+<h2 id="selections-work-across-files">Selections Work Across Files<a href="#selections-work-across-files" class="anchor-link">#</a></h2>
+<p>If you switch files mid-session, Claude picks up the new context. The most recently active selection or file is what Claude sees.</p>
+<pre><code>1. Select code in auth.ts → ask a question → Claude sees auth.ts code
+2. Switch to UserController.php → select a method → ask a question → Claude sees UserController.php code</code></pre>
+<hr>
+<h2 id="combining-selection-with--references">Combining Selection with <code>@</code> References<a href="#combining-selection-with--references" class="anchor-link">#</a></h2>
+<p>You can use both at once for richer context:</p>
+<pre><code>[Select a function in UserController.php]
+&gt; @app/Models/User.php — refactor this function to use the User model's existing methods</code></pre>
+<p>Claude has:</p>
+<ul>
+<li>Your selected code (the function you highlighted)</li>
+<li>The <code>@</code> referenced file (the User model)</li>
+</ul>
+<p>This is particularly powerful when you want Claude to understand how two parts of the codebase relate to each other, without switching away from the file you're editing.</p>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Select tightly</strong> — highlight the exact lines you're asking about, not the whole file. Claude gives better answers with focused context.</li>
+<li><strong>Select, then type</strong> — the selection stays active while you type in the prompt box. You don't lose it when you click the prompt.</li>
+<li><strong>Use it for code review</strong> — select a function, ask <code>&gt; any issues with this?</code> for a quick sanity check as you write code.</li>
+<li><strong>Works during refactors</strong> — select the old version of a function and ask <code>&gt; rewrite this to be async</code> — Claude makes the change in context.</li>
+<li><strong>Visual indicator</strong>: On most themes, your selection will remain highlighted while you type your prompt — a good visual confirmation that Claude will see it.</li>
+</ul>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="file-references.html">file-references.md</a> — Reference files explicitly with <code>@</code></li>
+<li><a href="prompt-box.html">prompt-box.md</a> — The VS Code prompt panel</li>
+<li><a href="clickable-links.html">clickable-links.md</a> — Navigate to files and lines from Claude's responses</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

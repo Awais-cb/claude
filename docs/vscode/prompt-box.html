@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The VS Code Prompt Box — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="the-vs-code-prompt-box">The VS Code Prompt Box<a href="#the-vs-code-prompt-box" class="anchor-link">#</a></h1>
+<p>When Claude Code is connected to VS Code via <code>claude --ide</code>, a prompt panel appears inside your editor. This is the primary way to interact with Claude without leaving VS Code.</p>
+<p>Imagine having a chat window embedded directly in your code editor — not in a separate browser tab, not in an external app, but right there alongside your code. You highlight a function, ask a question, and the answer appears a few inches away from what you're looking at. That's the prompt box.</p>
+<hr>
+<h2 id="what-it-is">What It Is<a href="#what-it-is" class="anchor-link">#</a></h2>
+<p>The prompt box is a text input panel embedded in VS Code that sends messages directly to your Claude Code session. It behaves exactly like typing in the terminal, but lives inside the editor UI — so you never have to switch focus away from your code.</p>
+<pre><code>┌─────────────────────────────────────────────────┐
+│   VS Code Editor                                │
+│                                                 │
+│   ┌──────────────────────┐                      │
+│   │  your-file.ts        │                      │
+│   │  ─────────────────── │                      │
+│   │  function login() {  │                      │
+│   │    ...               │                      │
+│   │  }                   │                      │
+│   └──────────────────────┘                      │
+│                                                 │
+│   ┌─────────────────────────────────────────┐   │
+│   │  Claude Code                            │   │
+│   │  ─────────────────────────────────────  │   │
+│   │  Claude: The login function is missing  │   │
+│   │  error handling. Here's what to add...  │   │
+│   │                                         │   │
+│   │  &gt; [your prompt here]            [Send] │   │
+│   └─────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────┘</code></pre>
+<blockquote><p>What to expect: The Claude Code panel appears as a docked panel at the bottom or side of VS Code. It shows Claude's responses above and a text input field at the bottom where you type your prompts.</p></blockquote>
+<hr>
+<h2 id="opening-the-prompt-panel">Opening the Prompt Panel<a href="#opening-the-prompt-panel" class="anchor-link">#</a></h2>
+<h3 id="option-1-command-palette">Option 1: Command Palette<a href="#option-1-command-palette" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>OS</th><th>Shortcut</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td><code>Cmd+Shift+P</code></td></tr>
+<tr><td>Windows / Linux</td><td><code>Ctrl+Shift+P</code></td></tr>
+</tbody>
+</table>
+<p>Then type:</p>
+<pre><code>Claude Code</code></pre>
+<p>Select <strong>Claude Code: Open Panel</strong> (or similar) from the list.</p>
+<h3 id="option-2-keyboard-shortcut">Option 2: Keyboard Shortcut<a href="#option-2-keyboard-shortcut" class="anchor-link">#</a></h3>
+<p>When the Claude Code panel is focused, use <code>Cmd+N</code> (macOS) or <code>Ctrl+N</code> (Windows / Linux) to start a new conversation.</p>
+<h3 id="option-3-it-opens-automatically">Option 3: It Opens Automatically<a href="#option-3-it-opens-automatically" class="anchor-link">#</a></h3>
+<p>When you run <code>claude --ide</code>, the panel opens automatically once the connection is established. On most setups this is instant — you'll see the panel appear within a second or two.</p>
+<hr>
+<h2 id="submitting-prompts">Submitting Prompts<a href="#submitting-prompts" class="anchor-link">#</a></h2>
+<p>Type your message in the input field and press <code>Enter</code> to submit.</p>
+<pre><code>&gt; Why is the calculateTotal function returning NaN?
+&gt; Add input validation to the registration form
+&gt; Explain how the middleware stack works in this project</code></pre>
+<h3 id="multi-line-input">Multi-line input<a href="#multi-line-input" class="anchor-link">#</a></h3>
+<p>Sometimes you need to write a longer prompt with line breaks — for example, describing a bug with multiple steps to reproduce. Here's how to insert a newline without submitting:</p>
+<table>
+<thead><tr><th>OS</th><th>Method</th></tr></thead>
+<tbody>
+<tr><td>All (default)</td><td><code>Shift+Enter</code></td></tr>
+<tr><td>Customized via keybindings</td><td><code>Enter</code> (if you've swapped submit to <code>Ctrl+Enter</code>)</td></tr>
+</tbody>
+</table>
+<p><strong>Setting up Shift+Enter in VS Code's terminal (if it's not working):</strong></p>
+<p>The behavior of <code>Shift+Enter</code> depends on your terminal emulator settings. In VS Code's integrated terminal, it should work by default. If it doesn't:</p>
+<ol>
+<li>Open VS Code settings (<code>Ctrl+,</code> / <code>Cmd+,</code>)</li>
+<li>Search for "terminal integrated"</li>
+<li>Look for keybinding configurations, or use <code>Ctrl+Shift+P</code> → "Open Keyboard Shortcuts (JSON)"</li>
+</ol>
+<p>Alternatively, configure Claude Code's keybindings to use <code>Ctrl+Enter</code> for submit and <code>Enter</code> for newlines — see <a href="keyboard-shortcuts.html">keyboard-shortcuts.md</a> for details.</p>
+<hr>
+<h2 id="what-you-can-do-from-the-prompt-box">What You Can Do from the Prompt Box<a href="#what-you-can-do-from-the-prompt-box" class="anchor-link">#</a></h2>
+<p>Everything you can do in the terminal, you can do from the prompt box:</p>
+<table>
+<thead><tr><th>Action</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>Ask questions</td><td><code>&gt; What does the auth middleware do?</code></td></tr>
+<tr><td>Request edits</td><td><code>&gt; Refactor this function to use async/await</code></td></tr>
+<tr><td>Reference files</td><td><code>&gt; @src/api/users.ts — add pagination support</code></td></tr>
+<tr><td>Run slash commands</td><td><code>&gt; /diff</code></td></tr>
+<tr><td>Ask about selections</td><td>Select code → <code>&gt; Why is this slow?</code></td></tr>
+<tr><td>Request commits</td><td><code>&gt; commit the changes with a descriptive message</code></td></tr>
+<tr><td>Run tests</td><td><code>&gt; run the test suite and fix failures</code></td></tr>
+<tr><td>Paste screenshots</td><td>Ctrl+V (image) → <code>&gt; What's causing this error?</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="realistic-prompt-examples">Realistic Prompt Examples<a href="#realistic-prompt-examples" class="anchor-link">#</a></h2>
+<h3 id="debugging">Debugging<a href="#debugging" class="anchor-link">#</a></h3>
+<pre><code>&gt; I'm getting a "Cannot read property 'id' of undefined" error on line 47 of UserController.
+  The request comes in with a valid body but something is null. What's happening?</code></pre>
+<h3 id="explaining-unfamiliar-code">Explaining unfamiliar code<a href="#explaining-unfamiliar-code" class="anchor-link">#</a></h3>
+<pre><code>&gt; I just joined this project and I'm looking at the payment service.
+  @src/services/PaymentService.ts — can you walk me through how this works,
+  what it depends on, and what could go wrong?</code></pre>
+<h3 id="making-a-targeted-change">Making a targeted change<a href="#making-a-targeted-change" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/api/users.ts — the GET /users endpoint returns all fields including
+  password_hash and internal_id. Strip those out before returning the response.</code></pre>
+<h3 id="code-review-before-committing">Code review before committing<a href="#code-review-before-committing" class="anchor-link">#</a></h3>
+<pre><code>&gt; I've just finished implementing user registration. Before I commit,
+  can you review what I've changed and flag anything that looks wrong?
+  Focus on security and edge cases.</code></pre>
+<hr>
+<h2 id="the-prompt-box-vs-the-terminal">The Prompt Box vs. the Terminal<a href="#the-prompt-box-vs-the-terminal" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Feature</th><th>Prompt Box</th><th>Terminal</th></tr></thead>
+<tbody>
+<tr><td>Send prompts</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Selected code as context</td><td>Yes (automatic)</td><td>Yes (automatic if <code>--ide</code> used)</td></tr>
+<tr><td>File references with <code>@</code></td><td>Yes, with autocomplete</td><td>Yes</td></tr>
+<tr><td>Clickable links in responses</td><td>Yes</td><td>Yes (in VS Code terminal)</td></tr>
+<tr><td>IDE status indicator</td><td>Yes</td><td>No</td></tr>
+<tr><td>Can see Claude's output</td><td>In the panel</td><td>In the terminal</td></tr>
+<tr><td>Slash commands</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Paste images from clipboard</td><td>Yes</td><td>Yes</td></tr>
+</tbody>
+</table>
+<p>Both work identically for Claude's capabilities. The prompt box is more convenient if you prefer staying in the editor UI. The terminal is useful if you want to see raw output or combine Claude with other shell commands.</p>
+<hr>
+<h2 id="cancelling-and-clearing">Cancelling and Clearing<a href="#cancelling-and-clearing" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+<tbody>
+<tr><td>Cancel current operation</td><td><code>Ctrl+C</code></td></tr>
+<tr><td>Clear input (when prompt is empty)</td><td><code>Ctrl+C</code> (when input is empty)</td></tr>
+<tr><td>Exit session</td><td><code>Ctrl+D</code></td></tr>
+<tr><td>Clear terminal screen</td><td><code>Ctrl+L</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="pasting-content">Pasting Content<a href="#pasting-content" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Text</strong>: Standard paste (<code>Ctrl+V</code> on Windows/Linux, <code>Cmd+V</code> on macOS)</li>
+<li><strong>Images/Screenshots</strong>: Paste images from clipboard — Claude can analyze them</li>
+</ul>
+<p>Pasting an image lets you ask Claude things like:</p>
+<pre><code>&gt; [paste screenshot of an error message]
+&gt; What's causing this error and how do I fix it?</code></pre>
+<pre><code>&gt; [paste screenshot of a UI design mockup]
+&gt; Can you generate the HTML and CSS for this layout?</code></pre>
+<p>This works on all platforms as long as the image is in your clipboard. On macOS, <code>Cmd+Shift+4</code> takes a screenshot directly to clipboard. On Windows, <code>Win+Shift+S</code> does the same. On Linux, <code>Flameshot</code> or <code>scrot</code> can be configured similarly.</p>
+<hr>
+<h2 id="context-window-usage-indicator">Context Window Usage Indicator<a href="#context-window-usage-indicator" class="anchor-link">#</a></h2>
+<p>The prompt box footer shows a <strong>context window usage indicator</strong> — a small display of how much of Claude's available context has been consumed by the current conversation. As a session grows longer (more messages, more files referenced), this indicator fills up. When it approaches the limit, consider starting a new session (<code>Cmd+N</code> / <code>Ctrl+N</code>) or compacting the conversation.</p>
+<hr>
+<h2 id="permission-mode-selector">Permission Mode Selector<a href="#permission-mode-selector" class="anchor-link">#</a></h2>
+<p>The prompt box includes a <strong>permission mode selector</strong> that lets you switch between modes without leaving the UI. Click the mode indicator in the prompt box to cycle between:</p>
+<ul>
+<li><strong>Normal</strong> — Claude asks for permission before making file edits or running commands</li>
+<li><strong>Plan</strong> — Claude outlines what it intends to do without executing anything (useful for review before action)</li>
+<li><strong>Auto-accept</strong> — Claude executes all actions automatically without prompting</li>
+</ul>
+<p>This is the same as the <code>--dangerously-skip-permissions</code> / plan-mode flags, but toggled per-session directly from the panel.</p>
+<hr>
+<h2 id="prompt-history">Prompt History<a href="#prompt-history" class="anchor-link">#</a></h2>
+<p>Use the <code>↑</code> / <code>↓</code> arrow keys to navigate through previous prompts in the session, the same as in a terminal. This is handy for:</p>
+<ul>
+<li>Re-running a prompt with small modifications</li>
+<li>Repeating a frequently used command like <code>&gt; run the tests</code></li>
+<li>Going back to see what you asked earlier in a long session</li>
+</ul>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Keep the panel pinned</strong> — drag it to a sidebar or bottom panel so it stays visible while you edit. Right-click the panel title bar for docking options.</li>
+<li><strong>Use the split view</strong> — put code on the left, prompt box on the right for a side-by-side workflow. See <a href="workflow-tips.html">workflow-tips.md</a> for layout setups.</li>
+<li><strong>The prompt box and terminal are the same session</strong> — you can alternate between them freely. Typing in one affects the state of the other.</li>
+<li><strong>Select code before typing your prompt</strong> — the selection context is captured at the moment you submit, so you can type your full question and then submit, not just at the moment you start typing.</li>
+</ul>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="file-references.html">file-references.md</a> — <code>@filename</code> autocomplete in the prompt box</li>
+<li><a href="selected-code-context.html">selected-code-context.md</a> — How highlighted code becomes context</li>
+<li><a href="keyboard-shortcuts.html">keyboard-shortcuts.md</a> — All shortcuts available in VS Code sessions</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

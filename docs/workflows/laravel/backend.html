@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="2">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laravel Backend Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="laravel-backend-developer-workflow">Laravel Backend Developer Workflow<a href="#laravel-backend-developer-workflow" class="anchor-link">#</a></h1>
+<p>Claude as your Laravel pair programmer — for building APIs, service layers, queue jobs, artisan commands, and everything server-side.</p>
+<hr>
+<h2 id="daily-session-setup">Daily Session Setup<a href="#daily-session-setup" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>cd your-laravel-project/
+claude --ide          # connects to VS Code
+# or:
+claude -c             # resume yesterday's session</code></pre>
+<p>Name each feature session:</p>
+<pre><code>&gt; /rename feat/TICKET-123-order-processing</code></pre>
+<hr>
+<h2 id="1-building-a-new-api-endpoint">1. Building a New API Endpoint<a href="#1-building-a-new-api-endpoint" class="anchor-link">#</a></h2>
+<h3 id="the-full-workflow">The full workflow<a href="#the-full-workflow" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need a POST /api/orders endpoint that:
+  - accepts { product_id, quantity, shipping_address }
+  - validates input (quantity 1–100, address must have line1/city/zip/country)
+  - creates an order in the database using OrderService
+  - dispatches a SendOrderConfirmationEmail job
+  - returns the created order as JSON with 201 status
+
+  First read app/Http/Controllers/ and app/Services/ to understand our
+  service layer and controller conventions. Then implement:
+  1. CreateOrderRequest form request
+  2. OrderService::createOrder()
+  3. OrderController::store()
+  4. Route in routes/web/ or routes/api/</code></pre>
+<h3 id="adding-to-an-existing-endpoint">Adding to an existing endpoint<a href="#adding-to-an-existing-endpoint" class="anchor-link">#</a></h3>
+<pre><code>&gt; the GET /api/orders endpoint needs cursor-based pagination.
+  Read @app/Http/Controllers/OrderController.php for the current implementation.
+  Match the pagination pattern used in @app/Http/Controllers/ProductController.php</code></pre>
+<h3 id="resourceful-api-with-all-crud-operations">Resourceful API with all CRUD operations<a href="#resourceful-api-with-all-crud-operations" class="anchor-link">#</a></h3>
+<pre><code>&gt; build a full resource API for Coupons:
+  - GET /coupons (index, paginated)
+  - POST /coupons (store, admin only)
+  - GET /coupons/{id} (show)
+  - PATCH /coupons/{id} (update, admin only)
+  - DELETE /coupons/{id} (destroy, admin only — soft delete)
+
+  Read app/Models/ and app/Services/ for conventions. Use:
+  - CouponService for business logic
+  - JsonResponse class for all responses
+  - Role middleware for admin-only routes (check routes/dashboard/ for examples)</code></pre>
+<hr>
+<h2 id="2-service-layer">2. Service Layer<a href="#2-service-layer" class="anchor-link">#</a></h2>
+<h3 id="creating-a-service-class">Creating a service class<a href="#creating-a-service-class" class="anchor-link">#</a></h3>
+<pre><code>&gt; create OrderService in app/Services/. Use static methods and GenericResponse.
+  The GenericResponse pattern is at app/Dtos/GenericResponse.php.
+  Implement:
+  - createOrder(array $data): GenericResponse
+  - cancelOrder(int $orderId, int $userId): GenericResponse — verify ownership first
+  - getOrdersByUser(int $userId, array $filters): GenericResponse
+
+  Never throw exceptions for business logic; return GenericResponse::fail().
+  Wrap DB writes in DB::beginTransaction() / commit() / rollBack().</code></pre>
+<h3 id="calling-a-service-from-a-controller">Calling a service from a controller<a href="#calling-a-service-from-a-controller" class="anchor-link">#</a></h3>
+<pre><code>&gt; update OrderController::store() to:
+  1. validate with CreateOrderRequest
+  2. call OrderService::createOrder($request-&gt;validated())
+  3. if $result-&gt;isFailed() → return JsonResponse::badRequest([], $result-&gt;message())
+  4. if success → return JsonResponse::ok($result-&gt;dataArray(), $result-&gt;message())
+
+  Read @app/Components/Classes/JsonResponse.php for the available methods.</code></pre>
+<hr>
+<h2 id="3-eloquent-models">3. Eloquent Models<a href="#3-eloquent-models" class="anchor-link">#</a></h2>
+<h3 id="creating-a-model-with-full-conventions">Creating a model with full conventions<a href="#creating-a-model-with-full-conventions" class="anchor-link">#</a></h3>
+<pre><code>&gt; create the Order model. Read @app/Models/BaseModel.php for the base class
+  and @app/Components/Traits/DatabaseOperation.php for cc* query methods.
+
+  The model should:
+  - extend BaseModel
+  - use DatabaseOperation, HasFactory
+  - use NotDeleted, IsActive scope traits
+  - define $fillable
+  - define relationships: user(), product(), coupon()
+  - include a scopePending(), scopeCompleted() query scope
+  - add a getFormattedTotalAttribute() accessor</code></pre>
+<h3 id="defining-complex-relationships">Defining complex relationships<a href="#defining-complex-relationships" class="anchor-link">#</a></h3>
+<pre><code>&gt; the Order model needs these relationships:
+  - belongsTo User (via user_id)
+  - hasMany OrderItem (via order_id)
+  - hasOne ShippingAddress (via order_id)
+  - belongsToMany Tag (via order_tags pivot table, with timestamps)
+
+  Read @app/Models/PackagePurchase.php to see how we define relationships.
+  Add all four with return type hints.</code></pre>
+<h3 id="using-the-databaseoperation-cc-methods">Using the DatabaseOperation cc* methods<a href="#using-the-databaseoperation-cc-methods" class="anchor-link">#</a></h3>
+<pre><code>&gt; rewrite the OrderRepository query to use the cc* methods from DatabaseOperation:
+  - get orders where status = 'pending' AND created_at &gt; 7 days ago
+  - eager load: user, items, shippingAddress
+  - order by created_at desc
+  - paginate 20 per page
+
+  Read @app/Components/Traits/DatabaseOperation.php for the clauses() format.</code></pre>
+<hr>
+<h2 id="4-form-requests-validation">4. Form Requests &amp; Validation<a href="#4-form-requests-validation" class="anchor-link">#</a></h2>
+<h3 id="create-a-form-request">Create a form request<a href="#create-a-form-request" class="anchor-link">#</a></h3>
+<pre><code>&gt; create CreateOrderRequest in app/Http/Requests/.
+  Use the FailedValidationJsonResponse trait (for JSON endpoints).
+  Validate:
+  - product_id: required, integer, exists in products table
+  - quantity: required, integer, min:1, max:100
+  - shipping_address: required, array
+  - shipping_address.line1: required, string, max:255
+  - shipping_address.city: required, string
+  - shipping_address.zip: required, string
+  - coupon_code: nullable, string, exists in coupons table on code column
+
+  Read @app/Http/Requests/ to find an existing example to follow.</code></pre>
+<h3 id="custom-validation-rules">Custom validation rules<a href="#custom-validation-rules" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a custom validation rule PhoneNumberFormat in app/Rules/.
+  It should accept Pakistani phone numbers in +923XXXXXXXXX format.
+  Read @app/Rules/ to see how existing rules are structured.</code></pre>
+<hr>
+<h2 id="5-queue-jobs">5. Queue Jobs<a href="#5-queue-jobs" class="anchor-link">#</a></h2>
+<h3 id="create-a-job">Create a job<a href="#create-a-job" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a SendOrderConfirmationEmail job in app/Jobs/.
+  - Accepts: int $orderId
+  - In handle(): fetch the order with user relation, send email via Mail::to()
+  - Implement ShouldQueue
+  - Add retry logic: 3 attempts, backoff 60 seconds
+  - Log success/failure via Log::info() / Log::error()
+
+  Read @app/Jobs/ for existing job patterns.</code></pre>
+<h3 id="dispatch-a-job-from-a-service">Dispatch a job from a service<a href="#dispatch-a-job-from-a-service" class="anchor-link">#</a></h3>
+<pre><code>&gt; update OrderService::createOrder() to dispatch SendOrderConfirmationEmail
+  after the order is created. Dispatch on the 'emails' queue.
+  Use ::dispatch() not ::dispatchNow().</code></pre>
+<h3 id="create-a-scheduled-command">Create a scheduled command<a href="#create-a-scheduled-command" class="anchor-link">#</a></h3>
+<pre><code>&gt; create an artisan command SendDailyReports that:
+  - runs daily at 8am via the scheduler (app/Console/Kernel.php)
+  - queries orders from the past 24 hours
+  - sends a summary email to the admin email from config('mail.admin_address')
+  - logs the count of orders processed
+
+  Read @app/Console/Commands/ for existing command patterns.</code></pre>
+<hr>
+<h2 id="6-middleware">6. Middleware<a href="#6-middleware" class="anchor-link">#</a></h2>
+<h3 id="create-custom-middleware">Create custom middleware<a href="#create-custom-middleware" class="anchor-link">#</a></h3>
+<pre><code>&gt; create middleware EnsureOrderBelongsToUser in app/Http/Middleware/.
+  - reads {order} route parameter
+  - checks if the authenticated user owns that order
+  - returns JsonResponse::forbidden() if not
+  - registers it as 'order-owner' in the middleware aliases
+
+  Read @app/Http/Middleware/ for the handle() pattern and how we return JsonResponse.</code></pre>
+<h3 id="apply-middleware-to-routes">Apply middleware to routes<a href="#apply-middleware-to-routes" class="anchor-link">#</a></h3>
+<pre><code>&gt; read routes/web/orders.php and apply the 'order-owner' middleware
+  to the show, update, and destroy routes. Show me the diff first.</code></pre>
+<hr>
+<h2 id="7-authentication-security">7. Authentication &amp; Security<a href="#7-authentication-security" class="anchor-link">#</a></h2>
+<h3 id="add-sanctum-api-token-auth">Add Sanctum API token auth<a href="#add-sanctum-api-token-auth" class="anchor-link">#</a></h3>
+<pre><code>&gt; add API token authentication to the orders API routes.
+  Check config/auth.php and existing middleware in app/Http/Middleware/ to
+  understand the current auth setup.
+  Use Laravel Sanctum with the 'auth:sanctum' middleware.</code></pre>
+<h3 id="security-audit-of-a-feature">Security audit of a feature<a href="#security-audit-of-a-feature" class="anchor-link">#</a></h3>
+<pre><code>&gt; audit the order creation flow for security issues:
+  - @app/Http/Requests/CreateOrderRequest.php — is all input validated?
+  - @app/Services/OrderService.php — could an attacker create orders for other users?
+  - @app/Http/Controllers/OrderController.php — is ownership checked before every action?
+  - Are there any SQL injection risks in raw DB queries?
+  - Is the coupon code check timing-attack safe?
+  List findings as CRITICAL / WARNING / SUGGESTION.</code></pre>
+<h3 id="mass-assignment-protection">Mass assignment protection<a href="#mass-assignment-protection" class="anchor-link">#</a></h3>
+<pre><code>&gt; audit all models in app/Models/ for mass assignment vulnerabilities.
+  Check that $fillable is explicitly defined (not $guarded = []).
+  Flag any model where sensitive fields like is_admin, role, or balance
+  could be mass-assigned through user input.</code></pre>
+<hr>
+<h2 id="8-debugging">8. Debugging<a href="#8-debugging" class="anchor-link">#</a></h2>
+<h3 id="tracing-a-request">Tracing a request<a href="#tracing-a-request" class="anchor-link">#</a></h3>
+<pre><code>&gt; trace the full lifecycle of POST /orders through the codebase.
+  From the route → middleware → form request → controller → service → model → job.
+  List every file it touches in order.</code></pre>
+<h3 id="fixing-a-500-error">Fixing a 500 error<a href="#fixing-a-500-error" class="anchor-link">#</a></h3>
+<pre><code>&gt; users are getting a 500 error when placing an order with a coupon code that's expired.
+  The error is: &quot;Call to a member function discount() on null&quot;
+  Relevant files: @app/Services/OrderService.php, @app/Models/Coupon.php
+  Find the null reference and fix it. Also add a proper GenericResponse::fail() for expired coupons.</code></pre>
+<h3 id="reading-laravel-logs">Reading Laravel logs<a href="#reading-laravel-logs" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>tail -f storage/logs/laravel.log | claude -p &quot;summarize errors as they appear, group by type&quot;</code></pre>
+<p>Or:</p>
+<pre data-lang="bash"><code>cat storage/logs/laravel.log | claude -p &quot;find all errors from the last hour, group by exception type, show the most frequent&quot;</code></pre>
+<h3 id="debugging-an-n1-query">Debugging an N+1 query<a href="#debugging-an-n1-query" class="anchor-link">#</a></h3>
+<pre><code>&gt; enable query logging and run the GET /orders endpoint:
+  DB::enableQueryLog(); // then fetch orders; dd(DB::getQueryLog());
+  Read @app/Http/Controllers/OrderController.php and @app/Services/OrderService.php.
+  Identify the N+1 and fix it with eager loading.</code></pre>
+<hr>
+<h2 id="9-artisan-commands">9. Artisan Commands<a href="#9-artisan-commands" class="anchor-link">#</a></h2>
+<h3 id="scaffold-quickly">Scaffold quickly<a href="#scaffold-quickly" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Have Claude run these with context
+&gt; create the migration, model, factory, seeder, controller, and form request for a Coupon resource.
+  Run: php artisan make:model Coupon -mfsc --requests
+  Then open each file and fill in the implementation.</code></pre>
+<h3 id="explain-what-a-command-does">Explain what a command does<a href="#explain-what-a-command-does" class="anchor-link">#</a></h3>
+<pre><code>&gt; read @app/Console/Commands/SyncGoogleCalendarEvents.php and explain
+  what this command does, what external services it calls, and what could go wrong.</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Task</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>New endpoint</td><td><code>create [METHOD] /[path]. validate with form request. call [Service]. use JsonResponse. check existing patterns first.</code></td></tr>
+<tr><td>Service method</td><td><code>add [methodName]() to [Service]. use GenericResponse. wrap DB writes in transaction. never throw exceptions.</code></td></tr>
+<tr><td>Model</td><td><code>create [Model] extending BaseModel with DatabaseOperation. $fillable, relationships: [list], scopes: [list].</code></td></tr>
+<tr><td>Form request</td><td><code>create [Name]Request with FailedValidationJsonResponse. rules: [list]. read @app/Http/Requests/ first.</code></td></tr>
+<tr><td>Job</td><td><code>create [Name]Job. ShouldQueue. accepts: [params]. handle(): [logic]. 3 retries, 60s backoff.</code></td></tr>
+<tr><td>Fix 500</td><td><code>users get 500 when [action]. error: [message]. check @[file1] and @[file2]. find and fix.</code></td></tr>
+<tr><td>Security audit</td><td><code>audit [feature] for: ownership checks, mass assignment, SQL injection, input validation. rate as CRITICAL/WARNING/SUGGESTION.</code></td></tr>
+<tr><td>N+1 fix</td><td><code>the [endpoint] has N+1 queries. read @[controller] and @[service]. find and fix with eager loading.</code></td></tr>
+<tr><td>Slow query</td><td><code>this query is slow: [query or method]. check indexes on [table]. suggest optimizations.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Always name sessions</strong> — <code>&gt; /rename feat/TICKET-123</code> makes it easy to resume the next morning</li>
+<li><strong>Reference the GenericResponse pattern by file</strong> — <code>read @app/Dtos/GenericResponse.php first</code> gets you consistent service methods</li>
+<li><strong>Use plan mode before schema changes</strong> — <code>claude --permission-mode plan</code> to find all files affected before any migration</li>
+<li><strong>Pipe logs to Claude</strong> — <code>cat storage/logs/laravel.log | claude -p "what's wrong?"</code> beats reading logs manually</li>
+<li><strong>Always check existing patterns first</strong> — ask Claude to read a similar file before creating a new one; it prevents convention drift</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../../assets/main.js"></script>
+</body>
+</html>

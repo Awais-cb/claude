@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Management — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="session-management-in-vs-code">Session Management in VS Code<a href="#session-management-in-vs-code" class="anchor-link">#</a></h1>
+<p>Claude Code sessions are conversations with memory — Claude remembers everything you've discussed within a session. The VS Code extension makes it easy to name, resume, and run multiple sessions in parallel.</p>
+<p>Think of a session like a project notebook. When you open it, you pick up exactly where you left off — Claude remembers which files you looked at, what changes were made, and what you were trying to accomplish. You can have multiple notebooks open at once (one per feature), and each keeps its own separate record.</p>
+<hr>
+<h2 id="starting-a-session">Starting a Session<a href="#starting-a-session" class="anchor-link">#</a></h2>
+<h3 id="basic-start-new-session">Basic start (new session)<a href="#basic-start-new-session" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide</code></pre>
+<h3 id="start-with-an-immediate-task">Start with an immediate task<a href="#start-with-an-immediate-task" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide "explain what this project does"</code></pre>
+<h3 id="resume-the-most-recent-session">Resume the most recent session<a href="#resume-the-most-recent-session" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide -c
+# or
+claude --ide --continue</code></pre>
+<h3 id="resume-a-named-session">Resume a named session<a href="#resume-a-named-session" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide -r "auth-refactor"
+# or
+claude --ide --resume "auth-refactor"</code></pre>
+<hr>
+<h2 id="naming-sessions">Naming Sessions<a href="#naming-sessions" class="anchor-link">#</a></h2>
+<p>Name a session so you can find it later.</p>
+<p>Inside a session, use the <code>/rename</code> command:</p>
+<pre><code>&gt; /rename auth-refactor</code></pre>
+<p>Good naming conventions:</p>
+<ul>
+<li>Use the feature or bug you're working on: <code>payment-bug</code>, <code>user-auth</code>, <code>api-pagination</code></li>
+<li>Use a ticket number: <code>JIRA-1234</code>, <code>GH-456</code></li>
+<li>Use a date for long-running work: <code>refactor-2024-03</code></li>
+</ul>
+<hr>
+<h2 id="resuming-sessions-in-vs-code">Resuming Sessions in VS Code<a href="#resuming-sessions-in-vs-code" class="anchor-link">#</a></h2>
+<p>You don't have to remember session names — the VS Code extension shows a list of recent sessions in the Claude Code panel.</p>
+<p>Use the <strong>Past Conversations dropdown</strong> in the Claude Code panel to browse and resume previous sessions. Select any entry to pick up where you left off.</p>
+<blockquote><p>What to expect: The Past Conversations dropdown shows your recent sessions sorted by last activity. Each entry shows the session name (or a truncated preview of the first message if unnamed), and the date/time it was last active. Select one to resume.</p></blockquote>
+<p>Or from the terminal, use <code>--resume</code> (or <code>-r</code>) with no argument to open an interactive session picker:</p>
+<pre data-lang="bash"><code># Open interactive session picker
+claude --resume
+# or
+claude -r
+
+# Resume a specific session by name
+claude --ide -r "session-name"</code></pre>
+<hr>
+<h2 id="viewing-session-history">Viewing Session History<a href="#viewing-session-history" class="anchor-link">#</a></h2>
+<p>To review what was covered in a session, use the <strong>Past Conversations dropdown</strong> in the VS Code Claude Code panel to reopen a previous session and scroll through it.</p>
+<p>When resuming a session from the terminal with <code>-c</code> or <code>-r</code>, Claude will have access to the full prior conversation history and can summarize what was previously discussed if you ask.</p>
+<hr>
+<h2 id="multiple-sessions-in-vs-code">Multiple Sessions in VS Code<a href="#multiple-sessions-in-vs-code" class="anchor-link">#</a></h2>
+<p>VS Code lets you run multiple Claude Code sessions simultaneously — one per terminal panel. This is powerful for parallel work.</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│  VS Code                                                │
+│                                                         │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  Your Code Editor (files)                        │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                         │
+│  ┌─────────────────┐    ┌──────────────────────────┐    │
+│  │  Terminal 1     │    │  Terminal 2              │    │
+│  │  Session:       │    │  Session:                │    │
+│  │  "auth-refactor"│    │  "fix-payment-bug"       │    │
+│  │                 │    │                          │    │
+│  │  &gt; working on   │    │  &gt; investigating the     │    │
+│  │    login flow   │    │    null ref error        │    │
+│  └─────────────────┘    └──────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="starting-a-second-session">Starting a second session<a href="#starting-a-second-session" class="anchor-link">#</a></h3>
+<p>Open a new terminal panel:</p>
+<table>
+<thead><tr><th>OS</th><th>Method</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td>Ctrl+` or Terminal → New Terminal</td></tr>
+<tr><td>Windows / Linux</td><td>Ctrl+` or Terminal → New Terminal</td></tr>
+</tbody>
+</table>
+<p>Then in the new panel:</p>
+<pre data-lang="bash"><code>claude --ide -r "other-feature"</code></pre>
+<h3 id="switching-between-sessions">Switching between sessions<a href="#switching-between-sessions" class="anchor-link">#</a></h3>
+<p>Click between terminal tabs in VS Code. Each terminal is its own Claude session with separate context.</p>
+<h3 id="use-cases-for-parallel-sessions">Use cases for parallel sessions<a href="#use-cases-for-parallel-sessions" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Session 1</th><th>Session 2</th></tr></thead>
+<tbody>
+<tr><td>Building a new feature</td><td>Fixing an unrelated bug</td></tr>
+<tr><td>Refactoring the backend</td><td>Updating frontend components</td></tr>
+<tr><td>Writing tests</td><td>Implementing the code being tested</td></tr>
+<tr><td>Reviewing a PR</td><td>Working on your own branch</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="ending-a-session">Ending a Session<a href="#ending-a-session" class="anchor-link">#</a></h2>
+<pre><code>Ctrl+D</code></pre>
+<p>or type <code>exit</code>. The session history is saved automatically — you can resume it later with <code>-c</code> or <code>-r</code>.</p>
+<hr>
+<h2 id="session-context">Session Context<a href="#session-context" class="anchor-link">#</a></h2>
+<p>Each session maintains its own context window. Within a session, Claude remembers:</p>
+<ul>
+<li>All files it has read</li>
+<li>All changes it has made</li>
+<li>All commands it has run</li>
+<li>Your entire conversation history</li>
+</ul>
+<p>When you start a new session (<code>claude --ide</code> without <code>-c</code>), Claude starts fresh. Use <code>-c</code> to carry over context from the previous session.</p>
+<hr>
+<h2 id="session-files-on-disk">Session Files on Disk<a href="#session-files-on-disk" class="anchor-link">#</a></h2>
+<p>Sessions are stored as JSON files. The location depends on your OS:</p>
+<p><strong>macOS:</strong></p>
+<pre><code>~/.claude/sessions/</code></pre>
+<p><strong>Linux / WSL:</strong></p>
+<pre><code>~/.claude/sessions/</code></pre>
+<p><strong>Windows (native):</strong></p>
+<pre><code>%USERPROFILE%\.claude\sessions\</code></pre>
+<p>Which typically resolves to:</p>
+<pre><code>C:\Users\YourName\.claude\sessions\</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre><code>~/.claude/sessions/</code></pre>
+<p>(which is at <code>/home/yourname/.claude/sessions/</code> in the Linux filesystem)</p>
+<p>Each session is a JSON file containing the full conversation. You can:</p>
+<ul>
+<li>Browse them to find old sessions</li>
+<li>Delete sessions you no longer need</li>
+<li>Back them up before a major refactor</li>
+</ul>
+<p>To view your session directory:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>ls ~/.claude/sessions/</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>Get-ChildItem "$env:USERPROFILE\.claude\sessions\"</code></pre>
+<hr>
+<h2 id="saving-work-between-sessions">Saving Work Between Sessions<a href="#saving-work-between-sessions" class="anchor-link">#</a></h2>
+<p>For work that should persist across sessions regardless of which session you start, use:</p>
+<h3 id="claudemd-project-level-memory">CLAUDE.md (project-level memory)<a href="#claudemd-project-level-memory" class="anchor-link">#</a></h3>
+<pre><code>&gt; /memory</code></pre>
+<p>Add important context that Claude should always know about this project. This is especially useful for:</p>
+<ul>
+<li>Documenting the project architecture</li>
+<li>Noting conventions and patterns</li>
+<li>Recording decisions made during the session that future sessions should know about</li>
+</ul>
+<h3 id="auto-memory">Auto-memory<a href="#auto-memory" class="anchor-link">#</a></h3>
+<p>Claude Code automatically extracts key facts and saves them:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre><code>~/.claude/projects/&lt;project&gt;/memory/MEMORY.md</code></pre>
+<p><strong>Windows (native):</strong></p>
+<pre><code>%USERPROFILE%\.claude\projects\&lt;project&gt;\memory\MEMORY.md</code></pre>
+<p>Review and edit these with:</p>
+<pre><code>&gt; /memory</code></pre>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Name sessions immediately</strong> — <code>&gt; /rename my-task</code> as soon as you start, so you can find it later</li>
+<li><strong>Use one session per feature/ticket</strong> — keeps context focused and relevant</li>
+<li><strong>Resume often</strong> — <code>claude --ide -c</code> is the fastest way to pick up where you left off</li>
+<li><strong>Don't fear long sessions</strong> — Claude Code handles context compaction automatically, so sessions can run for hours without issue</li>
+<li><strong>Use <code>/compact</code> in long sessions</strong> — if responses start to feel less focused, run <code>&gt; /compact</code> to summarize old history and free up space</li>
+</ul>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="connecting-to-ide.html">connecting-to-ide.md</a> — The <code>--ide</code> flag and connection setup</li>
+<li><a href="prompt-box.html">prompt-box.md</a> — The VS Code prompt panel</li>
+<li><a href="../claude-code/context-management.html">../context-management.md</a> — Context window limits and compaction</li>
+<li><a href="../claude-code/memory-system.html">../memory-system.md</a> — Persistent memory across sessions</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

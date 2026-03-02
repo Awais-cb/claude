@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slash Commands — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="slash-commands">Slash Commands<a href="#slash-commands" class="anchor-link">#</a></h1>
+<p>Slash commands are special instructions you type inside an active Claude Code session. They start with <code>/</code> and control how Claude behaves — like a set of buttons on a dashboard that change what Claude is doing or how it's set up.</p>
+<blockquote><p><strong>Think of it like a chat app:</strong> In WhatsApp or Slack, you type your message and hit send. Slash commands are the <em>settings</em> behind that chat — they let you clear the conversation, switch modes, check costs, or connect new tools, all without leaving the chat.</p></blockquote>
+<hr>
+<h2 id="how-to-use">How to Use<a href="#how-to-use" class="anchor-link">#</a></h2>
+<p>Type <code>/</code> at the prompt and a searchable list of commands appears. Start typing to filter it:</p>
+<pre><code>&gt; /          ← shows all commands
+&gt; /cl        ← filters to /clear, /clone, /compact...
+&gt; /clear     ← runs the clear command</code></pre>
+<pre><code>&gt; /help          ← see everything available
+&gt; /cost          ← check how much you've spent
+&gt; /clear         ← wipe the conversation and start fresh</code></pre>
+<hr>
+<h2 id="session-commands">Session Commands<a href="#session-commands" class="anchor-link">#</a></h2>
+<p>These control the conversation itself — when to start over, when to save your place, and how to manage memory.</p>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/clear</code></td><td>Clear conversation history and start fresh</td></tr>
+<tr><td><code>/new</code></td><td>Same as <code>/clear</code> — start a new conversation</td></tr>
+<tr><td><code>/reset</code></td><td>Reset conversation to beginning</td></tr>
+<tr><td><code>/compact [instructions]</code></td><td>Summarize conversation to free up context space</td></tr>
+<tr><td><code>/rename &lt;name&gt;</code></td><td>Name the current session for easy resumption</td></tr>
+<tr><td><code>/resume &lt;name&gt;</code></td><td>Resume a previous session by name or ID</td></tr>
+<tr><td><code>/continue</code></td><td>Continue from the last message</td></tr>
+<tr><td><code>/fork</code></td><td>Create a new session branching from this point</td></tr>
+<tr><td><code>/rewind</code></td><td>Undo last change and restore previous state</td></tr>
+<tr><td><code>/checkpoint</code></td><td>Save current state (so you can rewind to here)</td></tr>
+</tbody>
+</table>
+<h3 id="-clear-the-fresh-start"><code>/clear</code> — The fresh start<a href="#-clear-the-fresh-start" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like opening a new browser tab. The old tab (conversation) is gone, but you're still using the same browser (Claude Code).</p></blockquote>
+<p>Use this when:</p>
+<ul>
+<li>Claude seems confused or stuck and giving irrelevant answers</li>
+<li>You've finished one task and want to start a completely different one</li>
+<li>The conversation has gone off track</li>
+</ul>
+<pre><code>&gt; /clear</code></pre>
+<p>Claude forgets everything from this session. You start with a clean slate.</p>
+<hr>
+<h3 id="-compact-free-up-memory-without-losing-everything"><code>/compact</code> — Free up memory without losing everything<a href="#-compact-free-up-memory-without-losing-everything" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like summarizing a long email thread. Instead of forwarding 50 messages, you write "here's what we've decided so far" and continue from there.</p></blockquote>
+<p>Claude Code has a context window — a limit on how much it can "hold in mind" at once. In a long session, it can fill up and Claude starts forgetting earlier details. <code>/compact</code> summarizes the conversation intelligently so you can keep going.</p>
+<pre><code>&gt; /compact</code></pre>
+<p>Or give it a hint about what to keep:</p>
+<pre><code>&gt; /compact keep the database schema decisions and the list of files we've already edited</code></pre>
+<p><strong>When to use it:</strong> If Claude starts giving vague or less relevant answers in a long session, run <code>/compact</code>. You'll notice responses get sharper again.</p>
+<hr>
+<h3 id="-rename-and--resume-save-and-continue-later"><code>/rename</code> and <code>/resume</code> — Save and continue later<a href="#-rename-and--resume-save-and-continue-later" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like bookmarking a browser tab. Give it a name so you can find it again.</p></blockquote>
+<pre><code>&gt; /rename payment-refactor</code></pre>
+<p>Next time you start Claude Code:</p>
+<pre data-lang="bash"><code>claude -r "payment-refactor"</code></pre>
+<p>Or inside a session:</p>
+<pre><code>&gt; /resume payment-refactor</code></pre>
+<p>Claude reloads the full conversation exactly where you left off.</p>
+<hr>
+<h3 id="-rewind-and--checkpoint-undo-and-save-points"><code>/rewind</code> and <code>/checkpoint</code> — Undo and save-points<a href="#-rewind-and--checkpoint-undo-and-save-points" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like Save Game in a video game. <code>/checkpoint</code> saves your progress; <code>/rewind</code> takes you back to the last save.</p></blockquote>
+<pre><code>&gt; /checkpoint           ← save the current state
+&gt; /rewind               ← go back to the last checkpoint</code></pre>
+<p>Use <code>/checkpoint</code> before asking Claude to do something risky or experimental. If the result isn't what you wanted, <code>/rewind</code> puts things back.</p>
+<hr>
+<h3 id="-fork-branch-the-conversation"><code>/fork</code> — Branch the conversation<a href="#-fork-branch-the-conversation" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like duplicating a document to try a different version without changing the original.</p></blockquote>
+<pre><code>&gt; /fork</code></pre>
+<p>Creates a new session that starts from this exact point in the conversation. Useful when you want to explore two different approaches to the same problem without losing either.</p>
+<hr>
+<h2 id="code-operations">Code Operations<a href="#code-operations" class="anchor-link">#</a></h2>
+<p>These are the commands for actual development work — reviewing code, making commits, running diffs.</p>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/review</code></td><td>Review a pull request for quality, security, and tests</td></tr>
+<tr><td><code>/diff</code></td><td>Show an interactive diff of recent changes</td></tr>
+<tr><td><code>/simplify</code></td><td>Review changed code for quality and efficiency</td></tr>
+<tr><td><code>/debug</code></td><td>Debug current session using the debug log</td></tr>
+<tr><td><code>/batch</code></td><td>Plan and execute a large-scale change across multiple worktrees</td></tr>
+<tr><td><code>/pr-comments</code></td><td>Fetch and display comments from a GitHub PR</td></tr>
+<tr><td><code>/security-review</code></td><td>Analyze branch changes for security vulnerabilities</td></tr>
+<tr><td><code>/commit-push-pr</code></td><td>Commit, push, and open a PR in one step</td></tr>
+</tbody>
+</table>
+<h3 id="-diff-see-what-changed"><code>/diff</code> — See what changed<a href="#-diff-see-what-changed" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like Track Changes in Microsoft Word — shows exactly what was added, removed, or modified.</p></blockquote>
+<pre><code>&gt; /diff</code></pre>
+<p>An interactive view appears showing every file Claude has changed, with green for additions and red for removals. Navigate with arrow keys.</p>
+<p><strong>Use this before every commit</strong> to double-check Claude's work.</p>
+<hr>
+<h3 id="-review-code-review-on-any-pr"><code>/review</code> — Code review on any PR<a href="#-review-code-review-on-any-pr" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like asking a senior developer to read through a pull request and give feedback, but in seconds.</p></blockquote>
+<pre><code>&gt; /review 123</code></pre>
+<p>Claude fetches PR #123 from GitHub, reads all the changed files, and gives structured feedback on correctness, security, test coverage, and code quality. It includes specific line references so you know exactly where to look.</p>
+<hr>
+<h3 id="-security-review-find-vulnerabilities-in-your-changes"><code>/security-review</code> — Find vulnerabilities in your changes<a href="#-security-review-find-vulnerabilities-in-your-changes" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like a security audit, but automated. Looks for the kinds of bugs that could be exploited.</p></blockquote>
+<pre><code>&gt; /security-review</code></pre>
+<p>Claude reviews everything changed on the current branch versus <code>main</code> and flags potential issues: SQL injection, missing auth checks, exposed credentials, unvalidated user input, etc.</p>
+<hr>
+<h3 id="-commit-push-pr-ship-in-one-command"><code>/commit-push-pr</code> — Ship in one command<a href="#-commit-push-pr-ship-in-one-command" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like a "Deploy" button that does the whole release process for you.</p></blockquote>
+<pre><code>&gt; /commit-push-pr</code></pre>
+<p>Claude will:</p>
+<ol>
+<li>Look at all changed files</li>
+<li>Write a descriptive commit message</li>
+<li>Push to the remote branch</li>
+<li>Open a pull request with a title and summary</li>
+</ol>
+<hr>
+<h3 id="-batch-large-scale-changes-across-many-files"><code>/batch</code> — Large-scale changes across many files<a href="#-batch-large-scale-changes-across-many-files" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like a find-and-replace that understands code — but for complex refactors, not just text substitution.</p></blockquote>
+<pre><code>&gt; /batch</code></pre>
+<p>Claude plans the change first, then executes it in parallel across multiple copies of your repo (worktrees). Good for renaming a function used in 50 files, updating an API contract, or migrating a pattern across a whole codebase.</p>
+<hr>
+<h2 id="mode-switching">Mode Switching<a href="#mode-switching" class="anchor-link">#</a></h2>
+<p>These change what Claude is <em>allowed</em> to do.</p>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/plan</code></td><td>Switch to Plan Mode (read-only, no edits)</td></tr>
+<tr><td><code>/permissions</code></td><td>View or update permission settings (alias: <code>/allowed-tools</code>)</td></tr>
+<tr><td><code>/fast</code></td><td>Toggle Fast Mode on/off (2.5× faster)</td></tr>
+<tr><td><code>/fast on</code></td><td>Turn Fast Mode on</td></tr>
+<tr><td><code>/fast off</code></td><td>Turn Fast Mode off</td></tr>
+</tbody>
+</table>
+<h3 id="-plan-look-before-you-leap"><code>/plan</code> — Look before you leap<a href="#-plan-look-before-you-leap" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like an architect drawing blueprints before construction starts. Claude describes exactly what it would do, but doesn't touch anything yet.</p></blockquote>
+<pre><code>&gt; /plan</code></pre>
+<p>In Plan Mode, Claude can read files, search the codebase, and explain its approach — but it cannot edit any files or run commands. Switch back to normal mode with <code>Shift+Tab</code>.</p>
+<p><strong>Use it when:</strong></p>
+<ul>
+<li>You're about to do something big and want to understand the impact first</li>
+<li>You're exploring an unfamiliar codebase</li>
+<li>You want Claude's opinion before it starts changing things</li>
+</ul>
+<hr>
+<h3 id="-fast-speed-vs-depth-trade-off"><code>/fast</code> — Speed vs. depth trade-off<a href="#-fast-speed-vs-depth-trade-off" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like choosing between a detailed expert answer and a quick reply from a knowledgeable friend. Fast mode gives you the quick reply.</p></blockquote>
+<pre><code>&gt; /fast       ← toggles it on or off
+&gt; /fast on    ← explicitly turn on
+&gt; /fast off   ← explicitly turn off</code></pre>
+<p>Fast mode is great for:</p>
+<ul>
+<li>Simple questions ("what does this function do?")</li>
+<li>Quick lookups ("what's the syntax for array destructuring?")</li>
+<li>Rapid iteration where you're giving lots of small instructions</li>
+</ul>
+<p>Turn it off for complex tasks that need more careful reasoning.</p>
+<hr>
+<h2 id="model-configuration">Model &amp; Configuration<a href="#model-configuration" class="anchor-link">#</a></h2>
+<p>These switch which AI model Claude uses or open the settings.</p>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/model</code></td><td>Switch model (opus, sonnet, haiku) or adjust effort level</td></tr>
+<tr><td><code>/config</code></td><td>Open visual configuration interface</td></tr>
+<tr><td><code>/settings</code></td><td>View and edit settings.json</td></tr>
+<tr><td><code>/keybindings</code></td><td>Edit keyboard shortcuts</td></tr>
+<tr><td><code>/agents</code></td><td>Manage subagents (create, edit, delete)</td></tr>
+<tr><td><code>/skills</code></td><td>List available skills (custom commands)</td></tr>
+<tr><td><code>/hooks</code></td><td>Create and manage automation hooks</td></tr>
+<tr><td><code>/plugin</code></td><td>Install, enable, or disable plugins</td></tr>
+</tbody>
+</table>
+<h3 id="-model-choose-your-ai-brain"><code>/model</code> — Choose your AI brain<a href="#-model-choose-your-ai-brain" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like choosing a vehicle for a trip. A bicycle (Haiku) is fast and cheap for short trips. A car (Sonnet) handles most things well. A plane (Opus) is overkill for short trips but worth it for long ones.</p></blockquote>
+<pre><code>&gt; /model</code></pre>
+<p>An interactive menu appears. Choose:</p>
+<table>
+<thead><tr><th>Model</th><th>Best for</th><th>Speed</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td><strong>opus</strong></td><td>Hard problems, architecture decisions</td><td>Slower</td><td>Higher</td></tr>
+<tr><td><strong>sonnet</strong></td><td>Everyday coding tasks (default)</td><td>Balanced</td><td>Balanced</td></tr>
+<tr><td><strong>haiku</strong></td><td>Simple questions, quick lookups</td><td>Fastest</td><td>Cheapest</td></tr>
+</tbody>
+</table>
+<p>You can switch models mid-session — Claude keeps the conversation history.</p>
+<hr>
+<h3 id="-config-and--settings-adjust-how-claude-behaves"><code>/config</code> and <code>/settings</code> — Adjust how Claude behaves<a href="#-config-and--settings-adjust-how-claude-behaves" class="anchor-link">#</a></h3>
+<pre><code>&gt; /config      ← visual editor with toggles and menus
+&gt; /settings    ← opens the raw settings.json file</code></pre>
+<p><code>/config</code> is friendlier for beginners — it shows all options with descriptions and lets you change them with arrow keys. <code>/settings</code> is for power users who know what they want to edit directly.</p>
+<hr>
+<h2 id="memory-context">Memory &amp; Context<a href="#memory-context" class="anchor-link">#</a></h2>
+<p>These help Claude understand your project better and remember things across sessions.</p>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/memory</code></td><td>View and edit CLAUDE.md and memory files</td></tr>
+<tr><td><code>/init</code></td><td>Auto-generate a CLAUDE.md for your project</td></tr>
+<tr><td><code>/context</code></td><td>Visualize context window usage as a colored grid</td></tr>
+</tbody>
+</table>
+<h3 id="-init-teach-claude-about-your-project"><code>/init</code> — Teach Claude about your project<a href="#-init-teach-claude-about-your-project" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like writing an onboarding guide for a new hire. Instead of explaining your project from scratch in every session, you write it once and Claude reads it every time.</p></blockquote>
+<pre><code>&gt; /init</code></pre>
+<p>Claude analyzes your codebase — reads your file structure, package.json, existing README, and patterns — then generates a <code>CLAUDE.md</code> file with project-specific instructions. Future sessions automatically load this file.</p>
+<hr>
+<h3 id="-memory-what-claude-remembers-about-you"><code>/memory</code> — What Claude remembers about you<a href="#-memory-what-claude-remembers-about-you" class="anchor-link">#</a></h3>
+<pre><code>&gt; /memory</code></pre>
+<p>Opens an editor showing:</p>
+<ul>
+<li>Your project's <code>CLAUDE.md</code></li>
+<li>Auto-saved memories from previous sessions (things Claude noticed and saved automatically)</li>
+</ul>
+<p>You can read, edit, or delete any of these. This is useful when Claude has learned something wrong or outdated.</p>
+<hr>
+<h3 id="-context-is-the-memory-getting-full"><code>/context</code> — Is the memory getting full?<a href="#-context-is-the-memory-getting-full" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like checking how full a notebook is. The context window is Claude's "working memory" — when it's full, older parts of the conversation get pushed out.</p></blockquote>
+<pre><code>&gt; /context</code></pre>
+<p>Shows a colored grid of the current session's context usage. If it's nearly full, run <code>/compact</code>.</p>
+<hr>
+<h2 id="git-github">Git &amp; GitHub<a href="#git-github" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/install-github-app</code></td><td>Set up Claude in GitHub Actions</td></tr>
+<tr><td><code>/install-slack-app</code></td><td>Set up Claude in Slack</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="integrations">Integrations<a href="#integrations" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/mcp</code></td><td>Manage MCP server connections</td></tr>
+<tr><td><code>/chrome</code></td><td>Manage Chrome browser integration</td></tr>
+<tr><td><code>/ide</code></td><td>Manage IDE integrations</td></tr>
+<tr><td><code>/desktop</code></td><td>Continue session in the Claude Code desktop app</td></tr>
+<tr><td><code>/remote-control</code> / <code>/rc</code></td><td>Enable remote control from claude.ai</td></tr>
+</tbody>
+</table>
+<h3 id="-mcp-connect-claude-to-external-tools"><code>/mcp</code> — Connect Claude to external tools<a href="#-mcp-connect-claude-to-external-tools" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like installing apps on your phone. Each MCP server gives Claude a new ability — access to your database, a design tool, a project management system, etc.</p></blockquote>
+<pre><code>&gt; /mcp</code></pre>
+<p>Lists connected MCP servers and lets you add or remove them. See <a href="mcp-servers.html">mcp-servers.md</a> for details.</p>
+<hr>
+<h2 id="display-themes">Display &amp; Themes<a href="#display-themes" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/theme</code></td><td>Change color theme</td></tr>
+<tr><td><code>/vim</code></td><td>Toggle vim editing mode</td></tr>
+<tr><td><code>/terminal-setup</code></td><td>Configure terminal keybindings (Shift+Enter, etc.)</td></tr>
+<tr><td><code>/statusline</code></td><td>Configure the status line display</td></tr>
+<tr><td><code>/output-style</code></td><td>Switch output style (default, explanatory, learning)</td></tr>
+<tr><td><code>/tasks</code></td><td>View and manage background tasks</td></tr>
+<tr><td><code>/copy</code></td><td>Copy the last assistant response to clipboard</td></tr>
+<tr><td><code>/export [filename]</code></td><td>Export conversation as plain text</td></tr>
+</tbody>
+</table>
+<h3 id="-output-style-how-claude-explains-things"><code>/output-style</code> — How Claude explains things<a href="#-output-style-how-claude-explains-things" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like choosing between a textbook explanation and a conversation with a friend.</p></blockquote>
+<pre><code>&gt; /output-style</code></pre>
+<p>Options:</p>
+<ul>
+<li><strong>default</strong> — concise, practical</li>
+<li><strong>explanatory</strong> — more detail, explains reasoning</li>
+<li><strong>learning</strong> — step-by-step, teaches as it goes (great for beginners)</li>
+</ul>
+<hr>
+<h2 id="information-monitoring">Information &amp; Monitoring<a href="#information-monitoring" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/help</code></td><td>Show all available commands</td></tr>
+<tr><td><code>/status</code></td><td>Show version, model, and connection status</td></tr>
+<tr><td><code>/cost</code></td><td>Show token usage and cost for this session</td></tr>
+<tr><td><code>/usage</code></td><td>Show plan limits and rate limit status</td></tr>
+<tr><td><code>/stats</code></td><td>Visualize daily usage, streaks, and model preferences</td></tr>
+<tr><td><code>/insights</code></td><td>Usage insights and analytics</td></tr>
+<tr><td><code>/doctor</code></td><td>Diagnose installation and configuration issues</td></tr>
+<tr><td><code>/release-notes</code></td><td>View recent changelog</td></tr>
+</tbody>
+</table>
+<h3 id="-cost-check-your-spending"><code>/cost</code> — Check your spending<a href="#-cost-check-your-spending" class="anchor-link">#</a></h3>
+<pre><code>&gt; /cost</code></pre>
+<p>Shows exactly how many tokens were used (input + output) and the estimated cost for the current session. Useful for understanding what kinds of tasks are expensive.</p>
+<blockquote><p><strong>Tip:</strong> Long files cost more to read. Use <code>@specific-file.js</code> instead of giving Claude access to an entire folder when you only need one file.</p></blockquote>
+<h3 id="-doctor-somethings-not-working"><code>/doctor</code> — Something's not working?<a href="#-doctor-somethings-not-working" class="anchor-link">#</a></h3>
+<pre><code>&gt; /doctor</code></pre>
+<p>Runs a self-diagnosis and checks for common issues: missing API key, outdated version, broken MCP connections, terminal misconfiguration. Start here when something feels off.</p>
+<hr>
+<h2 id="account">Account<a href="#account" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/login</code></td><td>Log in to Anthropic account</td></tr>
+<tr><td><code>/logout</code></td><td>Log out</td></tr>
+<tr><td><code>/upgrade</code></td><td>View upgrade options</td></tr>
+<tr><td><code>/privacy-settings</code></td><td>Update privacy preferences</td></tr>
+<tr><td><code>/passes</code></td><td>View usage passes</td></tr>
+<tr><td><code>/extra-usage</code></td><td>Enable extra usage credits</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="special-input-prefixes">Special Input Prefixes<a href="#special-input-prefixes" class="anchor-link">#</a></h2>
+<p>These are not slash commands but special prefixes that change how input is handled:</p>
+<table>
+<thead><tr><th>Prefix</th><th>Behavior</th></tr></thead>
+<tbody>
+<tr><td><code>/</code></td><td>Opens command list</td></tr>
+<tr><td><code>!</code></td><td>Run as raw bash command (no Claude interpretation)</td></tr>
+<tr><td><code>@</code></td><td>Autocomplete file paths</td></tr>
+</tbody>
+</table>
+<h3 id="-run-a-terminal-command-directly"><code>!</code> — Run a terminal command directly<a href="#-run-a-terminal-command-directly" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like stepping out of a conversation to do something yourself, then stepping back in.</p></blockquote>
+<pre><code>&gt; !ls -la
+&gt; !git status
+&gt; !npm test</code></pre>
+<p>The <code>!</code> prefix runs the command directly in bash — Claude doesn't interpret it or add any of its own behavior. The output is shown to you and also visible to Claude (so you can ask "what does that output mean?" right after).</p>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li>Type <code>/</code> and start typing to search/filter commands — you don't need to memorize anything</li>
+<li><code>/help &lt;command&gt;</code> gives details on a specific command, e.g. <code>/help compact</code></li>
+<li><code>Shift+Tab</code> quickly cycles permission modes without typing a command</li>
+<li>Start every new project with <code>/init</code> to give Claude instant context about your codebase</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

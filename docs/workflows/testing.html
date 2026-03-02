@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="testing-workflow">Testing Workflow<a href="#testing-workflow" class="anchor-link">#</a></h1>
+<p>How to use Claude to write, run, and improve tests across your entire stack — unit, integration, end-to-end, and test-driven development.</p>
+<hr>
+<h2 id="the-core-principle">The Core Principle<a href="#the-core-principle" class="anchor-link">#</a></h2>
+<p>Claude writes better tests when it can read both the code being tested <strong>and</strong> your existing test examples. Always reference both:</p>
+<pre><code>&gt; write tests for @src/services/OrderService.ts.
+  follow the patterns and style in @src/tests/services/UserService.test.ts</code></pre>
+<hr>
+<h2 id="1-unit-testing">1. Unit Testing<a href="#1-unit-testing" class="anchor-link">#</a></h2>
+<h3 id="test-a-new-function">Test a new function<a href="#test-a-new-function" class="anchor-link">#</a></h3>
+<pre><code>&gt; write unit tests for the calculateDiscount function in @src/utils/pricing.ts.
+  cover:
+  - 10% discount for orders over $100
+  - 20% discount for orders over $500
+  - no discount for orders under $100
+  - discount cannot exceed the order total
+  - throws if quantity is negative
+  use Vitest, follow the style in @src/tests/utils/</code></pre>
+<h3 id="test-a-service-class">Test a service class<a href="#test-a-service-class" class="anchor-link">#</a></h3>
+<pre><code>&gt; write unit tests for @src/services/NotificationService.ts.
+  mock dependencies: NotificationRepository, EmailService, SocketService.
+  test each public method:
+  - createNotification: happy path, invalid userId, email failure (should still save)
+  - markAsRead: success, wrong user (should throw AuthError), already read (idempotent)
+  - deleteNotification: success, not found, wrong user
+  use Vitest + vi.mock(). follow @src/tests/services/UserService.test.ts</code></pre>
+<h3 id="test-a-react-component">Test a React component<a href="#test-a-react-component" class="anchor-link">#</a></h3>
+<pre><code>&gt; write unit tests for @src/components/features/orders/OrderCard.tsx.
+  test:
+  - renders order number, status, and total correctly
+  - &quot;Cancel&quot; button only shows for orders with status &quot;pending&quot;
+  - clicking &quot;Cancel&quot; calls the onCancel prop with the order id
+  - shows a loading spinner when isCancelling is true
+  - formats the date correctly (use a fixed date in tests)
+  use Vitest + React Testing Library + @testing-library/user-event</code></pre>
+<h3 id="test-a-custom-hook">Test a custom hook<a href="#test-a-custom-hook" class="anchor-link">#</a></h3>
+<pre><code>&gt; write tests for @src/hooks/useCart.ts.
+  test:
+  - addItem adds a new item to the cart
+  - addItem increases quantity if item already exists
+  - removeItem removes the item
+  - updateQuantity changes quantity (min 1, max 99)
+  - total is calculated correctly
+  - cart persists to localStorage and reloads on init
+  use Vitest + renderHook from @testing-library/react</code></pre>
+<hr>
+<h2 id="2-integration-testing">2. Integration Testing<a href="#2-integration-testing" class="anchor-link">#</a></h2>
+<h3 id="api-endpoint-test">API endpoint test<a href="#api-endpoint-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; write integration tests for POST /api/orders using Supertest.
+  set up a test database that gets reset between tests.
+  test:
+  - 201: valid request creates an order and returns it
+  - 400: missing required fields returns validation errors
+  - 401: missing JWT token returns 401
+  - 403: valid token but wrong user can't access another user's cart
+  - 422: product out of stock returns a clear error
+
+  use our test setup from @src/tests/setup.ts and factories from @src/tests/factories/</code></pre>
+<h3 id="database-integration-test">Database integration test<a href="#database-integration-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; write integration tests for OrderRepository in @src/repositories/OrderRepository.ts.
+  use the test database (TEST_DATABASE_URL from env).
+  test:
+  - findByUser returns only the requesting user's orders
+  - findByUser paginates correctly (page 2, per_page 5)
+  - create inserts and returns the full order with relations
+  - updateStatus throws if order doesn't exist
+  clean up test data after each test.</code></pre>
+<h3 id="frontend-api-integration-test">Frontend + API integration test<a href="#frontend-api-integration-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; write integration tests for the checkout flow using msw to mock API calls.
+  test the full user journey:
+  1. user adds item to cart → cart count updates
+  2. user goes to checkout → form renders with cart items
+  3. user fills in shipping info → validation works
+  4. user submits → loading state shows, then success page
+  5. API error → error message shows with retry option
+
+  mock these endpoints with msw:
+  - POST /api/orders → 201 with order data
+  - POST /api/orders → 422 with validation error
+  use @src/tests/mocks/handlers.ts for the msw setup</code></pre>
+<hr>
+<h2 id="3-end-to-end-testing-playwright">3. End-to-End Testing (Playwright)<a href="#3-end-to-end-testing-playwright" class="anchor-link">#</a></h2>
+<h3 id="create-an-e2e-test">Create an E2E test<a href="#create-an-e2e-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; write a Playwright test for the user registration and first purchase flow:
+  1. navigate to /register
+  2. fill in name, email, password
+  3. submit and verify redirect to /dashboard
+  4. navigate to /products
+  5. click the first product
+  6. click &quot;Add to Cart&quot;
+  7. navigate to /cart
+  8. click &quot;Checkout&quot;
+  9. fill in shipping address
+  10. click &quot;Place Order&quot;
+  11. verify order confirmation page
+
+  use page objects. create @e2e/pages/RegisterPage.ts, ProductPage.ts, CheckoutPage.ts.
+  use test data from @e2e/fixtures/users.ts.
+  follow the patterns in @e2e/tests/login.spec.ts</code></pre>
+<h3 id="test-a-critical-user-path">Test a critical user path<a href="#test-a-critical-user-path" class="anchor-link">#</a></h3>
+<pre><code>&gt; write an E2E test for the password reset flow:
+  1. click &quot;Forgot password&quot; on the login page
+  2. enter email and submit
+  3. mock receiving the email (intercept the API call)
+  4. navigate to the reset link
+  5. enter new password and confirm
+  6. verify redirect to login with success message
+  7. log in with new password and verify it works</code></pre>
+<h3 id="visual-regression-test">Visual regression test<a href="#visual-regression-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; add a visual regression test for the ProductCard component.
+  screenshot it in 3 states:
+  - normal: in-stock product
+  - out-of-stock: disabled button state
+  - sale badge: with &quot;SALE&quot; badge visible
+  use Playwright's screenshot comparison.
+  save baselines in @e2e/screenshots/baselines/</code></pre>
+<hr>
+<h2 id="4-test-driven-development-tdd">4. Test-Driven Development (TDD)<a href="#4-test-driven-development-tdd" class="anchor-link">#</a></h2>
+<p>Claude is excellent at TDD. Write the test first, then the implementation:</p>
+<h3 id="red-green-refactor">Red → Green → Refactor<a href="#red-green-refactor" class="anchor-link">#</a></h3>
+<pre><code>&gt; I want to use TDD to build a coupon code validation feature.
+  Start by writing the tests for validateCouponCode(code, cartTotal) in
+  @src/tests/utils/coupon.test.ts. Don't write the implementation yet.
+
+  Tests should cover:
+  - valid code &quot;SAVE10&quot; gives 10% off (min $50 cart)
+  - valid code &quot;FLAT20&quot; gives $20 off (min $100 cart)
+  - expired code throws CouponExpiredError
+  - already-used code throws CouponUsedError
+  - unknown code throws CouponNotFoundError
+  - cart below minimum throws CouponMinimumError</code></pre>
+<p>Then make them pass:</p>
+<pre><code>&gt; now write the implementation for validateCouponCode in @src/utils/coupon.ts
+  that makes all these tests pass. use the CouponRepository to look up codes.</code></pre>
+<p>Then refactor:</p>
+<pre><code>&gt; the tests are passing. refactor the implementation for clarity:
+  - extract the minimum cart check into a private helper
+  - extract the usage check into a private helper
+  - make sure all edge cases are still covered</code></pre>
+<hr>
+<h2 id="5-fixing-failing-tests">5. Fixing Failing Tests<a href="#5-fixing-failing-tests" class="anchor-link">#</a></h2>
+<h3 id="diagnose-failures">Diagnose failures<a href="#diagnose-failures" class="anchor-link">#</a></h3>
+<pre><code>&gt; run npm test and show me the failures. then fix them one by one.</code></pre>
+<h3 id="investigate-a-specific-failure">Investigate a specific failure<a href="#investigate-a-specific-failure" class="anchor-link">#</a></h3>
+<pre><code>&gt; this test is failing:
+  [paste the test output]
+
+  the test is in @src/tests/services/OrderService.test.ts line 47.
+  read the test and the implementation in @src/services/OrderService.ts
+  and explain why it's failing. then fix it.</code></pre>
+<h3 id="flaky-tests">Flaky tests<a href="#flaky-tests" class="anchor-link">#</a></h3>
+<pre><code>&gt; the test in @src/tests/components/SearchBar.test.ts is flaky —
+  it passes about 70% of the time and fails with a timeout the rest.
+  read the test and find the root cause of the flakiness. fix it.</code></pre>
+<hr>
+<h2 id="6-test-coverage">6. Test Coverage<a href="#6-test-coverage" class="anchor-link">#</a></h2>
+<h3 id="find-gaps">Find gaps<a href="#find-gaps" class="anchor-link">#</a></h3>
+<pre><code>&gt; run the test suite with coverage (npm test -- --coverage) and report:
+  - which files are below 70% line coverage?
+  - which critical paths (auth, payments, orders) have the worst coverage?
+  - which branches are most commonly untested?
+  sort by coverage percentage ascending.</code></pre>
+<h3 id="fill-coverage-gaps">Fill coverage gaps<a href="#fill-coverage-gaps" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/services/PaymentService.ts has 45% coverage. read the file and the
+  existing tests in @src/tests/services/PaymentService.test.ts.
+  write additional tests to cover:
+  - all error branches (lines 34, 67, 89)
+  - the retry logic (lines 102-118)
+  - the webhook signature verification (lines 145-160)</code></pre>
+<hr>
+<h2 id="7-performance-testing">7. Performance Testing<a href="#7-performance-testing" class="anchor-link">#</a></h2>
+<h3 id="benchmark-a-function">Benchmark a function<a href="#benchmark-a-function" class="anchor-link">#</a></h3>
+<pre><code>&gt; write a benchmark for the generateReport function in @src/utils/reports.ts.
+  compare:
+  - current implementation
+  - with the caching optimization I'm about to add
+
+  use Vitest bench (vitest.bench.ts).</code></pre>
+<h3 id="load-test-an-endpoint">Load test an endpoint<a href="#load-test-an-endpoint" class="anchor-link">#</a></h3>
+<pre><code>&gt; write a k6 load test script for POST /api/orders that:
+  - ramps from 0 to 50 users over 30 seconds
+  - holds at 50 users for 2 minutes
+  - ramps down
+  - tracks: p95 response time &lt; 500ms, error rate &lt; 1%
+  save to @load-tests/orders.js</code></pre>
+<hr>
+<h2 id="the-check-skill-run-before-every-pr">The <code>/check</code> Skill (Run Before Every PR)<a href="#the-check-skill-run-before-every-pr" class="anchor-link">#</a></h2>
+<p>Add this skill to <code>.claude/skills/check.md</code> and run it before every commit:</p>
+<pre><code>&gt; /check</code></pre>
+<p>It runs: typecheck → lint → unit tests → reports pass/fail for each. Catches issues before code review.</p>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Task</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>Unit test</td><td><code>write unit tests for @[file]. cover: [scenarios]. follow @[example test].</code></td></tr>
+<tr><td>Service test</td><td><code>test @[service]. mock: [dependencies]. test each method: [list]. use vi.mock().</code></td></tr>
+<tr><td>Component test</td><td><code>write tests for @[component]. test: [scenarios]. use Vitest + RTL + user-event.</code></td></tr>
+<tr><td>API test</td><td><code>write integration tests for [endpoint]. test: [status codes + scenarios]. use @[setup].</code></td></tr>
+<tr><td>E2E test</td><td><code>write Playwright test for [user journey]: [steps]. use page objects. follow @[example].</code></td></tr>
+<tr><td>Fix failures</td><td><code>run npm test, show failures, fix them one by one.</code></td></tr>
+<tr><td>Coverage</td><td><code>run tests with coverage. which files are below 70%? focus on [critical paths].</code></td></tr>
+<tr><td>TDD</td><td><code>write tests first for [feature]: [scenarios]. don't write implementation yet.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Always reference an existing test</strong> — <code>follow the style in @src/tests/services/UserService.test.ts</code> gets dramatically better output than no reference</li>
+<li><strong>Run tests after every change</strong> — <code>&gt; run npm test and fix failures</code> keeps you from accumulating broken tests</li>
+<li><strong>Test behavior, not implementation</strong> — ask Claude to test what the function does, not how it does it; this makes tests more maintainable</li>
+<li><strong>Write tests immediately</strong> — ask Claude to write tests right after implementing a feature, while Claude still has full context of what was built</li>
+<li><strong>Use TDD for complex business logic</strong> — especially for validation, pricing, and auth logic where edge cases matter most</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

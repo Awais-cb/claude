@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="0">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Cheatsheet — Claude Code Docs</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="claude-code--developer-cheatsheet">Claude Code — Developer Cheatsheet<a href="#claude-code--developer-cheatsheet" class="anchor-link">#</a></h1>
+<p>Quick reference for everything you need during active development.
+Full docs: <a href="claude-code/index.html"><code>claude-code/</code></a> · VS Code: <a href="vscode/index.html"><code>vscode-extension/</code></a></p>
+<hr>
+<h2 id="install--auth">Install &amp; Auth<a href="#install--auth" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>OS</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td><strong>macOS</strong></td><td><code>curl -fsSL https://claude.ai/install.sh | bash</code> or <code>brew install claude</code></td></tr>
+<tr><td><strong>Linux / WSL</strong></td><td><code>curl -fsSL https://claude.ai/install.sh | bash</code></td></tr>
+<tr><td><strong>Windows</strong></td><td><code>winget install Anthropic.Claude</code></td></tr>
+<tr><td><strong>npm (alt)</strong></td><td><code>npm install -g @anthropic-ai/claude-code</code> (requires Node.js 18+)</td></tr>
+<tr><td><strong>All</strong></td><td><code>claude auth login</code> — authenticate once, stays logged in</td></tr>
+<tr><td><strong>Verify</strong></td><td><code>claude --version</code> or <code>claude update</code> to update</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="starting-a-session">Starting a Session<a href="#starting-a-session" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude                          # New interactive session
+claude "fix the bug in app.js"  # Start with an immediate task
+claude -c                       # Resume last session
+claude -r "session-name"        # Resume named session
+claude --ide                    # Connect to VS Code / JetBrains
+claude --permission-mode plan   # Read-only (explore without changing anything)
+claude -p "summarize README"    # Non-interactive, print and exit</code></pre>
+<hr>
+<h2 id="models">Models<a href="#models" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude --model opus     # Most powerful — hard problems, architecture decisions
+claude --model sonnet   # Default — everyday coding tasks
+claude --model haiku    # Fastest &amp; cheapest — simple questions, boilerplate</code></pre>
+<p>Switch mid-session: <code>/model</code> → pick from menu, or <code>Alt+P</code> / <code>Option+P</code></p>
+<hr>
+<h2 id="essential-keyboard-shortcuts">Essential Keyboard Shortcuts<a href="#essential-keyboard-shortcuts" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Enter</code></td><td>Submit prompt</td></tr>
+<tr><td><code>Ctrl+C</code></td><td>Cancel / stop Claude</td></tr>
+<tr><td><code>Ctrl+D</code></td><td>Exit session</td></tr>
+<tr><td><code>Shift+Tab</code></td><td>Cycle permission mode (Normal → Auto-Accept → Plan)</td></tr>
+<tr><td><code>Esc Esc</code></td><td>Undo Claude's last file change</td></tr>
+<tr><td><code>Ctrl+V</code></td><td>Paste image from clipboard (all platforms, including macOS)</td></tr>
+<tr><td><code>Ctrl+G</code></td><td>Open current prompt in <code>$EDITOR</code></td></tr>
+<tr><td><code>Ctrl+L</code></td><td>Clear screen (keeps conversation)</td></tr>
+<tr><td><code>Ctrl+O</code></td><td>Toggle verbose output (see Claude's reasoning)</td></tr>
+<tr><td><code>Ctrl+B</code></td><td>Background current task</td></tr>
+<tr><td><code>Ctrl+T</code></td><td>Toggle task list view</td></tr>
+<tr><td><code>↑ / ↓</code></td><td>Navigate prompt history</td></tr>
+<tr><td><code>Alt+T</code> / <code>Option+T</code></td><td>Toggle extended thinking</td></tr>
+<tr><td><code>Alt+F</code> / <code>Option+F</code></td><td>Toggle fast mode</td></tr>
+</tbody>
+</table>
+<blockquote><p><strong>macOS:</strong> <code>Option</code> = <code>Alt</code> on Linux/Windows</p></blockquote>
+<hr>
+<h2 id="permission-modes">Permission Modes<a href="#permission-modes" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Mode</th><th>What Claude can do</th><th>Toggle</th></tr></thead>
+<tbody>
+<tr><td><strong>Normal</strong> (default)</td><td>Everything, asks before risky actions</td><td><code>Shift+Tab</code></td></tr>
+<tr><td><strong>Plan</strong></td><td>Read-only — no edits, no commands</td><td><code>Shift+Tab</code> or <code>--permission-mode plan</code></td></tr>
+<tr><td><strong>Auto-Accept</strong></td><td>Does everything without asking</td><td><code>Shift+Tab</code></td></tr>
+</tbody>
+</table>
+<p><strong>Pre-approve tools via CLI:</strong></p>
+<pre data-lang="bash"><code>claude --allowedTools "Bash(git *),Bash(npm *),Read(*)"
+claude --disallowedTools "Bash"          # block all shell commands
+claude --tools "Read,Glob,Grep"          # read-only lockdown</code></pre>
+<p><strong>Permanent permissions in <code>.claude/settings.json</code>:</strong></p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": ["Bash(git *)", "Bash(npm *)", "Read(*)", "Write(src/*)"],
+    "deny":  ["Write(.env*)", "Bash(rm -rf *)"]
+  }
+}</code></pre>
+<hr>
+<h2 id="slash-commands--most-used">Slash Commands — Most Used<a href="#slash-commands--most-used" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>/help</code></td><td>List all commands</td></tr>
+<tr><td><code>/clear</code></td><td>Wipe conversation, start fresh</td></tr>
+<tr><td><code>/compact</code></td><td>Summarize history, free up context space</td></tr>
+<tr><td><code>/rename &lt;name&gt;</code></td><td>Name current session</td></tr>
+<tr><td><code>/model</code></td><td>Switch model interactively</td></tr>
+<tr><td><code>/plan</code></td><td>Switch to read-only plan mode</td></tr>
+<tr><td><code>/fast</code></td><td>Toggle fast mode (2.5× faster)</td></tr>
+<tr><td><code>/diff</code></td><td>Interactive diff of recent changes</td></tr>
+<tr><td><code>/review &lt;PR#&gt;</code></td><td>Review a GitHub pull request</td></tr>
+<tr><td><code>/security-review</code></td><td>Check branch for security issues</td></tr>
+<tr><td><code>/commit-push-pr</code></td><td>Commit + push + open PR in one step</td></tr>
+<tr><td><code>/init</code></td><td>Auto-generate CLAUDE.md for this project</td></tr>
+<tr><td><code>/memory</code></td><td>View/edit memory and CLAUDE.md files</td></tr>
+<tr><td><code>/context</code></td><td>Show context window usage</td></tr>
+<tr><td><code>/cost</code></td><td>Show token usage and cost this session</td></tr>
+<tr><td><code>/doctor</code></td><td>Diagnose setup issues</td></tr>
+<tr><td><code>/hooks</code></td><td>Manage automation hooks</td></tr>
+<tr><td><code>/agents</code></td><td>Manage subagents</td></tr>
+<tr><td><code>/skills</code></td><td>List custom slash commands</td></tr>
+<tr><td><code>/mcp</code></td><td>Manage MCP server connections</td></tr>
+<tr><td><code>/vim</code></td><td>Toggle vim mode</td></tr>
+<tr><td><code>/config</code></td><td>Open visual settings editor</td></tr>
+<tr><td><code>/terminal-setup</code></td><td>Configure Shift+Enter, Alt keys</td></tr>
+</tbody>
+</table>
+<p><strong>Special prefixes:</strong></p>
+<pre><code>!ls -la          # Run bash directly (bypasses Claude)
+@src/utils.ts    # Reference a file in your prompt</code></pre>
+<hr>
+<h2 id="file--context-references">File &amp; Context References<a href="#file--context-references" class="anchor-link">#</a></h2>
+<pre><code>&gt; @src/auth.ts — explain this file
+&gt; @src/auth.ts @src/middleware.ts — compare these two
+&gt; @config/ — what does this folder configure?</code></pre>
+<p>In VS Code: type <code>@</code> in the prompt box → autocomplete dropdown appears.
+Highlight code in editor → Claude automatically sees it as context.</p>
+<hr>
+<h2 id="common-dev-workflows">Common Dev Workflows<a href="#common-dev-workflows" class="anchor-link">#</a></h2>
+<h3 id="bug-fix">Bug fix<a href="#bug-fix" class="anchor-link">#</a></h3>
+<pre><code>&gt; the login form throws a 500 when the email has a + symbol. check
+  src/auth/LoginController.php and fix it</code></pre>
+<h3 id="add-a-feature">Add a feature<a href="#add-a-feature" class="anchor-link">#</a></h3>
+<pre><code>&gt; add pagination to GET /api/users — page and per_page query params,
+  default 20 per page, max 100</code></pre>
+<h3 id="code-review-before-commit">Code review before commit<a href="#code-review-before-commit" class="anchor-link">#</a></h3>
+<pre><code>&gt; /diff
+&gt; /security-review
+&gt; /commit-push-pr</code></pre>
+<h3 id="understand-unfamiliar-code">Understand unfamiliar code<a href="#understand-unfamiliar-code" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --permission-mode plan
+&gt; walk me through how requests flow from the router to the database</code></pre>
+<h3 id="fix-failing-tests">Fix failing tests<a href="#fix-failing-tests" class="anchor-link">#</a></h3>
+<pre><code>&gt; run npm test and fix every failing test</code></pre>
+<h3 id="refactor-safely">Refactor safely<a href="#refactor-safely" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude -w "refactor-attempt"    # isolated worktree
+&gt; refactor the UserService to use the repository pattern</code></pre>
+<hr>
+<h2 id="session-management">Session Management<a href="#session-management" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude -c                       # Resume last session
+claude -r "auth-refactor"       # Resume by name
+claude -w "experiment"          # New isolated worktree branch</code></pre>
+<p>Inside a session:</p>
+<pre><code>&gt; /rename auth-refactor         # Name it so you can find it later
+&gt; /compact                      # Free up context when session gets long
+&gt; /checkpoint                   # Save state before a risky operation
+&gt; /rewind                       # Go back to last checkpoint</code></pre>
+<hr>
+<h2 id="non-interactive--scripting">Non-Interactive / Scripting<a href="#non-interactive--scripting" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code># One-shot answer and exit
+claude -p "what does this function return?"
+
+# Pipe input
+cat error.log | claude -p "what caused this?"
+git diff | claude -p "write a commit message for this"
+
+# Save output to file
+claude -p "write a README for this project" &gt; README.md
+
+# JSON output for scripts
+claude -p "list all API endpoints" --output-format json
+
+# Limit cost
+claude -p "big task" --max-budget-usd 0.50</code></pre>
+<hr>
+<h2 id="claudemd--teach-claude-your-project">CLAUDE.md — Teach Claude Your Project<a href="#claudemd--teach-claude-your-project" class="anchor-link">#</a></h2>
+<p>Create at project root. Claude reads it every session automatically.</p>
+<pre data-lang="markdown"><code>## Tech Stack
+- Node.js 20, TypeScript, Express
+- PostgreSQL + Prisma ORM
+
+## Commands
+- `npm run dev`   — start dev server
+- `npm test`      — run Vitest tests
+- `npm run lint`  — ESLint
+
+## Conventions
+- 2-space indent, single quotes
+- Named exports only
+- Use the `logger` util, never `console.log`
+
+## Do Not
+- Never edit .env directly
+- Don't use `any` in TypeScript</code></pre>
+<p>Generate one automatically: <code>&gt; /init</code></p>
+<hr>
+<h2 id="hooks--automate-on-events">Hooks — Automate on Events<a href="#hooks--automate-on-events" class="anchor-link">#</a></h2>
+<p>Auto-format after every edit (<code>.claude/settings.json</code>):</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "command": "prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\"" }
+    ],
+    "Notification": [
+      { "command": "notify-send 'Claude Code' 'Needs your input'" }
+    ]
+  }
+}</code></pre>
+<table>
+<thead><tr><th>Notification command</th><th>OS</th></tr></thead>
+<tbody>
+<tr><td><code>osascript -e 'display notification "Msg" with title "Claude"'</code></td><td>macOS</td></tr>
+<tr><td><code>notify-send 'Claude' 'Msg'</code></td><td>Linux</td></tr>
+<tr><td><code>powershell.exe -c "[Windows.UI.Notifications.ToastNotificationManager,...]"</code></td><td>WSL→Windows</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="subagents--parallel-work">Subagents — Parallel Work<a href="#subagents--parallel-work" class="anchor-link">#</a></h2>
+<pre><code>&gt; use the explorer agent to find all places we call the Stripe API
+&gt; run these 3 tasks in parallel using subagents: [list tasks]</code></pre>
+<p>Create a custom agent (<code>.claude/agents/my-agent.md</code>):</p>
+<pre data-lang="yaml"><code>---
+name: test-writer
+description: Writes unit tests for existing code
+model: sonnet
+tools: [Read, Grep, Write, "Bash(npm test)"]
+---
+Write comprehensive tests. Cover happy path, edge cases, and errors.
+Always match the existing test style.</code></pre>
+<p>Use it: <code>&gt; use the test-writer agent on src/services/UserService.ts</code></p>
+<hr>
+<h2 id="skills--custom-slash-commands">Skills — Custom Slash Commands<a href="#skills--custom-slash-commands" class="anchor-link">#</a></h2>
+<p>Create (<code>.claude/skills/changelog/SKILL.md</code>):</p>
+<pre data-lang="yaml"><code>---
+name: changelog
+description: Generate changelog from recent git commits
+---
+Run git log since last tag, group by type, write Keep a Changelog entry.</code></pre>
+<p>Use it: <code>&gt; /changelog</code></p>
+<p>List all: <code>&gt; /skills</code></p>
+<hr>
+<h2 id="mcp-servers--extend-claudes-abilities">MCP Servers — Extend Claude's Abilities<a href="#mcp-servers--extend-claudes-abilities" class="anchor-link">#</a></h2>
+<pre><code>&gt; /mcp                          # manage connections</code></pre>
+<p>Add via CLI (recommended):</p>
+<pre data-lang="bash"><code>claude mcp add github -e GITHUB_TOKEN=ghp_... -- npx -y @modelcontextprotocol/server-github
+claude mcp list     # see configured servers
+claude mcp remove github</code></pre>
+<p>Or edit <code>.mcp.json</code> at project root manually:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_TOKEN": "ghp_..." }
+    }
+  }
+}</code></pre>
+<hr>
+<h2 id="vs-code-extension">VS Code Extension<a href="#vs-code-extension" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>code --install-extension anthropic.claude-code   # install (requires VS Code 1.98.0+)</code></pre>
+<p>Open Claude via the <strong>Spark icon</strong> or status bar in VS Code — no terminal command needed. From a terminal session, use <code>claude --ide</code> to auto-connect to your open editor.</p>
+<table>
+<thead><tr><th>VS Code shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Cmd+N</code> / <code>Ctrl+N</code></td><td>New conversation (Claude focused)</td></tr>
+<tr><td><code>Cmd+Esc</code> / <code>Ctrl+Esc</code></td><td>Focus input</td></tr>
+<tr><td><code>Cmd+Shift+Esc</code> / <code>Ctrl+Shift+Esc</code></td><td>Open in new tab</td></tr>
+<tr><td><code>Option+K</code> / <code>Alt+K</code></td><td>Insert @-mention with line reference</td></tr>
+<tr><td><code>Ctrl+Shift+P</code> → "Claude Code"</td><td>Open command palette</td></tr>
+</tbody>
+</table>
+<ul>
+<li>Highlight code → ask Claude → selection is automatic context</li>
+<li>Click <code>filename.ts:47</code> in Claude's response → jumps to that line</li>
+</ul>
+<hr>
+<h2 id="cost--context-tips">Cost &amp; Context Tips<a href="#cost--context-tips" class="anchor-link">#</a></h2>
+<pre><code>&gt; /cost      # see spend this session
+&gt; /context   # see how full the context window is</code></pre>
+<p><strong>Keep costs down:</strong></p>
+<ul>
+<li>Use <code>haiku</code> for simple questions, <code>sonnet</code> for everyday work, <code>opus</code> for hard problems</li>
+<li>Reference specific files (<code>@file.ts</code>) instead of entire folders</li>
+<li>Run <code>/compact</code> in long sessions before context fills up</li>
+<li>Use <code>-p</code> (print mode) for one-off questions — no session overhead</li>
+</ul>
+<p><strong>Context getting full? Signs:</strong></p>
+<ul>
+<li>Responses feel less relevant or start forgetting earlier context</li>
+<li>Run <code>/compact</code> → frees space while keeping key decisions</li>
+<li>Or <code>/clear</code> → fresh start</li>
+</ul>
+<hr>
+<h2 id="settings-files">Settings Files<a href="#settings-files" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>File</th><th>Scope</th></tr></thead>
+<tbody>
+<tr><td><code>~/.claude/settings.json</code></td><td>Your machine, all projects</td></tr>
+<tr><td><code>.claude/settings.json</code></td><td>This project (commit to git)</td></tr>
+<tr><td><code>.claude/settings.local.json</code></td><td>This project, local only (gitignore this)</td></tr>
+</tbody>
+</table>
+<p><strong>Windows paths:</strong> Replace <code>~/.claude/</code> with <code>%USERPROFILE%\.claude\</code></p>
+<hr>
+<h2 id="quick-troubleshooting">Quick Troubleshooting<a href="#quick-troubleshooting" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><code>claude: command not found</code></td><td>Re-run the installer; restart terminal; check PATH</td></tr>
+<tr><td>Auth fails</td><td><code>claude auth logout</code> then <code>claude auth login</code></td></tr>
+<tr><td>Claude stops mid-task</td><td>Press <code>Enter</code> to nudge, or <code>Ctrl+C</code> and re-ask</td></tr>
+<tr><td>Context full / drifting</td><td><code>/compact</code> or <code>/clear</code></td></tr>
+<tr><td>Wrong file edited</td><td><code>Esc Esc</code> to revert, or <code>Ctrl+Z</code> in the file</td></tr>
+<tr><td>Hook not running</td><td><code>&gt; /doctor</code>; check shell path in hook command</td></tr>
+<tr><td>VS Code not connecting</td><td>Re-run <code>claude --ide</code>; check extension is enabled</td></tr>
+<tr><td>Slow responses</td><td><code>/fast on</code> or <code>/model haiku</code> for simple tasks</td></tr>
+</tbody>
+</table>
+      </article>
+    </main>
+  </div>
+  <script src="assets/main.js"></script>
+</body>
+</html>

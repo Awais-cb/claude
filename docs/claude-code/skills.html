@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="skills-custom-slash-commands">Skills — Custom Slash Commands<a href="#skills-custom-slash-commands" class="anchor-link">#</a></h1>
+<p>Think of skills like keyboard macros or TextExpander shortcuts. Instead of typing out a long, repetitive set of instructions every time you want Claude to do something, you define it once as a skill — and then trigger it with a short <code>/command</code>. One short command, full workflow.</p>
+<p>For example, instead of typing "Please review my code for security issues, check for hardcoded credentials, validate all SQL queries use parameterized inputs, and check that authentication is required on protected routes" every time, you create a <code>/security-check</code> skill and just type that.</p>
+<p>Skills are markdown files with instructions. When you type <code>/skill-name</code>, Claude loads and executes those instructions as if you had written them out in full.</p>
+<p>Think of skills as reusable macros or playbooks for things you do repeatedly.</p>
+<hr>
+<h2 id="built-in-skills">Built-in Skills<a href="#built-in-skills" class="anchor-link">#</a></h2>
+<p>Claude Code ships with several built-in skills:</p>
+<table>
+<thead><tr><th>Command</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><code>/simplify</code></td><td>Review recently changed code for quality and efficiency</td></tr>
+<tr><td><code>/review</code></td><td>Review a pull request for quality, correctness, security</td></tr>
+<tr><td><code>/security-review</code></td><td>Analyze branch changes for security vulnerabilities</td></tr>
+<tr><td><code>/debug</code></td><td>Debug the current session using debug logs</td></tr>
+<tr><td><code>/batch</code></td><td>Execute a large-scale change across multiple worktrees</td></tr>
+<tr><td><code>/pr-comments</code></td><td>Fetch and display GitHub PR comments</td></tr>
+<tr><td><code>/commit-push-pr</code></td><td>Commit changes, push, and create a PR</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="creating-a-custom-skill">Creating a Custom Skill<a href="#creating-a-custom-skill" class="anchor-link">#</a></h2>
+<h3 id="1-create-the-skill-directory-and-file">1. Create the skill directory and file<a href="#1-create-the-skill-directory-and-file" class="anchor-link">#</a></h3>
+<p>Each skill lives in its own <strong>directory</strong> with a <code>SKILL.md</code> file inside it — not a standalone <code>.md</code> file.</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code># User-level: available in all your projects
+mkdir -p ~/.claude/skills/my-skill
+# then create ~/.claude/skills/my-skill/SKILL.md
+
+# Project-level: only for the current project
+mkdir -p .claude/skills/my-skill
+# then create .claude/skills/my-skill/SKILL.md</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code># User-level
+mkdir -p ~/.claude/skills/my-skill
+
+# Project-level
+mkdir -p .claude/skills/my-skill</code></pre>
+<p><strong>Windows (native path):</strong></p>
+<pre><code># User-level
+%USERPROFILE%\.claude\skills\my-skill\SKILL.md
+
+# Project-level
+.claude\skills\my-skill\SKILL.md</code></pre>
+<p>The resulting structure looks like this:</p>
+<pre><code>~/.claude/skills/
+└── my-skill/
+    └── SKILL.md      ← required</code></pre>
+<blockquote><p><strong>Common mistake:</strong> Creating <code>~/.claude/skills/my-skill.md</code> (flat file) instead of <code>~/.claude/skills/my-skill/SKILL.md</code> (directory + file). The flat file will not appear in <code>/skills</code>.</p></blockquote>
+<h3 id="2-add-frontmatter-instructions-to-skillmd">2. Add frontmatter + instructions to <code>SKILL.md</code><a href="#2-add-frontmatter-instructions-to-skillmd" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: test-coverage
+description: Run tests and report which files lack coverage
+---
+
+Run the test suite with coverage enabled, then analyze the output to find
+files with less than 80% coverage. Report them sorted by coverage percentage
+(lowest first) with specific suggestions for what tests to add.
+
+Commands to use:
+- `npm test -- --coverage`
+- Parse the coverage output from the terminal</code></pre>
+<h3 id="3-invoke-it">3. Invoke it<a href="#3-invoke-it" class="anchor-link">#</a></h3>
+<pre><code>&gt; /test-coverage</code></pre>
+<hr>
+<h2 id="create-your-first-skill-in-5-minutes">Create Your First Skill in 5 Minutes<a href="#create-your-first-skill-in-5-minutes" class="anchor-link">#</a></h2>
+<p>Here's a complete beginner walkthrough. We'll create a <code>/standup</code> skill that generates a daily standup summary from your recent git activity.</p>
+<p><strong>Step 1: Create the skill directory</strong></p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude/skills/standup</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude/skills/standup</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\skills\standup" -Force</code></pre>
+<p><strong>Step 2: Create the SKILL.md file</strong></p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>nano ~/.claude/skills/standup/SKILL.md</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>nano ~/.claude/skills/standup/SKILL.md</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>notepad "$env:USERPROFILE\.claude\skills\standup\SKILL.md"</code></pre>
+<p><strong>Step 3: Write the skill</strong></p>
+<pre data-lang="markdown"><code>---
+name: standup
+description: Generate a daily standup summary from recent git activity
+---
+
+Generate my daily standup report by:
+
+1. Running `git log --oneline --since="yesterday" --author="$(git config user.name)"`
+2. Looking at which files were changed with `git diff --name-only HEAD~5..HEAD`
+3. Summarizing in the classic standup format:
+
+## Yesterday
+[What was completed based on commits]
+
+## Today
+[What's in progress or next logical step based on recent changes]
+
+## Blockers
+[Any TODO comments added recently, or note "None identified"]
+
+Keep it brief — 3-5 bullet points per section max. Friendly, casual tone.</code></pre>
+<p><strong>Step 4: Use it</strong></p>
+<pre><code>&gt; /standup</code></pre>
+<p>That's it. Claude reads your git history and generates a ready-to-paste standup summary.</p>
+<hr>
+<h2 id="skill-file-format">Skill File Format<a href="#skill-file-format" class="anchor-link">#</a></h2>
+<p>Each skill is a <strong>directory</strong> containing a <code>SKILL.md</code> file:</p>
+<pre><code>~/.claude/skills/
+└── skill-name/
+    ├── SKILL.md          ← required
+    ├── scripts/          ← optional: helper scripts
+    ├── references/       ← optional: docs loaded as needed
+    └── assets/           ← optional: templates, icons, etc.</code></pre>
+<p>The <code>SKILL.md</code> file uses YAML frontmatter followed by instructions:</p>
+<pre data-lang="markdown"><code>---
+name: skill-name              # Used as /skill-name command
+description: What this does   # Shown in /skills list
+trigger: specific phrase      # Optional: Claude auto-invokes when it sees this
+---
+
+Your instructions go here.
+
+Be as detailed as needed.
+Include example workflows.
+Specify which tools to use.</code></pre>
+<hr>
+<h2 id="practical-skill-examples">Practical Skill Examples<a href="#practical-skill-examples" class="anchor-link">#</a></h2>
+<h3 id="example-1-changelog-generator">Example 1: Changelog generator<a href="#example-1-changelog-generator" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: changelog
+description: Generate a changelog entry from recent git commits
+---
+
+Generate a changelog entry for the changes since the last git tag.
+
+1. Run `git log --oneline $(git describe --tags --abbrev=0)..HEAD`
+2. Group commits by type (feat, fix, refactor, docs, etc.)
+3. Write a user-friendly changelog entry in Keep a Changelog format
+4. Output it ready to paste into CHANGELOG.md</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; /changelog</code></pre>
+<hr>
+<h3 id="example-2-code-review-checklist">Example 2: Code review checklist<a href="#example-2-code-review-checklist" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: checklist
+description: Review code against our team's standard checklist
+---
+
+Review the recently changed files against this checklist:
+
+## Security
+- [ ] No hardcoded credentials or secrets
+- [ ] User input is validated and sanitized
+- [ ] SQL queries use parameterized inputs
+- [ ] Authentication is required where needed
+
+## Code Quality
+- [ ] No functions longer than 50 lines
+- [ ] No duplicated code (DRY)
+- [ ] Error cases are handled
+- [ ] No `console.log` statements left in
+
+## Tests
+- [ ] New functions have unit tests
+- [ ] Edge cases are covered
+- [ ] Test names clearly describe what they test
+
+Report each item as PASS, FAIL, or N/A with a brief explanation.</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; /checklist</code></pre>
+<hr>
+<h3 id="example-3-database-migration-helper">Example 3: Database migration helper<a href="#example-3-database-migration-helper" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: migration
+description: Create a new database migration with rollback
+---
+
+Create a new database migration file for the described change.
+
+1. Ask me what the migration should do (if not already stated)
+2. Create the migration file in `database/migrations/`
+3. Use the correct timestamp format: YYYY_MM_DD_HHMMSS_description.php
+4. Include both `up()` and `down()` methods
+5. Follow existing migration conventions in the project
+6. After creating, run `php artisan migrate` to apply it
+
+If the migration involves a new table, also create the corresponding Model.</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; /migration add user preferences table</code></pre>
+<hr>
+<h3 id="example-4-auto-documentation">Example 4: Auto-documentation<a href="#example-4-auto-documentation" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: document
+description: Add JSDoc/docstring comments to undocumented functions
+---
+
+Find all functions in the specified file (or recently changed files) that
+lack documentation comments.
+
+For each undocumented function:
+1. Read the function body to understand what it does
+2. Add a JSDoc comment (for JS/TS) or docstring (for Python)
+3. Include: description, @param with types, @returns, @throws if applicable
+4. Keep it concise — one line description + params is enough
+
+Don't change the function code, only add documentation.</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; /document src/utils/helpers.js</code></pre>
+<hr>
+<h3 id="example-5-environment-setup-check">Example 5: Environment setup check<a href="#example-5-environment-setup-check" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: env-check
+description: Verify the development environment is correctly configured
+---
+
+Check that the development environment is set up correctly:
+
+1. Run `node --version` and verify it's &gt;= 18.0.0
+2. Run `npm --version` and verify it's &gt;= 9.0.0
+3. Check that `.env` exists (don't read it, just confirm it's present)
+4. Run `npm install` and report if there are any errors
+5. Run the test suite with `npm test` and report pass/fail count
+6. Check if the database is reachable (if applicable to this project)
+
+Report a clear PASS/FAIL for each step with the actual version numbers found.
+Suggest fixes for anything that fails.</code></pre>
+<p><strong>Usage (great to run when onboarding to a new project):</strong></p>
+<pre><code>&gt; /env-check</code></pre>
+<hr>
+<h3 id="example-6-pr-description-writer">Example 6: PR description writer<a href="#example-6-pr-description-writer" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: pr-description
+description: Generate a pull request description from recent commits and changes
+---
+
+Write a pull request description for the current branch.
+
+1. Run `git log --oneline main..HEAD` to see all commits on this branch
+2. Run `git diff --stat main..HEAD` to see which files changed
+3. Read the most significantly changed files to understand the changes
+4. Write a PR description with:
+   - A one-sentence summary of what this PR does
+   - A "Why" section explaining the motivation
+   - A "What changed" section with bullet points for each significant change
+   - A "How to test" section with specific steps for a reviewer
+   - Any breaking changes or migration steps needed
+
+Keep it factual and specific — avoid vague language like "various improvements".</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; /pr-description</code></pre>
+<hr>
+<h2 id="skill-configuration-options">Skill Configuration Options<a href="#skill-configuration-options" class="anchor-link">#</a></h2>
+<h3 id="trigger-auto-invocation"><code>trigger</code> — Auto-invocation<a href="#trigger-auto-invocation" class="anchor-link">#</a></h3>
+<p>Claude loads the skill automatically when it detects the trigger pattern:</p>
+<pre data-lang="markdown"><code>---
+name: api-conventions
+description: Project API design standards
+trigger: api endpoint
+---
+
+When creating or modifying API endpoints, follow these conventions:
+- Use plural nouns for collections: `/users`, `/orders`
+- Use HTTP methods correctly: GET (read), POST (create), PUT (replace), PATCH (update), DELETE
+- Return consistent response shapes: `{ data, error, meta }`
+...</code></pre>
+<p>Now whenever you mention "api endpoint", Claude automatically applies these conventions.</p>
+<h3 id="disable-model-invocation-hidden-skills"><code>disable-model-invocation</code> — Hidden skills<a href="#disable-model-invocation-hidden-skills" class="anchor-link">#</a></h3>
+<p>Skills with this flag are only invoked when explicitly called, not available to Claude as context:</p>
+<pre data-lang="markdown"><code>---
+name: internal-notes
+description: Internal team notes
+disable-model-invocation: true
+---</code></pre>
+<h3 id="context-fork-run-in-isolation"><code>context: fork</code> — Run in isolation<a href="#context-fork-run-in-isolation" class="anchor-link">#</a></h3>
+<p>Runs the skill in a separate subagent context:</p>
+<pre data-lang="markdown"><code>---
+name: experiment
+description: Try a risky approach in isolation
+context: fork
+---</code></pre>
+<hr>
+<h2 id="organizing-skills">Organizing Skills<a href="#organizing-skills" class="anchor-link">#</a></h2>
+<p>Each skill is a directory containing a <code>SKILL.md</code>. You can group related skills under subdirectories:</p>
+<pre><code>.claude/skills/
+├── review/
+│   ├── code-review/
+│   │   └── SKILL.md
+│   ├── security-review/
+│   │   └── SKILL.md
+│   └── performance-review/
+│       └── SKILL.md
+├── docs/
+│   ├── changelog/
+│   │   └── SKILL.md
+│   └── readme-update/
+│       └── SKILL.md
+└── testing/
+    ├── test-coverage/
+    │   └── SKILL.md
+    └── integration-tests/
+        └── SKILL.md</code></pre>
+<p>All skills are discovered automatically regardless of nesting depth.</p>
+<p><strong>Suggested organization for beginners:</strong></p>
+<ul>
+<li>Put personal workflow shortcuts in <code>~/.claude/skills/</code> (user-level)</li>
+<li>Put team/project standards in <code>.claude/skills/</code> (project-level, commit to git so teammates get them too)</li>
+</ul>
+<hr>
+<h2 id="viewing-available-skills">Viewing Available Skills<a href="#viewing-available-skills" class="anchor-link">#</a></h2>
+<pre><code>&gt; /skills</code></pre>
+<p>Lists all available skills with their descriptions. Tab completion works — type <code>/</code> and press Tab to see all available skills.</p>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Keep skills focused</strong> — one skill, one purpose</li>
+<li><strong>Include examples</strong> in the skill description for complex workflows</li>
+<li><strong>Use <code>trigger</code></strong> for conventions you always want applied (style guides, naming rules)</li>
+<li><strong>Project skills</strong> for team standards, <strong>user skills</strong> for personal preferences</li>
+<li>Invoke with <code>/skill-name</code> — tab completion works for skills too</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

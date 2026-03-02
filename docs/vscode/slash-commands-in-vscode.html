@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slash Commands in VS Code — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="slash-commands-in-vs-code">Slash Commands in VS Code<a href="#slash-commands-in-vs-code" class="anchor-link">#</a></h1>
+<p>All Claude Code slash commands work inside VS Code sessions. Type them in the prompt box or the integrated terminal — they behave identically either way.</p>
+<p>Slash commands are like keyboard shortcuts for common tasks. Instead of explaining to Claude what you want in natural language, you type a short command and it happens. <code>/diff</code> shows all your changes. <code>/review</code> reviews a PR. <code>/compact</code> cleans up a long conversation. They're the fastest way to trigger specific behaviors.</p>
+<hr>
+<h2 id="how-to-use-slash-commands">How to Use Slash Commands<a href="#how-to-use-slash-commands" class="anchor-link">#</a></h2>
+<p>In the prompt box or terminal, type <code>/</code> followed by the command name:</p>
+<pre><code>&gt; /help
+&gt; /diff
+&gt; /review</code></pre>
+<p>No special setup needed — all commands are available as soon as you're in a Claude Code session. You'll see autocomplete suggestions as you type <code>/</code>.</p>
+<hr>
+<h2 id="core-session-commands">Core Session Commands<a href="#core-session-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/help</code></td><td>Show all available commands with descriptions</td></tr>
+<tr><td><code>/clear</code></td><td>Clear the current conversation context (start fresh without ending the session)</td></tr>
+<tr><td><code>/compact</code></td><td>Compress conversation history to free up context window space</td></tr>
+<tr><td><code>/status</code></td><td>Show Claude Code version, model, and account info</td></tr>
+<tr><td><code>/doctor</code></td><td>Diagnose issues with your Claude Code setup</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-these">When to use these<a href="#when-to-use-these" class="anchor-link">#</a></h3>
+<p><strong><code>/help</code></strong> — Your first stop when you're unsure what's available. Prints a full list of commands with one-line descriptions.</p>
+<p><strong><code>/clear</code></strong> — Use this when you've finished one task and want to start a different one without ending your session. The session persists (you can still resume it later), but Claude's working memory resets. Good for switching topics.</p>
+<p><strong><code>/compact</code></strong> — Use this in long sessions when Claude's answers start to feel off-topic or you notice it forgetting earlier context. It summarizes old history into a condensed form and frees up space for new context.</p>
+<p><strong><code>/status</code></strong> — Quickly check which model you're using, your API status, and the current permission mode.</p>
+<p><strong><code>/doctor</code></strong> — Run this when something seems broken. It checks your setup (CLI version, auth status, extension connection) and tells you what's wrong.</p>
+<hr>
+<h2 id="navigation-and-ui-commands">Navigation and UI Commands<a href="#navigation-and-ui-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/rename &lt;name&gt;</code></td><td>Name the current session for easy resumption later</td></tr>
+<tr><td><code>/history</code></td><td>Show the full conversation history for this session</td></tr>
+<tr><td><code>/vim</code></td><td>Toggle vim editing mode for the prompt box</td></tr>
+<tr><td><code>/fast [on|off]</code></td><td>Toggle Fast Mode (2.5x faster responses); optionally pass <code>on</code> or <code>off</code></td></tr>
+<tr><td><code>/model &lt;name&gt;</code></td><td>Switch model — <code>opus</code>, <code>sonnet</code>, or <code>haiku</code></td></tr>
+<tr><td><code>/desktop</code></td><td>Move the session to the Claude Code desktop app</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-these-1">When to use these<a href="#when-to-use-these-1" class="anchor-link">#</a></h3>
+<p><strong><code>/rename</code></strong> — Do this immediately when starting a session: <code>&gt; /rename payment-refactor</code>. Without a name, you'll have trouble finding the session later.</p>
+<p><strong><code>/history</code></strong> — When resuming a session after a break, use <code>/history</code> to scroll through what was discussed and remind yourself where you left off.</p>
+<p><strong><code>/vim</code></strong> — For vim users only. Enables vim keybindings in the prompt input.</p>
+<p><strong><code>/fast</code></strong> — Toggle on for quick questions or rapid iteration. Toggle off for complex multi-step tasks where thoroughness matters more than speed.</p>
+<p><strong><code>/model haiku</code></strong> — Switch to a faster, cheaper model for simple questions like "what does this function do?" Switch back with <code>/model opus</code> for complex tasks.</p>
+<hr>
+<h2 id="configuration-commands">Configuration Commands<a href="#configuration-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/config</code></td><td>Open the Settings interface (same as <code>/settings</code>)</td></tr>
+<tr><td><code>/settings</code></td><td>Open the Settings interface (same as <code>/config</code>)</td></tr>
+<tr><td><code>/keybindings</code></td><td>Edit keyboard shortcuts in <code>keybindings.json</code></td></tr>
+<tr><td><code>/memory</code></td><td>View and edit CLAUDE.md and memory files</td></tr>
+<tr><td><code>/permissions</code></td><td>View and modify allowed/denied tool permissions</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-these-2">When to use these<a href="#when-to-use-these-2" class="anchor-link">#</a></h3>
+<p><strong><code>/config</code></strong> and <strong><code>/settings</code></strong> — These are aliases of each other and open the same Settings interface. Use either one to access Claude Code's configuration. The interface may show different tabs depending on context, but both commands take you to the same place.</p>
+<p><strong><code>/memory</code></strong> — Opens the CLAUDE.md file for this project. Add things here that Claude should always know: project conventions, architecture decisions, testing patterns, etc.</p>
+<p><strong><code>/permissions</code></strong> — Check what Claude is and isn't allowed to do. Useful when Claude unexpectedly asks for permission on something you want to auto-approve.</p>
+<hr>
+<h2 id="code-and-review-commands">Code and Review Commands<a href="#code-and-review-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/diff</code></td><td>Open interactive diff of recent changes</td></tr>
+<tr><td><code>/review</code></td><td>Review a pull request (fetches PR diff and analyzes it)</td></tr>
+<tr><td><code>/pr-comments &lt;number&gt;</code></td><td>Fetch review comments from a PR to address them</td></tr>
+<tr><td><code>/security-review</code></td><td>Review all branch changes for security vulnerabilities</td></tr>
+<tr><td><code>/simplify</code></td><td>Review changed code for quality, reuse, and efficiency</td></tr>
+<tr><td><code>/commit-push-pr</code></td><td>Stage changes, commit, push, and open a pull request</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-these-3">When to use these<a href="#when-to-use-these-3" class="anchor-link">#</a></h3>
+<p><strong><code>/diff</code></strong> — Before committing, run <code>/diff</code> to see a summary of all your changes. Claude can then tell you if anything looks off.</p>
+<p><strong><code>/review 47</code></strong> — Review PR #47 from GitHub. Claude fetches the diff, analyzes it, and gives you a structured review with specific feedback. File links in the response let you navigate directly to any issue.</p>
+<p><strong><code>/security-review</code></strong> — Run before merging any code that touches authentication, payments, or user data. Claude checks specifically for security vulnerabilities.</p>
+<p><strong><code>/commit-push-pr</code></strong> — The "I'm done" command. Stages your changes, writes a commit message, pushes the branch, and opens a pull request — all in one go. Note: this is a built-in <strong>skill</strong> (not a raw slash command), so it runs as a Claude Code workflow rather than a direct CLI flag.</p>
+<hr>
+<h2 id="context-commands">Context Commands<a href="#context-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/context</code></td><td>Visualize how much of the context window is being used</td></tr>
+<tr><td><code>/add-dir &lt;path&gt;</code></td><td>Add an additional directory Claude can access</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-these-4">When to use these<a href="#when-to-use-these-4" class="anchor-link">#</a></h3>
+<p><strong><code>/context</code></strong> — Run when sessions feel sluggish or Claude seems to be losing track of earlier details. It shows a visual bar of how full the context window is.</p>
+<p><strong><code>/add-dir ../shared-lib</code></strong> — When your project depends on code in a sibling directory, this gives Claude read access to it without restarting the session.</p>
+<hr>
+<h2 id="ide-commands">IDE Commands<a href="#ide-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/ide</code></td><td>Manage IDE connections (list connected IDEs, reconnect)</td></tr>
+</tbody>
+</table>
+<p>Useful when you want to check whether VS Code is properly connected or switch between multiple editor instances.</p>
+<pre><code>&gt; /ide
+
+Connected IDE: VS Code
+Window: my-project — src/services/UserService.ts
+Status: Active</code></pre>
+<hr>
+<h2 id="integration-commands">Integration Commands<a href="#integration-commands" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/mcp</code></td><td>Manage MCP (Model Context Protocol) server connections</td></tr>
+<tr><td><code>/chrome</code></td><td>Manage Chrome browser integration</td></tr>
+<tr><td><code>/install-github-app</code></td><td>Set up Claude as a GitHub Actions bot for PR automation</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-these-5">When to use these<a href="#when-to-use-these-5" class="anchor-link">#</a></h3>
+<p><strong><code>/mcp</code></strong> — Use when you want to connect a database, API, or external tool to your Claude session. MCP servers extend Claude's abilities beyond just your local files.</p>
+<p><strong><code>/install-github-app</code></strong> — One-time setup to enable Claude Code to automatically review PRs and respond to GitHub comments. Great for teams.</p>
+<hr>
+<h2 id="extended-thinking">Extended Thinking<a href="#extended-thinking" class="anchor-link">#</a></h2>
+<p><code>/think</code>, <code>/think-hard</code>, and <code>/think-harder</code> are <strong>not</strong> built-in slash commands. Extended thinking is toggled via <code>Option+T</code> (macOS) / <code>Alt+T</code> (Windows/Linux) or by selecting the thinking level from the <code>/</code> command menu inside the session.</p>
+<h3 id="when-to-use-extended-thinking">When to use extended thinking<a href="#when-to-use-extended-thinking" class="anchor-link">#</a></h3>
+<p>Extended thinking is best for genuinely complex problems:</p>
+<ul>
+<li>Architectural decisions with many tradeoffs</li>
+<li>Debugging an obscure issue that involves multiple interacting systems</li>
+<li>Designing a system that needs to handle edge cases carefully</li>
+</ul>
+<p>You can also phrase requests naturally to invoke deeper reasoning:</p>
+<pre><code>&gt; Think carefully about how to design the retry logic for our payment processor
+  to handle network failures, duplicate charges, and idempotency correctly.</code></pre>
+<p>The response will be slower but significantly more thorough.</p>
+<hr>
+<h2 id="skill-commands">Skill Commands<a href="#skill-commands" class="anchor-link">#</a></h2>
+<p>Skills are custom slash commands defined by users. Any skill you've created or installed appears here:</p>
+<pre><code>&gt; /commit          # Stage, write message, commit
+&gt; /review-pr       # Full PR review workflow
+&gt; /deploy          # Custom deployment script</code></pre>
+<p>See <code>~/.claude/skills/</code> for available skills and <a href="../claude-code/skills.html">skills.md</a> for how to create them.</p>
+<hr>
+<h2 id="practical-examples-in-vs-code">Practical Examples in VS Code<a href="#practical-examples-in-vs-code" class="anchor-link">#</a></h2>
+<h3 id="quick-code-review-before-a-commit">Quick code review before a commit<a href="#quick-code-review-before-a-commit" class="anchor-link">#</a></h3>
+<pre><code>&gt; /diff</code></pre>
+<p>See all changes you've made. Then:</p>
+<pre><code>&gt; /security-review</code></pre>
+<p>Check for security issues. If all clear:</p>
+<pre><code>&gt; /commit-push-pr</code></pre>
+<h3 id="picking-up-where-you-left-off">Picking up where you left off<a href="#picking-up-where-you-left-off" class="anchor-link">#</a></h3>
+<pre><code>&gt; /history</code></pre>
+<p>Scroll through what was discussed. Then continue where you left off.</p>
+<h3 id="when-the-context-feels-cluttered">When the context feels cluttered<a href="#when-the-context-feels-cluttered" class="anchor-link">#</a></h3>
+<pre><code>&gt; /compact</code></pre>
+<p>Claude compresses old history, keeping the important parts but freeing up context window space.</p>
+<h3 id="switching-to-a-faster-model-for-simple-tasks">Switching to a faster model for simple tasks<a href="#switching-to-a-faster-model-for-simple-tasks" class="anchor-link">#</a></h3>
+<pre><code>&gt; /model haiku</code></pre>
+<p>Haiku is significantly faster and cheaper for straightforward questions. Switch back:</p>
+<pre><code>&gt; /model opus</code></pre>
+<h3 id="bringing-in-an-mcp-tool">Bringing in an MCP tool<a href="#bringing-in-an-mcp-tool" class="anchor-link">#</a></h3>
+<pre><code>&gt; /mcp</code></pre>
+<p>Add or activate an MCP server (e.g., a database connection or Jira integration) without leaving VS Code.</p>
+<h3 id="checking-setup-health">Checking setup health<a href="#checking-setup-health" class="anchor-link">#</a></h3>
+<pre><code>&gt; /doctor</code></pre>
+<p>Runs a diagnostic check and prints a report of your Claude Code setup — version, auth status, API connectivity, extension connection.</p>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong><code>/help</code> first</strong> — if you're unsure what's available, <code>/help</code> lists everything</li>
+<li><strong>Slash commands work in both the prompt box and terminal</strong> — no difference</li>
+<li><strong>Some commands open interactive UIs</strong> — <code>/config</code> and <code>/memory</code> open visual editors</li>
+<li><strong><code>/compact</code> is your friend in long sessions</strong> — run it when responses start feeling less focused</li>
+<li><strong>Tab autocomplete works for slash commands</strong> — type <code>/</code> and press Tab to see all options</li>
+</ul>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="../claude-code/slash-commands.html">../slash-commands.md</a> — Full slash command reference</li>
+<li><a href="prompt-box.html">prompt-box.md</a> — The VS Code prompt panel</li>
+<li><a href="settings-configuration.html">settings-configuration.md</a> — Settings you can configure with <code>/config</code></li>
+<li><a href="../claude-code/skills.html">../skills.md</a> — Creating custom slash commands</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

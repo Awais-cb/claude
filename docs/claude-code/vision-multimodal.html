@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision &amp; Multimodal — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="vision-multimodal">Vision &amp; Multimodal<a href="#vision-multimodal" class="anchor-link">#</a></h1>
+<p>Think of this like sending a photo to a knowledgeable friend and asking "what do you think?" — except Claude can actually analyze what it sees in technical detail. You can take a screenshot of a broken UI, a whiteboard diagram, a design mockup, or a wall of error messages and paste it directly into your Claude Code session. Claude will look at the image and respond as if it has eyes.</p>
+<p>This changes the way you work. Instead of typing out a long description of what is wrong with your layout, you just show it. Instead of explaining what a diagram says, you paste it and ask Claude to generate code from it.</p>
+<blockquote><p>What to expect: After copying a screenshot, pressing Ctrl+V in the terminal pastes the image inline. Claude acknowledges it and begins analyzing the visual content.</p></blockquote>
+<hr>
+<h2 id="pasting-images">Pasting Images<a href="#pasting-images" class="anchor-link">#</a></h2>
+<h3 id="taking-a-screenshot-and-pasting-it">Taking a screenshot and pasting it<a href="#taking-a-screenshot-and-pasting-it" class="anchor-link">#</a></h3>
+<p>The workflow is: take a screenshot, then paste it into Claude Code.</p>
+<p><strong>macOS:</strong></p>
+<p>Take the screenshot:</p>
+<pre><code>Cmd+Shift+4         # Select a region (saves to Desktop)
+Cmd+Shift+4, Space  # Click a window to capture just that window
+Cmd+Shift+3         # Capture the full screen
+Cmd+Ctrl+Shift+4    # Capture region to clipboard (no file saved)</code></pre>
+<p>Paste into Claude Code:</p>
+<pre><code>Ctrl+V</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<p>Take the screenshot (several tools available):</p>
+<pre data-lang="bash"><code># gnome-screenshot (GNOME desktop)
+gnome-screenshot -a           # Select a region (saves to Pictures)
+gnome-screenshot -a -c        # Select a region, copy to clipboard
+
+# scrot (lightweight, any desktop)
+scrot -s /tmp/screenshot.png  # Select a region and save
+
+# Flameshot (feature-rich, supports annotation)
+flameshot gui                 # Opens GUI selector with annotation tools</code></pre>
+<p>Paste into Claude Code:</p>
+<pre><code>Ctrl+V</code></pre>
+<p><strong>Windows (WSL / PowerShell):</strong></p>
+<p>Take the screenshot:</p>
+<pre><code>Win+Shift+S     # Snipping Tool — select a region (copies to clipboard)
+Win+PrtSc       # Full screen to clipboard
+Alt+PrtSc       # Active window to clipboard</code></pre>
+<p>Or use the Snipping Tool app for more control (search "Snipping Tool" in Start).</p>
+<p>Paste into Claude Code:</p>
+<pre><code>Ctrl+V</code></pre>
+<blockquote><p>Note: When using WSL, make sure you are running Claude Code in a terminal that supports image paste (such as Windows Terminal). The clipboard is shared between Windows and WSL.</p></blockquote>
+<h3 id="from-a-file">From a file<a href="#from-a-file" class="anchor-link">#</a></h3>
+<p>Just reference the file path:</p>
+<pre><code>&gt; analyze this screenshot: /tmp/error-screenshot.png
+&gt; what's wrong with the UI in ~/Desktop/mockup.jpg?</code></pre>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre><code>&gt; analyze this screenshot: /Users/yourname/Desktop/bug.png
+&gt; what's wrong with the UI in /home/yourname/mockup.jpg?</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre><code>&gt; analyze this screenshot: /mnt/c/Users/yourname/Desktop/bug.png</code></pre>
+<p>Or drag-and-drop the image file into your terminal (works in most modern terminals).</p>
+<hr>
+<h2 id="what-you-can-do-with-images">What You Can Do With Images<a href="#what-you-can-do-with-images" class="anchor-link">#</a></h2>
+<h3 id="debug-ui-issues">Debug UI issues<a href="#debug-ui-issues" class="anchor-link">#</a></h3>
+<pre><code>[Paste screenshot of broken layout]
+&gt; Why is the sidebar overlapping the content area?</code></pre>
+<h3 id="implement-designs">Implement designs<a href="#implement-designs" class="anchor-link">#</a></h3>
+<pre><code>[Paste a Figma mockup or design screenshot]
+&gt; Implement this UI in React with Tailwind CSS</code></pre>
+<h3 id="analyze-error-screens">Analyze error screens<a href="#analyze-error-screens" class="anchor-link">#</a></h3>
+<pre><code>[Paste a screenshot of an error dialog]
+&gt; What caused this error and how do I fix it?</code></pre>
+<h3 id="understand-architecture-diagrams">Understand architecture diagrams<a href="#understand-architecture-diagrams" class="anchor-link">#</a></h3>
+<pre><code>[Paste a system architecture diagram]
+&gt; Explain this architecture and identify potential bottlenecks</code></pre>
+<h3 id="decode-screenshots-of-code">Decode screenshots of code<a href="#decode-screenshots-of-code" class="anchor-link">#</a></h3>
+<pre><code>[Paste a photo of code on a whiteboard]
+&gt; Transcribe and explain this code</code></pre>
+<h3 id="read-charts-and-data-visualizations">Read charts and data visualizations<a href="#read-charts-and-data-visualizations" class="anchor-link">#</a></h3>
+<pre><code>[Paste a performance graph]
+&gt; What trends does this graph show? What should I investigate?</code></pre>
+<hr>
+<h2 id="when-to-use-vision-instead-of-text">When to Use Vision Instead of Text<a href="#when-to-use-vision-instead-of-text" class="anchor-link">#</a></h2>
+<pre><code>Situation                          Approach
+─────────────────────────────────────────────────────
+UI looks wrong / broken            Paste a screenshot
+Error message on screen            Paste a screenshot (faster than typing it)
+Design to implement                Paste the mockup
+Diagram to understand              Paste the diagram
+Whiteboard from a meeting          Photograph it and paste
+Console errors in browser          Screenshot DevTools and paste
+Test output with visual gaps       Screenshot and paste
+Database schema diagram            Paste ER diagram image</code></pre>
+<hr>
+<h2 id="practical-examples">Practical Examples<a href="#practical-examples" class="anchor-link">#</a></h2>
+<h3 id="example-1-fix-a-visual-bug">Example 1: Fix a visual bug<a href="#example-1-fix-a-visual-bug" class="anchor-link">#</a></h3>
+<pre><code>[You paste a screenshot showing text overlapping a button]
+
+&gt; The "Submit" button is being covered by the error message.
+  Fix the CSS.
+
+Claude: I can see the issue — the error message has `position: absolute`
+but the button doesn't have proper z-index. Here's the fix...</code></pre>
+<h3 id="example-2-build-from-a-design">Example 2: Build from a design<a href="#example-2-build-from-a-design" class="anchor-link">#</a></h3>
+<pre><code>[You paste a screenshot of a login page design]
+
+&gt; Build this login form in HTML + CSS. Match the design exactly.
+
+Claude: Looking at the design, I can see:
+- White card with 24px border radius
+- Email and password fields with gray borders
+- Blue "Sign In" button
+- "Forgot password?" link below...
+
+Here's the implementation:</code></pre>
+<h3 id="example-3-debug-a-console-error">Example 3: Debug a console error<a href="#example-3-debug-a-console-error" class="anchor-link">#</a></h3>
+<pre><code>[You paste a screenshot of browser DevTools with red error messages]
+
+&gt; Fix these JavaScript errors
+
+Claude: I can see three errors:
+1. TypeError: Cannot read property 'map' of undefined
+   → In UserList.jsx, the `users` prop is undefined on first render
+2. ...</code></pre>
+<h3 id="example-4-read-a-diagram">Example 4: Read a diagram<a href="#example-4-read-a-diagram" class="anchor-link">#</a></h3>
+<pre><code>[You paste an ER diagram from a whiteboard photo]
+
+&gt; Generate SQL CREATE TABLE statements from this ER diagram
+
+Claude: I can see 4 entities in the diagram:
+- users (id, email, name, created_at)
+- orders (id, user_id, total, status)
+...</code></pre>
+<h3 id="example-5-recreate-a-competitors-ui">Example 5: Recreate a competitor's UI<a href="#example-5-recreate-a-competitors-ui" class="anchor-link">#</a></h3>
+<pre><code>[You paste a screenshot of a competitor's dashboard]
+
+&gt; Recreate this dashboard layout in our app using our existing
+  component library. Match the structure but use our brand colors.
+
+Claude: I can see a three-column layout with:
+- Left nav with icons
+- Center feed with cards
+- Right sidebar with summary stats
+Here's how to implement this...</code></pre>
+<h3 id="example-6-read-a-terminal-error-screenshot">Example 6: Read a terminal error screenshot<a href="#example-6-read-a-terminal-error-screenshot" class="anchor-link">#</a></h3>
+<pre><code>[You paste a screenshot of a red stack trace in the terminal]
+
+&gt; What caused this and how do I fix it?
+
+Claude: I can read the stack trace. The root cause is:
+  TypeError: Cannot read properties of null (reading 'user')
+  at middleware.js:47
+The problem is that req.session is null when the session
+middleware hasn't run yet. Here's the fix...</code></pre>
+<hr>
+<h2 id="annotating-screenshots-before-pasting">Annotating Screenshots Before Pasting<a href="#annotating-screenshots-before-pasting" class="anchor-link">#</a></h2>
+<p>On each platform you can annotate (draw arrows, circles, labels) before pasting to highlight exactly what you want Claude to look at:</p>
+<p><strong>macOS:</strong></p>
+<ul>
+<li>Open the screenshot in Preview (double-click the file)</li>
+<li>Use the Markup toolbar (pencil icon) to draw shapes and arrows</li>
+<li>Copy (Cmd+C) and paste into Claude Code</li>
+</ul>
+<p><strong>Linux (Ubuntu):</strong></p>
+<ul>
+<li>Use Flameshot: <code>flameshot gui</code> — it has built-in annotation tools</li>
+<li>Or open the image in GIMP and use the drawing tools</li>
+</ul>
+<p><strong>Windows:</strong></p>
+<ul>
+<li>Open the screenshot in the Photos app and use Edit &gt; Draw</li>
+<li>Or use Paint (search "Paint" in Start) to add arrows and shapes</li>
+<li>Or use Snipping Tool's built-in pen tool right after capturing</li>
+</ul>
+<hr>
+<h2 id="multiple-images">Multiple Images<a href="#multiple-images" class="anchor-link">#</a></h2>
+<p>You can include multiple images in a single message:</p>
+<pre><code>[Paste image 1]
+[Paste image 2]
+
+&gt; Compare these two UI versions and tell me which has better UX</code></pre>
+<hr>
+<h2 id="images-in-context">Images in Context<a href="#images-in-context" class="anchor-link">#</a></h2>
+<p>Images persist in the conversation context:</p>
+<pre><code>[Paste a wireframe]
+
+&gt; Implement this wireframe as a React component
+
+[Claude implements it]
+
+&gt; Now make the button red like in the original design
+
+Claude still has the image in context and refers back to it.</code></pre>
+<hr>
+<h2 id="opening-images-from-responses">Opening Images from Responses<a href="#opening-images-from-responses" class="anchor-link">#</a></h2>
+<p>When Claude references an image it created or analyzed:</p>
+<p><strong>macOS:</strong></p>
+<pre><code>Cmd+Click   # Opens image in viewer</code></pre>
+<p><strong>Linux (Ubuntu) / Windows (WSL):</strong></p>
+<pre><code>Ctrl+Click  # Opens image in viewer</code></pre>
+<hr>
+<h2 id="limitations">Limitations<a href="#limitations" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Max image size</strong>: Depends on model (typically up to 5MB per image)</li>
+<li><strong>Formats supported</strong>: PNG, JPEG, GIF, WebP</li>
+<li><strong>PDFs</strong>: Not supported as images (use text extraction instead)</li>
+<li><strong>Image generation</strong>: Claude Code cannot generate images, only analyze them</li>
+</ul>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Screenshots are gold</strong> — instead of describing a bug, just show it</li>
+<li><strong>Paste design mockups</strong> to get accurate implementations</li>
+<li><strong>Annotate screenshots</strong> with arrows/circles in Preview/Paint/Flameshot before pasting to highlight specific areas</li>
+<li><strong>System diagram photos</strong> — Claude handles messy whiteboard photos surprisingly well</li>
+<li><strong>Browser DevTools screenshots</strong> save a lot of typing when debugging frontend errors</li>
+<li><strong>Multiple images</strong> can be pasted in one message to ask for a comparison or combined analysis</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

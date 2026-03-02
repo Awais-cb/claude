@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Shortcuts — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="keyboard-shortcuts">Keyboard Shortcuts<a href="#keyboard-shortcuts" class="anchor-link">#</a></h1>
+<p>Keyboard shortcuts let you control Claude Code without typing commands. Instead of writing <code>/compact</code> or <code>/plan</code>, a key combination does it instantly.</p>
+<blockquote><p><strong>Think of it like driving:</strong> You don't tell the car "please activate the brakes" — you just press the pedal. Shortcuts are your pedals: fast, muscle-memory actions that don't interrupt your flow.</p></blockquote>
+<blockquote><p><strong>Tip:</strong> Type <code>?</code> inside a session to see which shortcuts are active in your terminal.</p></blockquote>
+<hr>
+<h2 id="essential-controls">Essential Controls<a href="#essential-controls" class="anchor-link">#</a></h2>
+<p>These are the most important shortcuts to learn first. They work everywhere, in any situation.</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Ctrl+C</code></td><td>Cancel current action or clear input</td></tr>
+<tr><td><code>Ctrl+D</code></td><td>Exit session (EOF)</td></tr>
+<tr><td><code>Ctrl+L</code></td><td>Clear terminal screen</td></tr>
+<tr><td><code>Ctrl+O</code></td><td>Toggle verbose output (see Claude's internal reasoning)</td></tr>
+<tr><td><code>Ctrl+R</code></td><td>Reverse search through command history</td></tr>
+</tbody>
+</table>
+<h3 id="ctrlc-the-emergency-stop"><code>Ctrl+C</code> — The emergency stop<a href="#ctrlc-the-emergency-stop" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like the Stop button on a printer. Press it when Claude is doing something and you want it to stop immediately.</p></blockquote>
+<pre><code>[Claude is generating a long response or running a command]
+→ Press Ctrl+C
+[Claude stops immediately, cursor returns to you]</code></pre>
+<p>If there's text in the input box (you're mid-typing), <code>Ctrl+C</code> clears the input instead. Press it twice if Claude is actively working and you want to abort.</p>
+<hr>
+<h3 id="ctrld-leave-the-session"><code>Ctrl+D</code> — Leave the session<a href="#ctrld-leave-the-session" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like closing a chat window. The conversation is saved — you can come back with <code>claude -c</code>.</p></blockquote>
+<p>Press <code>Ctrl+D</code> on an empty input line to exit Claude Code cleanly.</p>
+<hr>
+<h3 id="ctrll-clean-screen-same-session"><code>Ctrl+L</code> — Clean screen, same session<a href="#ctrll-clean-screen-same-session" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like wiping a whiteboard. The conversation history isn't deleted — you just scroll up to see it again — but your screen gets clean.</p></blockquote>
+<p>Use this when the terminal feels cluttered and you want to see the current state clearly. It does NOT affect your conversation.</p>
+<hr>
+<h3 id="ctrlo-look-inside-claudes-head"><code>Ctrl+O</code> — Look inside Claude's head<a href="#ctrlo-look-inside-claudes-head" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like turning on subtitles. Normally you just see Claude's output; with verbose mode on, you see what tools it's calling, what it's reading, and why.</p></blockquote>
+<pre><code>→ Press Ctrl+O
+[Every tool call, file read, and internal step now shows in real time]</code></pre>
+<p>Useful when something is taking a long time and you want to understand what Claude is actually doing.</p>
+<hr>
+<h2 id="submitting-input">Submitting &amp; Input<a href="#submitting-input" class="anchor-link">#</a></h2>
+<p>How you get your message to Claude.</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Enter</code></td><td>Submit message</td></tr>
+<tr><td><code>Shift+Enter</code></td><td>New line (multi-line input) — requires terminal setup</td></tr>
+<tr><td><code>Option+Enter</code></td><td>New line on macOS</td></tr>
+<tr><td><code>\</code> then <code>Enter</code></td><td>New line (works in all terminals)</td></tr>
+<tr><td><code>Ctrl+J</code></td><td>Line feed character</td></tr>
+<tr><td><code>Ctrl+G</code></td><td>Open current input in your <code>$EDITOR</code></td></tr>
+</tbody>
+</table>
+<h3 id="writing-multi-line-prompts">Writing multi-line prompts<a href="#writing-multi-line-prompts" class="anchor-link">#</a></h3>
+<p>For complex tasks, a well-structured multi-line prompt gets better results than a single rushed sentence.</p>
+<p><strong>Method 1:</strong> Use <code>\</code> at the end of each line (works in every terminal):</p>
+<pre><code>&gt; Here's what I need:\
+&gt; 1. Read the auth module\
+&gt; 2. Find any security issues\
+&gt; 3. Fix them and write tests</code></pre>
+<p><strong>Method 2:</strong> Set up <code>Shift+Enter</code> (recommended for regular use):</p>
+<pre><code>&gt; /terminal-setup</code></pre>
+<p>This configures your terminal so <code>Shift+Enter</code> adds a new line, while plain <code>Enter</code> submits. Much more natural.</p>
+<p><strong>Method 3:</strong> <code>Ctrl+G</code> — write in your full editor:</p>
+<blockquote><p><strong>Analogy:</strong> Like drafting an email in Word instead of the email client's input box — more space, full editing features.</p></blockquote>
+<p>Press <code>Ctrl+G</code> and your current prompt opens in whatever editor you have set as <code>$EDITOR</code> (vim, nano, VS Code, etc.). Write as much as you want, save, and close — the text comes back to Claude Code ready to submit.</p>
+<hr>
+<h2 id="mode-switching">Mode Switching<a href="#mode-switching" class="anchor-link">#</a></h2>
+<p>Change what Claude is allowed to do without opening any menu.</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Shift+Tab</code></td><td>Cycle permission modes: Normal → Auto-Accept → Plan</td></tr>
+<tr><td><code>Alt+M</code></td><td>Same as <code>Shift+Tab</code></td></tr>
+<tr><td><code>Option+P</code> / <code>Alt+P</code></td><td>Switch model without clearing your prompt</td></tr>
+<tr><td><code>Option+T</code> / <code>Alt+T</code></td><td>Toggle extended thinking mode</td></tr>
+</tbody>
+</table>
+<h3 id="shifttab-the-permission-dial"><code>Shift+Tab</code> — The permission dial<a href="#shifttab-the-permission-dial" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like a camera mode dial: Auto → Manual → Burst. Each mode gives you a different level of control vs. speed.</p></blockquote>
+<pre><code>Normal → Auto-Accept → Plan → Normal → ...</code></pre>
+<p>The current mode is shown in the footer at the bottom of your terminal:</p>
+<pre><code>┌────────────────────────────────────────────────┐
+│ &gt; _                                            │
+│                                                │
+│  [Normal Mode]  tokens: 1,204  cost: $0.02    │
+└────────────────────────────────────────────────┘</code></pre>
+<table>
+<thead><tr><th>Mode</th><th>What it means</th><th>When to use it</th></tr></thead>
+<tbody>
+<tr><td><strong>Normal</strong></td><td>Claude asks before risky actions</td><td>Day-to-day work</td></tr>
+<tr><td><strong>Plan</strong></td><td>Read-only — no edits at all</td><td>Exploring code, understanding a codebase</td></tr>
+<tr><td><strong>Auto-Accept</strong></td><td>Does everything without asking</td><td>Trusted tasks, rapid iteration</td></tr>
+</tbody>
+</table>
+<hr>
+<h3 id="altp-swap-models-on-the-fly"><code>Alt+P</code> — Swap models on the fly<a href="#altp-swap-models-on-the-fly" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like switching from a calculator to a full spreadsheet app without closing your work.</p></blockquote>
+<p>Press <code>Alt+P</code> (or <code>Option+P</code> on Mac) while you have a prompt typed. A model picker appears and you can switch to Opus, Sonnet, or Haiku. Your typed prompt stays in the input box.</p>
+<hr>
+<h2 id="text-editing">Text Editing<a href="#text-editing" class="anchor-link">#</a></h2>
+<p>Shortcuts for editing what you've typed in the input prompt — especially useful for long, complex prompts.</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Ctrl+K</code></td><td>Delete from cursor to end of line</td></tr>
+<tr><td><code>Ctrl+U</code></td><td>Delete entire current line</td></tr>
+<tr><td><code>Ctrl+Y</code></td><td>Paste last deleted text</td></tr>
+<tr><td><code>Alt+Y</code></td><td>Cycle through paste history</td></tr>
+<tr><td><code>Alt+B</code></td><td>Move cursor back one word</td></tr>
+<tr><td><code>Alt+F</code></td><td>Move cursor forward one word</td></tr>
+<tr><td><code>Up Arrow</code></td><td>Previous command in history</td></tr>
+<tr><td><code>Down Arrow</code></td><td>Next command in history</td></tr>
+<tr><td><code>Left/Right Arrow</code></td><td>Cycle dialog tabs (in menus)</td></tr>
+</tbody>
+</table>
+<h3 id="the-most-useful-text-editing-shortcuts">The most useful text editing shortcuts<a href="#the-most-useful-text-editing-shortcuts" class="anchor-link">#</a></h3>
+<p><strong><code>Ctrl+U</code></strong> — wipe the whole line and start over. Much faster than holding Backspace.</p>
+<p><strong><code>Ctrl+K</code></strong> — delete everything from your cursor to the end of the line. Good for rewriting the end of a prompt without deleting the beginning.</p>
+<p><strong><code>Ctrl+Y</code></strong> — paste back what you just deleted with <code>Ctrl+U</code> or <code>Ctrl+K</code>. It's like an undo for deletions.</p>
+<p><strong><code>Alt+B</code> / <code>Alt+F</code></strong> — jump backward/forward one word at a time instead of pressing the arrow key 20 times.</p>
+<p><strong><code>Up Arrow</code></strong> — retrieve your last prompt. Essential when Claude misunderstood and you want to tweak and resend.</p>
+<hr>
+<h2 id="image-clipboard">Image &amp; Clipboard<a href="#image-clipboard" class="anchor-link">#</a></h2>
+<p>Claude can see images. Paste them directly from your clipboard.</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Ctrl+V</code></td><td>Paste image from clipboard</td></tr>
+<tr><td><code>Cmd+V</code></td><td>Paste image from clipboard (macOS)</td></tr>
+<tr><td><code>Ctrl+V</code></td><td>Paste image from clipboard (Linux)</td></tr>
+<tr><td><code>Cmd+Click</code></td><td>Open image in viewer</td></tr>
+<tr><td><code>Ctrl+Click</code></td><td>Open image in viewer (Linux/Windows)</td></tr>
+</tbody>
+</table>
+<h3 id="how-to-ask-claude-about-a-screenshot">How to ask Claude about a screenshot<a href="#how-to-ask-claude-about-a-screenshot" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like sending a photo to a friend and asking "what do you think?" — except Claude can actually analyze and respond to what it sees.</p></blockquote>
+<ol>
+<li>Take a screenshot — <code>Cmd+Shift+4</code> on macOS, <code>PrintScreen</code> on Windows/Linux</li>
+<li>Press <code>Ctrl+V</code> (or <code>Cmd+V</code>) in Claude Code</li>
+<li>Ask your question:</li>
+</ol>
+<pre><code>&gt; [image pasted]
+&gt; Why is the login button not showing up?</code></pre>
+<pre><code>&gt; [image pasted]
+&gt; This is the error I'm getting. What's causing it?</code></pre>
+<pre><code>&gt; [image pasted]
+&gt; Can you recreate this UI layout in HTML/CSS?</code></pre>
+<p>Claude sees the image exactly as you see it and can describe, analyze, or act on it.</p>
+<hr>
+<h2 id="session-history">Session &amp; History<a href="#session-history" class="anchor-link">#</a></h2>
+<p>Shortcuts for managing what's happening in the background.</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Esc Esc</code></td><td>Rewind/summarize conversation (undo last change)</td></tr>
+<tr><td><code>Ctrl+B</code></td><td>Background a running task (keeps it running)</td></tr>
+<tr><td><code>Ctrl+T</code></td><td>Toggle task list view</td></tr>
+<tr><td><code>Ctrl+F</code></td><td>Kill background agents (press twice to confirm)</td></tr>
+</tbody>
+</table>
+<h3 id="esc-esc-undo-claudes-last-action"><code>Esc Esc</code> — Undo Claude's last action<a href="#esc-esc-undo-claudes-last-action" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like Ctrl+Z for Claude's edits. If Claude changed a file and the result wasn't what you wanted, <code>Esc Esc</code> reverts it.</p></blockquote>
+<pre><code>[Claude edits 3 files]
+→ Press Esc Esc
+[The edits are reverted, you're back to before]</code></pre>
+<p>This is different from <code>/rewind</code> (which goes back to a checkpoint) — <code>Esc Esc</code> specifically undoes the most recent file change.</p>
+<hr>
+<h3 id="ctrlb-keep-claude-working-in-the-background"><code>Ctrl+B</code> — Keep Claude working in the background<a href="#ctrlb-keep-claude-working-in-the-background" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like minimizing an app that's still running. Claude keeps working while you do something else.</p></blockquote>
+<pre><code>[Claude is running tests or building something long]
+→ Press Ctrl+B
+[Task runs in background, you get your prompt back]
+→ Press Ctrl+T to check on it</code></pre>
+<hr>
+<h2 id="vim-mode">Vim Mode<a href="#vim-mode" class="anchor-link">#</a></h2>
+<p>If you're a vim user, you can enable vim keybindings for the input prompt:</p>
+<pre><code>&gt; /vim</code></pre>
+<p>This does <strong>not</strong> affect files you open in your editor — it only changes how you type prompts into Claude Code's input box.</p>
+<blockquote><p><strong>Not a vim user?</strong> Skip this section entirely. It's purely optional.</p></blockquote>
+<h3 id="what-vim-mode-looks-like">What vim mode looks like<a href="#what-vim-mode-looks-like" class="anchor-link">#</a></h3>
+<pre><code>┌─────────────────────────────────┐
+│ [NORMAL]                        │
+│ &gt; Here is my prompt_            │
+└─────────────────────────────────┘</code></pre>
+<p>The mode indicator <code>[NORMAL]</code> or <code>[INSERT]</code> shows in the prompt.</p>
+<h3 id="switching-modes">Switching Modes<a href="#switching-modes" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Esc</code></td><td>Enter NORMAL mode</td></tr>
+<tr><td><code>i</code></td><td>Insert before cursor</td></tr>
+<tr><td><code>I</code></td><td>Insert at beginning of line</td></tr>
+<tr><td><code>a</code></td><td>Insert after cursor</td></tr>
+<tr><td><code>A</code></td><td>Insert at end of line</td></tr>
+<tr><td><code>o</code></td><td>Insert new line below</td></tr>
+<tr><td><code>O</code></td><td>Insert new line above</td></tr>
+</tbody>
+</table>
+<h3 id="navigation-normal-mode">Navigation (NORMAL mode)<a href="#navigation-normal-mode" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>h</code></td><td>Move left</td></tr>
+<tr><td><code>j</code></td><td>Move down</td></tr>
+<tr><td><code>k</code></td><td>Move up</td></tr>
+<tr><td><code>l</code></td><td>Move right</td></tr>
+<tr><td><code>w</code></td><td>Next word</td></tr>
+<tr><td><code>b</code></td><td>Previous word</td></tr>
+<tr><td><code>e</code></td><td>End of word</td></tr>
+<tr><td><code>0</code></td><td>Start of line</td></tr>
+<tr><td><code>$</code></td><td>End of line</td></tr>
+<tr><td><code>gg</code></td><td>Beginning of text</td></tr>
+<tr><td><code>G</code></td><td>End of text</td></tr>
+<tr><td><code>f&lt;char&gt;</code></td><td>Jump to next occurrence of <code>&lt;char&gt;</code></td></tr>
+<tr><td><code>F&lt;char&gt;</code></td><td>Jump to previous occurrence of <code>&lt;char&gt;</code></td></tr>
+</tbody>
+</table>
+<h3 id="editing-normal-mode">Editing (NORMAL mode)<a href="#editing-normal-mode" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>x</code></td><td>Delete character</td></tr>
+<tr><td><code>dd</code></td><td>Delete line</td></tr>
+<tr><td><code>D</code></td><td>Delete to end of line</td></tr>
+<tr><td><code>yy</code> / <code>Y</code></td><td>Copy line</td></tr>
+<tr><td><code>p</code></td><td>Paste after</td></tr>
+<tr><td><code>P</code></td><td>Paste before</td></tr>
+<tr><td><code>J</code></td><td>Join line with next</td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>Indent right</td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>Indent left</td></tr>
+<tr><td><code>.</code></td><td>Repeat last action</td></tr>
+</tbody>
+</table>
+<h3 id="text-objects-normal-mode">Text Objects (NORMAL mode)<a href="#text-objects-normal-mode" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>iw</code> / <code>aw</code></td><td>Inner/outer word</td></tr>
+<tr><td><code>i"</code> / <code>a"</code></td><td>Inner/outer quotes</td></tr>
+<tr><td><code>i(</code> / <code>a(</code></td><td>Inner/outer parentheses</td></tr>
+<tr><td><code>i[</code> / <code>a[</code></td><td>Inner/outer brackets</td></tr>
+<tr><td><code>i{</code> / <code>a{</code></td><td>Inner/outer braces</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="custom-keybindings">Custom Keybindings<a href="#custom-keybindings" class="anchor-link">#</a></h2>
+<p>You can define your own shortcuts in <code>~/.claude/keybindings.json</code>.</p>
+<blockquote><p><strong>Analogy:</strong> Like remapping keys on a gaming keyboard. You decide which physical key triggers which action.</p></blockquote>
+<p>Run <code>/keybindings</code> to open the editor, or edit the file directly:</p>
+<pre data-lang="json"><code>[
+  {
+    "key": "ctrl+shift+r",
+    "action": "runTests"
+  },
+  {
+    "key": "ctrl+shift+f",
+    "action": "formatCode"
+  }
+]</code></pre>
+<h3 id="common-actions-to-remap">Common actions to remap<a href="#common-actions-to-remap" class="anchor-link">#</a></h3>
+<ul>
+<li><code>submitMessage</code> — Submit current input</li>
+<li><code>clearInput</code> — Clear input box</li>
+<li><code>openEditor</code> — Open input in $EDITOR</li>
+<li><code>toggleVimMode</code> — Toggle vim mode</li>
+<li><code>toggleFastMode</code> — Toggle fast mode</li>
+<li><code>toggleThinking</code> — Toggle extended thinking</li>
+<li><code>cyclePermissionMode</code> — Cycle through permission modes</li>
+<li><code>showHelp</code> — Show help</li>
+<li><code>clearHistory</code> — Clear conversation history</li>
+<li><code>compact</code> — Compact conversation</li>
+<li><code>newLine</code> — Insert new line</li>
+</ul>
+<h3 id="chord-shortcuts-two-keys-in-sequence">Chord shortcuts (two keys in sequence)<a href="#chord-shortcuts-two-keys-in-sequence" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>[
+  {
+    "key": "ctrl+x ctrl+s",
+    "action": "saveMemory"
+  }
+]</code></pre>
+<p>Press <code>Ctrl+X</code>, release, then press <code>Ctrl+S</code> — like emacs-style chording.</p>
+<hr>
+<h2 id="terminal-setup">Terminal Setup<a href="#terminal-setup" class="anchor-link">#</a></h2>
+<p>Some shortcuts require one-time terminal configuration. Run:</p>
+<pre><code>&gt; /terminal-setup</code></pre>
+<p>This guides you through configuring your terminal to support:</p>
+<ul>
+<li><code>Shift+Enter</code> for new lines (instead of submitting)</li>
+<li><code>Option</code> as Meta key on macOS (required for <code>Alt+</code> shortcuts)</li>
+<li>Correct escape sequences for special keys</li>
+</ul>
+<h3 id="terminals-with-best-support">Terminals with best support<a href="#terminals-with-best-support" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Terminal</th><th>Support level</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>iTerm2</strong></td><td>Excellent</td><td>Best for macOS</td></tr>
+<tr><td><strong>Ghostty</strong></td><td>Full</td><td>Great modern option</td></tr>
+<tr><td><strong>WezTerm</strong></td><td>Full</td><td>Cross-platform</td></tr>
+<tr><td><strong>Kitty</strong></td><td>Full</td><td>GPU-accelerated</td></tr>
+<tr><td><strong>macOS Terminal.app</strong></td><td>Limited</td><td>No <code>Shift+Enter</code> by default</td></tr>
+<tr><td><strong>Windows Terminal</strong></td><td>Good</td><td>Run <code>/terminal-setup</code> first</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="quick-reference-card">Quick Reference Card<a href="#quick-reference-card" class="anchor-link">#</a></h2>
+<pre><code>┌─────────────────────────────────────────────────┐
+│           Essential Shortcuts                   │
+├──────────────────┬──────────────────────────────┤
+│ Ctrl+C           │ Cancel / stop Claude         │
+│ Ctrl+D           │ Exit session                 │
+│ Ctrl+L           │ Clear screen (not history)   │
+│ Shift+Tab        │ Cycle permission mode        │
+│ Esc Esc          │ Undo last change             │
+│ Ctrl+V           │ Paste image                  │
+│ Ctrl+G           │ Open in $EDITOR              │
+│ Ctrl+O           │ Toggle verbose output        │
+│ Up Arrow         │ Previous prompt              │
+│ Ctrl+U           │ Delete whole line            │
+└──────────────────┴──────────────────────────────┘</code></pre>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

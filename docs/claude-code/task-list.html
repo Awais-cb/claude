@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task List — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="task-list-progress-tracking">Task List &amp; Progress Tracking<a href="#task-list-progress-tracking" class="anchor-link">#</a></h1>
+<p>Think of the task list like a sticky note board that Claude keeps updated while it works — you can see exactly what's done, what's in progress, and what's coming next. When you hand Claude a big job, it doesn't just dive in blindly. It first pins up a set of sticky notes (tasks), then works through them one at a time, moving each from "todo" to "done" as it goes. You always know where it is and how much is left.</p>
+<p>This is especially valuable for complex work that takes several minutes. Instead of staring at a blank terminal wondering "is it still going?", you get a live progress board.</p>
+<blockquote><p>What to expect: A sidebar or inline panel listing task steps with icons showing pending, in-progress, and completed states updating in real time.</p></blockquote>
+<hr>
+<h2 id="what-is-the-task-list">What is the Task List?<a href="#what-is-the-task-list" class="anchor-link">#</a></h2>
+<p>When you give Claude a complex task, it creates a structured list of steps and updates it in real-time:</p>
+<pre><code>&gt; Implement user authentication with login, registration, and password reset
+
+Claude creates tasks:
+[⏳] Set up auth database tables
+[⏳] Create User model with password hashing
+[⏳] Build login endpoint with JWT
+[⏳] Build registration endpoint with validation
+[⏳] Build password reset with email flow
+[⏳] Add auth middleware for protected routes
+[⏳] Write tests for all auth endpoints
+
+Claude starts working...
+
+[✅] Set up auth database tables
+[🔄] Create User model with password hashing
+[⏳] Build login endpoint with JWT
+...</code></pre>
+<hr>
+<h2 id="viewing-the-task-list">Viewing the Task List<a href="#viewing-the-task-list" class="anchor-link">#</a></h2>
+<p>Toggle the task list view at any time:</p>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code>Ctrl+T      # Toggle task list view</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>Ctrl+T      # Toggle task list view</code></pre>
+<p><strong>Windows (WSL or PowerShell):</strong></p>
+<pre data-lang="bash"><code>Ctrl+T      # Toggle task list view</code></pre>
+<p>Or type a slash command inside any session:</p>
+<pre><code>&gt; /tasks    # Show all tasks and their status</code></pre>
+<p>This works the same way on all operating systems.</p>
+<hr>
+<h2 id="task-states">Task States<a href="#task-states" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Icon</th><th>State</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>⏳</td><td><code>pending</code></td><td>Not started yet</td></tr>
+<tr><td>🔄</td><td><code>in_progress</code></td><td>Currently working on</td></tr>
+<tr><td>✅</td><td><code>completed</code></td><td>Done</td></tr>
+</tbody>
+</table>
+<p>Here is what the flow looks like as Claude works through a feature:</p>
+<pre><code>Time →
+
+[⏳] Create DB tables
+[⏳] Build model
+[⏳] Build endpoint
+[⏳] Write tests
+
+          ↓  Claude starts
+
+[✅] Create DB tables
+[🔄] Build model
+[⏳] Build endpoint
+[⏳] Write tests
+
+          ↓  Model done
+
+[✅] Create DB tables
+[✅] Build model
+[🔄] Build endpoint
+[⏳] Write tests
+
+          ↓  All done
+
+[✅] Create DB tables
+[✅] Build model
+[✅] Build endpoint
+[✅] Write tests</code></pre>
+<hr>
+<h2 id="when-to-use-task-lists">When to Use Task Lists<a href="#when-to-use-task-lists" class="anchor-link">#</a></h2>
+<p>The task list feature is most helpful when:</p>
+<ul>
+<li>You are asking Claude to implement a multi-step feature from scratch</li>
+<li>You want to monitor progress without interrupting Claude mid-task</li>
+<li>You are running long jobs (test suites, large refactors, batch file processing) and want to do other work in parallel</li>
+<li>You are coordinating multiple Claude agents across a shared codebase</li>
+</ul>
+<p>You do NOT need to do anything to enable the task list. Claude creates it automatically when it detects that the work has 3 or more distinct steps.</p>
+<hr>
+<h2 id="when-claude-creates-tasks-and-when-it-doesnt">When Claude Creates Tasks (and When It Doesn't)<a href="#when-claude-creates-tasks-and-when-it-doesnt" class="anchor-link">#</a></h2>
+<p>Claude creates a task list when:</p>
+<ul>
+<li>Multiple independent steps are needed</li>
+<li>The work will take more than a few actions</li>
+<li>You give multiple things to do at once</li>
+</ul>
+<pre><code>&gt; 1. Update the API endpoints to use the new auth system
+  2. Update all the tests
+  3. Update the documentation
+  4. Create a migration for the schema changes</code></pre>
+<p>Claude creates 4 tasks and works through them systematically.</p>
+<p>Claude does NOT create a task list when:</p>
+<ul>
+<li>The request is a single action (e.g., "rename this variable")</li>
+<li>You are asking a question rather than requesting work</li>
+<li>The job can be completed in one or two steps</li>
+</ul>
+<hr>
+<h2 id="background-tasks">Background Tasks<a href="#background-tasks" class="anchor-link">#</a></h2>
+<p>You can run tasks in the background while you do something else. Think of it like putting laundry in the washing machine — you start it, walk away, and check back when it is done.</p>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code>Ctrl+B      # Background the currently running task</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>Ctrl+B      # Background the currently running task</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>Ctrl+B      # Background the currently running task</code></pre>
+<p>The task keeps running. You can:</p>
+<ul>
+<li>Start a new conversation</li>
+<li>Continue asking questions</li>
+<li>Check back on the background task</li>
+</ul>
+<pre data-lang="bash"><code>Ctrl+T      # See background task progress (all platforms)</code></pre>
+<h3 id="example-run-tests-while-working">Example: Run tests while working<a href="#example-run-tests-while-working" class="anchor-link">#</a></h3>
+<pre><code>&gt; run the full test suite
+
+[Starts running 500 tests...]
+
+[You press Ctrl+B to background it]
+
+&gt; while tests run, explain how the payment module works
+
+Claude explains the payment module...
+
+[Tests finish in background]
+
+Claude: Background task completed: 498 tests passed, 2 failed.
+Tests/UserAuthTest.php:
+  - testLoginWithInvalidPassword — assertion failed
+  - testTokenExpiry — timeout exceeded</code></pre>
+<hr>
+<h2 id="killing-background-agents">Killing Background Agents<a href="#killing-background-agents" class="anchor-link">#</a></h2>
+<p>If you need to cancel a background task:</p>
+<p><strong>macOS / Linux (Ubuntu) / Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>Ctrl+F      # Kill background agents (press twice to confirm)</code></pre>
+<p>This is the equivalent of pulling the plug — use it when a task is going in the wrong direction or has been running longer than expected.</p>
+<hr>
+<h2 id="shared-task-lists">Shared Task Lists<a href="#shared-task-lists" class="anchor-link">#</a></h2>
+<p>For agent teams or cross-session task coordination:</p>
+<p><strong>macOS / Linux (Ubuntu) / Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_TASK_LIST_ID=my-project claude</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>$env:CLAUDE_CODE_TASK_LIST_ID = "my-project"
+claude</code></pre>
+<p>The value is a <strong>name</strong>, not a file path. Claude Code uses it to reference a named directory under <code>~/.claude/tasks/</code> (e.g., <code>~/.claude/tasks/my-project</code>). Use a short, descriptive name that identifies the project or agent team.</p>
+<p>Multiple Claude sessions can see and update the same task list — useful for agent teams working on different parts of the same project.</p>
+<hr>
+<h2 id="how-claude-uses-tasks">How Claude Uses Tasks<a href="#how-claude-uses-tasks" class="anchor-link">#</a></h2>
+<p>Claude automatically creates tasks for complex work (3+ distinct steps). It uses the task list to:</p>
+<ol>
+<li><strong>Plan before acting</strong> — breaks work into clear steps</li>
+<li><strong>Show progress</strong> — you always know what's happening</li>
+<li><strong>Stay organized</strong> — one task at a time, in order</li>
+<li><strong>Survive compaction</strong> — tasks persist even when conversation is compacted</li>
+</ol>
+<h3 id="visual-how-tasks-relate-to-claudes-work">Visual: How tasks relate to Claude's work<a href="#visual-how-tasks-relate-to-claudes-work" class="anchor-link">#</a></h3>
+<pre><code>Your request
+     │
+     ▼
+Claude plans
+  ┌─────────────────────────┐
+  │ [⏳] Step 1             │
+  │ [⏳] Step 2             │
+  │ [⏳] Step 3             │
+  └─────────────────────────┘
+     │
+     ▼
+Claude executes (updates task list as it goes)
+  ┌─────────────────────────┐
+  │ [✅] Step 1  ← done     │
+  │ [🔄] Step 2  ← active   │
+  │ [⏳] Step 3             │
+  └─────────────────────────┘
+     │
+     ▼
+Claude finishes
+  ┌─────────────────────────┐
+  │ [✅] Step 1             │
+  │ [✅] Step 2             │
+  │ [✅] Step 3             │
+  └─────────────────────────┘</code></pre>
+<hr>
+<h2 id="practical-example-large-feature">Practical Example: Large Feature<a href="#practical-example-large-feature" class="anchor-link">#</a></h2>
+<pre><code>$ claude
+
+&gt; I need to add a complete notification system: email, SMS, and in-app notifications.
+  Users should be able to set their preferences.
+
+Claude creates tasks:
+[⏳] Design notification system architecture
+[⏳] Create notifications database tables
+[⏳] Build notification preferences UI
+[⏳] Implement email notification service
+[⏳] Implement SMS notification service
+[⏳] Implement in-app notification storage
+[⏳] Create notification preference API endpoints
+[⏳] Write tests for notification services
+
+[🔄] Designing notification system architecture...</code></pre>
+<p>You can check in anytime:</p>
+<pre><code>&gt; how's it going?
+
+Claude: I've completed the database tables and preferences UI.
+Currently implementing the email service.
+5 tasks remaining after this one.</code></pre>
+<hr>
+<h2 id="task-list-persistence">Task List Persistence<a href="#task-list-persistence" class="anchor-link">#</a></h2>
+<p>Task lists survive:</p>
+<ul>
+<li><strong>Context compaction</strong> — task list persists even when conversation is summarized</li>
+<li><strong>Session pauses</strong> — resume a session with <code>/continue</code> and tasks are still there</li>
+<li><strong>Multiple worktrees</strong> — with <code>CLAUDE_CODE_TASK_LIST_ID</code>, tasks are shared</li>
+</ul>
+<hr>
+<h2 id="tips-for-working-with-tasks">Tips for Working with Tasks<a href="#tips-for-working-with-tasks" class="anchor-link">#</a></h2>
+<h3 id="break-down-requests-yourself">Break down requests yourself<a href="#break-down-requests-yourself" class="anchor-link">#</a></h3>
+<p>Claude creates better tasks when you structure your request:</p>
+<pre><code>&gt; Do the following in order:
+  1. First, read through the existing auth code
+  2. Then identify any security issues
+  3. Then fix each issue
+  4. Finally, add tests for the fixes</code></pre>
+<h3 id="check-in-dont-interrupt">Check in, don't interrupt<a href="#check-in-dont-interrupt" class="anchor-link">#</a></h3>
+<p>While Claude is working on tasks, you can ask status questions:</p>
+<pre><code>&gt; what are you working on?
+&gt; how many tasks are left?
+&gt; is there anything I need to decide?</code></pre>
+<p>Claude updates you without losing progress.</p>
+<h3 id="background-long-running-tasks">Background long-running tasks<a href="#background-long-running-tasks" class="anchor-link">#</a></h3>
+<p>If you need Claude to do something that takes 5-10 minutes (like running a full test suite, processing many files, or doing extensive research):</p>
+<pre><code>&gt; analyze all 200 API endpoints for security vulnerabilities
+  [Ctrl+B to background it]
+&gt; in the meantime, let's work on something else</code></pre>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

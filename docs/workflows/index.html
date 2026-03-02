@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Workflows — Overview — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="claude-code-team-workflows">Claude Code — Team Workflows<a href="#claude-code-team-workflows" class="anchor-link">#</a></h1>
+<p>This folder contains workflow guides for every role on your development team. As a team lead, start with the setup guide — everything else builds on it.</p>
+<hr>
+<h2 id="for-the-team-lead">For the Team Lead<a href="#for-the-team-lead" class="anchor-link">#</a></h2>
+<p>Start here: <strong><a href="team-lead-setup.html">team-lead-setup.md</a></strong></p>
+<p>This covers how to configure Claude for the whole team: shared CLAUDE.md, permissions, hooks, custom agents, skills, and onboarding new developers.</p>
+<hr>
+<h2 id="workflow-guides-by-role">Workflow Guides by Role<a href="#workflow-guides-by-role" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Guide</th><th>Who it's for</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="team-lead-setup.html">team-lead-setup.md</a></td><td>Team Lead</td><td>Configure Claude for the whole team</td></tr>
+<tr><td><a href="backend.html">backend.md</a></td><td>Backend Devs</td><td>APIs, databases, migrations, backend testing</td></tr>
+<tr><td><a href="frontend.html">frontend.md</a></td><td>Frontend Devs</td><td>Components, styling, state, frontend testing</td></tr>
+<tr><td><a href="fullstack.html">fullstack.md</a></td><td>Fullstack Devs</td><td>End-to-end feature development</td></tr>
+<tr><td><a href="figma-to-frontend.html">figma-to-frontend.md</a></td><td>Frontend / Designers</td><td>Convert Figma designs to working code</td></tr>
+<tr><td><a href="frontend-to-backend.html">frontend-to-backend.md</a></td><td>Frontend + Backend</td><td>API integration, type sharing, contracts</td></tr>
+<tr><td><a href="testing.html">testing.md</a></td><td>All Devs</td><td>Unit, integration, E2E, and TDD workflows</td></tr>
+<tr><td><a href="code-review.html">code-review.md</a></td><td>All Devs</td><td>PR review, security, performance audits</td></tr>
+</tbody>
+</table>
+<h2 id="laravel-specific-workflows">Laravel-Specific Workflows<a href="#laravel-specific-workflows" class="anchor-link">#</a></h2>
+<p>For Laravel projects, use the dedicated guides in <a href="laravel/index.html">laravel/</a>:</p>
+<table>
+<thead><tr><th>Guide</th><th>Who it's for</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="laravel/fullstack.html">laravel/fullstack.md</a></td><td>Fullstack Devs</td><td>Migration → Eloquent → Service → Controller → Livewire → Tests</td></tr>
+<tr><td><a href="laravel/backend.html">laravel/backend.md</a></td><td>Backend Devs</td><td>Service layer, FormRequests, jobs, queues, artisan, auth</td></tr>
+<tr><td><a href="laravel/frontend.html">laravel/frontend.md</a></td><td>Frontend Devs</td><td>Blade, Livewire, Alpine.js, Inertia.js, Vite, Tailwind</td></tr>
+<tr><td><a href="laravel/database.html">laravel/database.md</a></td><td>All Devs</td><td>Migrations, Eloquent, relationships, seeders, query optimization</td></tr>
+<tr><td><a href="laravel/testing.html">laravel/testing.md</a></td><td>All Devs</td><td>Pest/PHPUnit, feature tests, unit tests, mocking, Dusk</td></tr>
+<tr><td><a href="laravel/pr-review.html">laravel/pr-review.md</a></td><td>All Devs</td><td>Laravel PR review — N+1s, ownership, migrations, security</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="how-to-use-these-guides">How to Use These Guides<a href="#how-to-use-these-guides" class="anchor-link">#</a></h2>
+<p>Each guide is structured as:</p>
+<ol>
+<li><strong>Setup</strong> — one-time configuration for that workflow</li>
+<li><strong>Daily workflow</strong> — the prompts and commands used day-to-day</li>
+<li><strong>Prompt library</strong> — copy-paste prompts for common tasks</li>
+<li><strong>Tips</strong> — how to get the most out of Claude for that role</li>
+</ol>
+<p>These are living documents. As your team discovers better prompts or patterns, update them and commit — everyone benefits.</p>
+<hr>
+<h2 id="quick-links">Quick Links<a href="#quick-links" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="../CHEATSHEET.html">CHEATSHEET.md</a> — one-page command reference for all devs</li>
+<li><a href="../claude-code/index.html">claude-code/</a> — full Claude Code documentation</li>
+<li><a href="../vscode/index.html">vscode-extension/</a> — VS Code extension docs</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Lead Setup Guide — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="team-lead-setup-guide">Team Lead Setup Guide<a href="#team-lead-setup-guide" class="anchor-link">#</a></h1>
+<p>How to configure Claude Code so every developer on your team gets a consistent, productive, and safe experience from day one.</p>
+<hr>
+<h2 id="overview">Overview<a href="#overview" class="anchor-link">#</a></h2>
+<p>As a team lead, you control:</p>
+<ol>
+<li><strong>What Claude knows about your project</strong> — via <code>CLAUDE.md</code></li>
+<li><strong>What Claude is allowed to do</strong> — via <code>settings.json</code> permissions</li>
+<li><strong>How Claude behaves automatically</strong> — via hooks</li>
+<li><strong>Reusable workflows</strong> — via shared skills and agents</li>
+<li><strong>What each developer should set up locally</strong> — onboarding checklist</li>
+</ol>
+<p>Everything in <code>.claude/</code> gets committed to git and shared with the team. Personal preferences go in <code>.claude/settings.local.json</code> (gitignored).</p>
+<hr>
+<h2 id="step-1-create-the-project-claudemd">Step 1: Create the Project CLAUDE.md<a href="#step-1-create-the-project-claudemd" class="anchor-link">#</a></h2>
+<p>This is the most impactful thing you can do. Every Claude session every developer starts will read this file automatically.</p>
+<pre data-lang="bash"><code># Generate a first draft automatically
+claude
+&gt; /init</code></pre>
+<p>Then edit it to add your team's specifics. A strong CLAUDE.md covers:</p>
+<pre data-lang="markdown"><code># [Project Name] — Claude Guide
+
+## Project Overview
+[2-3 sentences: what the app does, who uses it, tech stack summary]
+
+## Architecture
+[How the layers connect — e.g. React SPA → Express API → PostgreSQL]
+Key entry points:
+- Frontend: `src/main.tsx`
+- API: `src/server.ts`
+- DB models: `src/models/`
+
+## Tech Stack
+- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
+- **Backend**: Node.js 20, Express, Prisma ORM
+- **Database**: PostgreSQL 15
+- **Testing**: Vitest (unit), Playwright (E2E)
+- **CI**: GitHub Actions
+
+## Commands
+```bash
+npm run dev          # start dev server (frontend + backend)
+npm run dev:api      # backend only
+npm test             # run Vitest
+npm run test:e2e     # run Playwright
+npm run lint         # ESLint
+npm run typecheck    # TypeScript check
+npx prisma migrate dev  # run DB migrations
+```
+
+## Coding Conventions
+- 2-space indent, single quotes, trailing commas
+- Named exports only — no default exports
+- Every API route must have a Zod validation schema
+- Use `logger` (src/lib/logger.ts), never `console.log`
+- All DB access via repositories in `src/repositories/`
+- Services in `src/services/` handle business logic
+
+## Git Conventions
+- Branch naming: `feat/`, `fix/`, `chore/`, `refactor/`
+- Commit format: Conventional Commits (`feat:`, `fix:`, `docs:`)
+- PR must pass CI and have at least 1 approval before merge
+
+## Do Not
+- Never run `prisma migrate reset` — wipes the database
+- Don't commit `.env` or any secrets
+- Don't use `any` in TypeScript — use `unknown` and narrow it
+- Don't bypass ESLint with `// eslint-disable` without a comment explaining why
+- Don't write raw SQL — use Prisma query builder
+
+## Key Files to Know
+- `src/lib/errors.ts` — custom error classes
+- `src/lib/auth.ts` — JWT helpers
+- `src/middleware/` — Express middleware (auth, validation, error handling)
+- `src/types/` — shared TypeScript types</code></pre>
+<p><strong>Tips for a great CLAUDE.md:</strong></p>
+<ul>
+<li>Keep it under 150 lines — Claude reads it every session</li>
+<li>Update it when conventions change — stale instructions hurt more than none</li>
+<li>Use <code>@file</code> imports to pull in architecture docs: <code>@docs/architecture.md</code></li>
+</ul>
+<hr>
+<h2 id="step-2-configure-shared-permissions">Step 2: Configure Shared Permissions<a href="#step-2-configure-shared-permissions" class="anchor-link">#</a></h2>
+<p>Create <code>.claude/settings.json</code> at the project root and commit it:</p>
+<pre data-lang="json"><code>{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [
+      &quot;Read(*)&quot;,
+      &quot;Bash(git status)&quot;,
+      &quot;Bash(git log *)&quot;,
+      &quot;Bash(git diff *)&quot;,
+      &quot;Bash(git add *)&quot;,
+      &quot;Bash(git commit *)&quot;,
+      &quot;Bash(git checkout *)&quot;,
+      &quot;Bash(git branch *)&quot;,
+      &quot;Bash(git push *)&quot;,
+      &quot;Bash(git pull *)&quot;,
+      &quot;Bash(npm run *)&quot;,
+      &quot;Bash(npm test *)&quot;,
+      &quot;Bash(npx prisma *)&quot;,
+      &quot;Bash(npx playwright *)&quot;
+    ],
+    &quot;deny&quot;: [
+      &quot;Write(.env*)&quot;,
+      &quot;Write(*.key)&quot;,
+      &quot;Write(*.pem)&quot;,
+      &quot;Bash(rm -rf *)&quot;,
+      &quot;Bash(sudo *)&quot;,
+      &quot;Bash(npx prisma migrate reset)&quot;,
+      &quot;Bash(npx prisma db push --force-reset)&quot;
+    ],
+    &quot;defaultMode&quot;: &quot;normal&quot;
+  },
+  &quot;includeCoAuthoredBy&quot;: true
+}</code></pre>
+<p>This pre-approves safe commands (git, npm scripts, Prisma migrations) so developers aren't interrupted by prompts for routine actions, while blocking dangerous ones outright.</p>
+<p><strong>Add <code>.claude/settings.local.json</code> to <code>.gitignore</code></strong> so devs can override locally without affecting the team:</p>
+<pre data-lang="bash"><code>echo &quot;.claude/settings.local.json&quot; &gt;&gt; .gitignore</code></pre>
+<hr>
+<h2 id="step-3-set-up-shared-hooks">Step 3: Set Up Shared Hooks<a href="#step-3-set-up-shared-hooks" class="anchor-link">#</a></h2>
+<p>Create <code>.claude/settings.json</code> hooks section to automate quality enforcement:</p>
+<pre data-lang="json"><code>{
+  &quot;permissions&quot;: { &quot;...&quot;: &quot;...&quot; },
+  &quot;hooks&quot;: {
+    &quot;PostToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Edit|Write&quot;,
+        &quot;command&quot;: &quot;FILE=$CLAUDE_TOOL_INPUT_FILE_PATH; case $FILE in *.ts|*.tsx|*.js|*.jsx) npx prettier --write \&quot;$FILE\&quot; 2&gt;/dev/null; npx eslint --fix \&quot;$FILE\&quot; 2&gt;/dev/null;; *.css|*.scss) npx prettier --write \&quot;$FILE\&quot; 2&gt;/dev/null;; esac&quot;
+      }
+    ],
+    &quot;PreToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Bash&quot;,
+        &quot;command&quot;: &quot;CMD=$CLAUDE_TOOL_INPUT_COMMAND; if echo \&quot;$CMD\&quot; | grep -qE 'migrate reset|db push --force|drop database|DROP TABLE'; then echo '{&quot;decision&quot;:&quot;block&quot;,&quot;reason&quot;:&quot;Destructive database operation blocked. Run manually if you are sure.&quot;}'; else echo '{&quot;decision&quot;:&quot;allow&quot;}'; fi&quot;
+      }
+    ]
+  }
+}</code></pre>
+<p><strong>Per-OS notifications</strong> (each dev adds this to their <code>.claude/settings.local.json</code>):</p>
+<pre data-lang="json"><code>{
+  &quot;hooks&quot;: {
+    &quot;Notification&quot;: [
+      {
+        &quot;command&quot;: &quot;YOUR_NOTIFICATION_COMMAND&quot;
+      }
+    ]
+  }
+}</code></pre>
+<table>
+<thead><tr><th>OS</th><th>Notification command</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td><code>osascript -e 'display notification "Claude needs input" with title "Claude Code"'</code></td></tr>
+<tr><td>Linux</td><td><code>notify-send "Claude Code" "Claude needs input"</code></td></tr>
+<tr><td>Windows (WSL)</td><td><code>powershell.exe -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Claude needs input','Claude Code')"</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="step-4-create-shared-skills">Step 4: Create Shared Skills<a href="#step-4-create-shared-skills" class="anchor-link">#</a></h2>
+<p>Skills are reusable slash commands. Create them in <code>.claude/skills/</code> and commit.</p>
+<h3 id="-pr-full-pr-workflow"><code>/pr</code> — Full PR workflow<a href="#-pr-full-pr-workflow" class="anchor-link">#</a></h3>
+<p><code>.claude/skills/pr.md</code>:</p>
+<pre data-lang="markdown"><code>---
+name: pr
+description: Stage changes, write commit, push, and open a PR
+---
+
+Review all changed files with /diff first, then:
+1. Stage all relevant files (not .env, not node_modules)
+2. Write a Conventional Commits message (feat/fix/refactor/chore + scope + description)
+3. Push to the current branch
+4. Create a GitHub PR with:
+   - Title: same as commit subject
+   - Body: bullet summary of changes + test plan checklist
+   - Draft if the work is not yet complete</code></pre>
+<h3 id="-check-pre-commit-quality-gate"><code>/check</code> — Pre-commit quality gate<a href="#-check-pre-commit-quality-gate" class="anchor-link">#</a></h3>
+<p><code>.claude/skills/check.md</code>:</p>
+<pre data-lang="markdown"><code>---
+name: check
+description: Run lint, typecheck, and tests before committing
+---
+
+Run these in order and report results:
+1. `npm run typecheck` — TypeScript errors
+2. `npm run lint` — ESLint violations
+3. `npm test -- --run` — unit tests
+
+If anything fails, fix it before proceeding.
+Report a summary: PASS/FAIL for each step with counts.</code></pre>
+<h3 id="-review-override-team-specific-review"><code>/review</code> override — Team-specific review<a href="#-review-override-team-specific-review" class="anchor-link">#</a></h3>
+<p><code>.claude/skills/team-review.md</code>:</p>
+<pre data-lang="markdown"><code>---
+name: team-review
+description: Review code against our team's specific standards
+---
+
+Review the changed files against these rules:
+
+SECURITY
+- [ ] No hardcoded secrets or API keys
+- [ ] User input validated with Zod at API boundaries
+- [ ] SQL/DB queries use Prisma (no raw SQL)
+- [ ] Auth middleware applied to protected routes
+
+CODE QUALITY
+- [ ] No `any` types in TypeScript
+- [ ] No `console.log` (use logger)
+- [ ] Errors use custom error classes from src/lib/errors.ts
+- [ ] No functions over 40 lines
+
+ARCHITECTURE
+- [ ] Business logic in services, not controllers
+- [ ] DB access only via repositories
+- [ ] New endpoints have Zod schema validation
+
+TESTS
+- [ ] New functions have unit tests
+- [ ] Happy path + at least one error case tested
+
+Report each item as PASS, FAIL, or N/A with line references for failures.</code></pre>
+<hr>
+<h2 id="step-5-create-shared-agents">Step 5: Create Shared Agents<a href="#step-5-create-shared-agents" class="anchor-link">#</a></h2>
+<p>Agents are specialized Claude instances. Create them in <code>.claude/agents/</code>:</p>
+<h3 id="code-reviewer-agent">Code Reviewer Agent<a href="#code-reviewer-agent" class="anchor-link">#</a></h3>
+<p><code>.claude/agents/reviewer.md</code>:</p>
+<pre data-lang="markdown"><code>---
+name: reviewer
+description: Strict code reviewer focused on security and our team standards
+model: opus
+tools: [Read, Grep, Glob]
+permissionMode: plan
+---
+
+You are a strict but fair code reviewer for our team. You know our conventions
+from CLAUDE.md. When reviewing:
+
+1. Security first — look for injection, auth bypass, exposed secrets
+2. Type safety — flag any `any` or unchecked casts
+3. Architecture — is business logic in the right layer?
+4. Test coverage — are edge cases tested?
+
+Be specific: always give file name and line number.
+Categorize findings as: CRITICAL / WARNING / SUGGESTION</code></pre>
+<h3 id="explorer-agent-read-only-cheap">Explorer Agent (read-only, cheap)<a href="#explorer-agent-read-only-cheap" class="anchor-link">#</a></h3>
+<p><code>.claude/agents/explorer.md</code>:</p>
+<pre data-lang="markdown"><code>---
+name: explorer
+description: Fast, read-only codebase search and exploration
+model: haiku
+tools: [Read, Grep, Glob, WebSearch]
+permissionMode: plan
+---
+
+You find and summarize code. Never modify anything.
+When searching, be systematic: search by file name, then by content, then by imports.
+Always report: what you found, where it is (file:line), and a brief summary.</code></pre>
+<hr>
+<h2 id="step-6-developer-onboarding-checklist">Step 6: Developer Onboarding Checklist<a href="#step-6-developer-onboarding-checklist" class="anchor-link">#</a></h2>
+<p>Share this with every new developer joining the team:</p>
+<pre data-lang="markdown"><code># Claude Code Onboarding
+
+## Install (10 min)
+- [ ] Install Claude Code: `curl -fsSL https://claude.ai/install.sh | bash` (macOS: `brew install claude`, Windows: `winget install Anthropic.Claude`)
+- [ ] `claude auth login` — sign in with your Anthropic account
+- [ ] Install the Claude Code VS Code extension: `code --install-extension anthropic.claude-code`
+- [ ] Run `/terminal-setup` inside Claude to configure Shift+Enter
+
+## Configure (5 min)
+- [ ] Create `~/.claude/CLAUDE.md` with your personal preferences:
+  ```markdown
+  # My Preferences
+  - My name is [Name]
+  - I prefer verbose explanations while I'm learning the codebase
+  - Always ask before deleting files
+  ```
+- [ ] Create `.claude/settings.local.json` in the project for personal overrides:
+  ```json
+  { &quot;permissions&quot;: { &quot;allow&quot;: [&quot;Bash(docker *)&quot;] } }
+  ```
+- [ ] Set up your OS notification in `.claude/settings.local.json`
+
+## First Session
+- [ ] `cd` to the project root
+- [ ] `claude --ide` to connect to VS Code
+- [ ] Ask: `&gt; give me an overview of this codebase and how to get started`
+- [ ] Read through the generated CLAUDE.md so you know what Claude knows
+
+## Daily Workflow
+See the relevant workflow guide:
+- Backend: [backend.md](backend.html)
+- Frontend: [frontend.md](frontend.html)
+- Fullstack: [fullstack.md](fullstack.html)</code></pre>
+<hr>
+<h2 id="step-7-team-best-practices-to-enforce">Step 7: Team Best Practices to Enforce<a href="#step-7-team-best-practices-to-enforce" class="anchor-link">#</a></h2>
+<h3 id="keep-claudemd-up-to-date">Keep CLAUDE.md up to date<a href="#keep-claudemd-up-to-date" class="anchor-link">#</a></h3>
+<p>Assign someone (you, or rotate) to review <code>CLAUDE.md</code> monthly. Outdated instructions are worse than none — Claude will follow them even if they're wrong.</p>
+<h3 id="commit-claude-to-git">Commit <code>.claude/</code> to git<a href="#commit-claude-to-git" class="anchor-link">#</a></h3>
+<pre><code>.claude/
+├── settings.json       ✅ commit (shared permissions + hooks)
+├── settings.local.json ❌ gitignore (personal overrides)
+├── agents/             ✅ commit (shared agents)
+└── skills/             ✅ commit (shared skills)</code></pre>
+<h3 id="name-sessions-not-conversations">Name sessions, not conversations<a href="#name-sessions-not-conversations" class="anchor-link">#</a></h3>
+<p>Encourage devs to immediately <code>/rename</code> every session with the ticket number or feature name. This makes it trivial to pick up where they left off.</p>
+<h3 id="use-plan-mode-for-risky-work">Use plan mode for risky work<a href="#use-plan-mode-for-risky-work" class="anchor-link">#</a></h3>
+<p>Any ticket involving DB schema changes, auth changes, or large refactors should start with:</p>
+<pre data-lang="bash"><code>claude --permission-mode plan</code></pre>
+<h3 id="review-with-claude-before-human-review">Review with Claude before human review<a href="#review-with-claude-before-human-review" class="anchor-link">#</a></h3>
+<p>Before opening a PR, every dev should run:</p>
+<pre><code>&gt; /check          # lint + types + tests
+&gt; /team-review    # team-specific code review
+&gt; /pr             # commit + push + open PR</code></pre>
+<p>This catches 80% of review comments before a human ever sees the code.</p>
+<hr>
+<h2 id="maintenance">Maintenance<a href="#maintenance" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Cadence</th><th>Task</th></tr></thead>
+<tbody>
+<tr><td>Every PR</td><td>Check if CLAUDE.md needs updating for new patterns</td></tr>
+<tr><td>Monthly</td><td>Review shared skills and agents — are they still accurate?</td></tr>
+<tr><td>Quarterly</td><td>Review <code>.claude/settings.json</code> permissions — too loose? Too tight?</td></tr>
+<tr><td>When onboarding</td><td>Walk through this guide with the new dev</td></tr>
+</tbody>
+</table>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

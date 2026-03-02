@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="getting-started-with-claude-code">Getting Started with Claude Code<a href="#getting-started-with-claude-code" class="anchor-link">#</a></h1>
+<h2 id="what-is-claude-code-really">What is Claude Code, really?<a href="#what-is-claude-code-really" class="anchor-link">#</a></h2>
+<p>Imagine hiring a senior developer who never sleeps, never gets frustrated, and lives permanently inside your terminal. You describe a problem in plain English — "the login form is broken" or "add a search bar to the homepage" — and they read your actual files, figure out what's wrong, make the changes, and run your tests to confirm it works.</p>
+<p>That's Claude Code. It's not a chatbot you copy-paste code to and from. It's an AI assistant that can directly read, edit, and run things in your project — with your permission at every step.</p>
+<pre><code>You type: "the login is broken, fix it"
+          ↓
+Claude reads your login files
+          ↓
+Claude finds the bug
+          ↓
+Claude edits the file
+          ↓
+Claude runs your tests to verify
+          ↓
+Claude shows you what it changed</code></pre>
+<p>You stay in control the whole time. Claude asks before doing anything risky, and you can cancel at any point.</p>
+<hr>
+<h2 id="installation">Installation<a href="#installation" class="anchor-link">#</a></h2>
+<h3 id="prerequisites">Prerequisites<a href="#prerequisites" class="anchor-link">#</a></h3>
+<ul>
+<li>An <strong>Anthropic account</strong> (claude.ai)</li>
+</ul>
+<h3 id="step-1-install-claude-code">Step 1: Install Claude Code<a href="#step-1-install-claude-code" class="anchor-link">#</a></h3>
+<p><strong>macOS (recommended — native installer):</strong></p>
+<pre data-lang="bash"><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+<p><strong>macOS (Homebrew):</strong></p>
+<pre data-lang="bash"><code>brew install claude</code></pre>
+<p><strong>Linux / Ubuntu:</strong></p>
+<pre data-lang="bash"><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+<p><strong>Windows (WSL — recommended):</strong></p>
+<p>Most Windows developers run Claude Code inside WSL (Windows Subsystem for Linux), which gives you a real Linux terminal inside Windows.</p>
+<pre data-lang="powershell"><code># Step 1: Install WSL (run in PowerShell as Administrator)
+wsl --install
+
+# This installs Ubuntu by default. Restart your computer when prompted.</code></pre>
+<pre data-lang="bash"><code># Step 2: Inside WSL (Ubuntu), run the installer
+curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+<p><strong>Windows (native PowerShell):</strong></p>
+<pre data-lang="powershell"><code>winget install Anthropic.Claude</code></pre>
+<p><strong>Alternative — install via npm</strong> (requires Node.js 18+):</p>
+<pre data-lang="bash"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<h3 id="step-2-verify-installation">Step 2: Verify installation<a href="#step-2-verify-installation" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --version</code></pre>
+<p>You should see something like <code>claude-code/1.x.x</code>.</p>
+<h3 id="step-4-log-in">Step 4: Log in<a href="#step-4-log-in" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude auth login</code></pre>
+<p>This opens a browser window to authenticate with your Anthropic account. After logging in, return to the terminal — you're ready to go.</p>
+<p><strong>Windows note:</strong> If the browser doesn't open automatically in WSL, copy the URL shown in the terminal and paste it into your Windows browser manually.</p>
+<hr>
+<h2 id="your-first-session">Your First Session<a href="#your-first-session" class="anchor-link">#</a></h2>
+<h3 id="navigate-to-your-project-first">Navigate to your project first<a href="#navigate-to-your-project-first" class="anchor-link">#</a></h3>
+<p>Claude Code works in whatever directory you start it from. Always <code>cd</code> into your project before launching Claude:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>cd ~/projects/my-app
+claude</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>cd C:\Users\YourName\projects\my-app
+claude</code></pre>
+<h3 id="start-claude-code">Start Claude Code<a href="#start-claude-code" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude</code></pre>
+<p>You'll see a prompt where you can type naturally:</p>
+<pre><code>&gt; What files are in this project?
+&gt; Fix the bug in login.js
+&gt; Add a unit test for the calculateTotal function
+&gt; Explain what this code does</code></pre>
+<h3 id="or-start-with-an-immediate-task">Or start with an immediate task<a href="#or-start-with-an-immediate-task" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude "explain what this project does"</code></pre>
+<h3 id="exit-a-session">Exit a session<a href="#exit-a-session" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Type in the terminal:
+exit
+
+# Or press:
+Ctrl+D</code></pre>
+<hr>
+<h2 id="a-complete-first-session-walkthrough">A Complete First Session Walkthrough<a href="#a-complete-first-session-walkthrough" class="anchor-link">#</a></h2>
+<p>Here's what a realistic first session looks like — from opening Claude to finishing a small task:</p>
+<pre><code>$ cd ~/projects/my-web-app
+$ claude
+
+&gt; read the README and give me an overview of this project
+
+Claude reads README.md, package.json, and a few key source files...
+
+Claude: This is a Node.js REST API for a task management app. It uses:
+- Express for routing
+- PostgreSQL via Sequelize ORM
+- JWT for authentication
+- Jest for testing
+
+The main entry point is src/server.js. There are 3 feature modules:
+users, tasks, and notifications.
+
+&gt; the /api/tasks endpoint is returning a 500 error when I filter by status.
+  look at src/routes/tasks.js and fix it
+
+Claude: I'll look at that file now...
+
+[Claude reads src/routes/tasks.js]
+
+I found the issue. On line 47, the status filter is comparing against
+the raw query string value but the database stores it in uppercase.
+Here's the fix:
+
+[Claude edits the file — shows you the diff]
+
+Should I run the test suite to verify?
+
+&gt; yes
+
+Claude runs: npm test
+
+All 23 tests passing. The fix works.
+
+&gt; great. commit the change with a clear message
+
+Claude runs: git add src/routes/tasks.js
+Claude runs: git commit -m "Fix: uppercase status comparison in task filter"
+
+Done. Committed as abc1234.</code></pre>
+<p>That's a complete bug-fix cycle — find, fix, test, commit — all through conversation.</p>
+<h3 id="start-with-an-immediate-task-1">Start with an immediate task<a href="#start-with-an-immediate-task-1" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude "explain what this project does"</code></pre>
+<h3 id="exit-a-session-1">Exit a session<a href="#exit-a-session-1" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Type in the terminal:
+exit
+
+# Or press:
+Ctrl+D</code></pre>
+<hr>
+<h2 id="basic-workflow">Basic Workflow<a href="#basic-workflow" class="anchor-link">#</a></h2>
+<p>Here's a typical session:</p>
+<pre><code>&gt; read the README and give me an overview
+
+Claude reads README.md and explains the project...
+
+&gt; the getUserById function in src/users.js is throwing a 500 error. Fix it.
+
+Claude reads the file, identifies the bug, and edits it...
+
+&gt; write a test for the fix
+
+Claude creates a test file...
+
+&gt; run the tests
+
+Claude runs: npm test</code></pre>
+<p><strong>That's it.</strong> Just talk to it like a senior developer.</p>
+<hr>
+<h2 id="resuming-a-previous-session">Resuming a Previous Session<a href="#resuming-a-previous-session" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code># Resume the most recent conversation
+claude -c
+# or
+claude --continue
+
+# Resume a specific session by name
+claude -r "my-feature"
+# or
+claude --resume "my-feature"</code></pre>
+<p>Inside a session, name it so you can find it later:</p>
+<pre><code>/rename my-feature</code></pre>
+<hr>
+<h2 id="modes-how-claude-works">Modes: How Claude Works<a href="#modes-how-claude-works" class="anchor-link">#</a></h2>
+<p>Claude has three modes you can switch between:</p>
+<table>
+<thead><tr><th>Mode</th><th>What Claude can do</th><th>When to use</th></tr></thead>
+<tbody>
+<tr><td><strong>Normal</strong> (default)</td><td>Everything, asks permission for risky actions</td><td>Day-to-day work</td></tr>
+<tr><td><strong>Plan Mode</strong></td><td>Read-only — no edits allowed</td><td>Explore before committing</td></tr>
+<tr><td><strong>Auto-Accept</strong></td><td>Does everything without asking</td><td>Trusted, fast iteration</td></tr>
+</tbody>
+</table>
+<p>Switch modes with <code>Shift+Tab</code> while in a session.</p>
+<hr>
+<h2 id="key-concepts-for-beginners">Key Concepts for Beginners<a href="#key-concepts-for-beginners" class="anchor-link">#</a></h2>
+<h3 id="claude-can-use-tools">Claude can use tools<a href="#claude-can-use-tools" class="anchor-link">#</a></h3>
+<p>Claude doesn't just chat — it actively uses tools:</p>
+<ul>
+<li><strong>Read files</strong> — looks at your actual code</li>
+<li><strong>Edit files</strong> — makes real changes</li>
+<li><strong>Run bash commands</strong> — runs tests, builds, etc.</li>
+<li><strong>Search the web</strong> — fetches documentation</li>
+<li><strong>Manage git</strong> — commits, PRs, branches</li>
+</ul>
+<h3 id="youre-always-in-control">You're always in control<a href="#youre-always-in-control" class="anchor-link">#</a></h3>
+<ul>
+<li>Claude <strong>asks before</strong> doing anything potentially risky</li>
+<li>You can <strong>cancel</strong> any action mid-way (<code>Ctrl+C</code>)</li>
+<li>You can <strong>undo</strong> recent changes (<code>Esc Esc</code>)</li>
+</ul>
+<h3 id="context-is-everything">Context is everything<a href="#context-is-everything" class="anchor-link">#</a></h3>
+<p>Claude reads your project files to understand context. You can give it more context via:</p>
+<ul>
+<li><strong>CLAUDE.md</strong> — a file where you explain your project (see <a href="claude-md.html">claude-md.md</a>)</li>
+<li><strong>Memory</strong> — Claude can remember things across sessions (see <a href="memory-system.html">memory-system.md</a>)</li>
+</ul>
+<hr>
+<h2 id="directory-matters">Directory Matters<a href="#directory-matters" class="anchor-link">#</a></h2>
+<p>Claude Code works in the <strong>current directory</strong> when you start it. Always <code>cd</code> into your project first:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>cd ~/projects/my-app
+claude</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>cd C:\Users\YourName\projects\my-app
+claude</code></pre>
+<hr>
+<h2 id="practical-examples">Practical Examples<a href="#practical-examples" class="anchor-link">#</a></h2>
+<h3 id="debug-a-bug">Debug a bug<a href="#debug-a-bug" class="anchor-link">#</a></h3>
+<pre><code>&gt; the login form is not submitting. check src/auth/LoginForm.jsx and tell me why</code></pre>
+<h3 id="add-a-feature">Add a feature<a href="#add-a-feature" class="anchor-link">#</a></h3>
+<pre><code>&gt; add a "forgot password" link to the login page that routes to /reset-password</code></pre>
+<h3 id="understand-code">Understand code<a href="#understand-code" class="anchor-link">#</a></h3>
+<pre><code>&gt; explain how the payment processing works in this codebase</code></pre>
+<h3 id="refactor-code">Refactor code<a href="#refactor-code" class="anchor-link">#</a></h3>
+<pre><code>&gt; the getUserData function in api/users.js is too long. split it into smaller functions</code></pre>
+<h3 id="run-and-fix-tests">Run and fix tests<a href="#run-and-fix-tests" class="anchor-link">#</a></h3>
+<pre><code>&gt; run the test suite and fix any failing tests</code></pre>
+<h3 id="write-documentation">Write documentation<a href="#write-documentation" class="anchor-link">#</a></h3>
+<pre><code>&gt; write a docstring for every function in utils/helpers.py</code></pre>
+<hr>
+<h2 id="getting-help">Getting Help<a href="#getting-help" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code># Inside a session:
+/help        # Show all available commands
+/status      # Show version and account info
+/doctor      # Diagnose any issues with your setup</code></pre>
+<hr>
+<h2 id="path-and-shell-setup-notes">PATH and Shell Setup Notes<a href="#path-and-shell-setup-notes" class="anchor-link">#</a></h2>
+<p>After installing Claude Code, if running <code>claude</code> gives you "command not found":</p>
+<p><strong>macOS / Linux / WSL (native installer):</strong></p>
+<p>The installer sets up your PATH automatically. If it didn't take effect, restart your terminal or run:</p>
+<pre data-lang="bash"><code>source ~/.bashrc    # for bash
+source ~/.zshrc     # for zsh</code></pre>
+<p><strong>macOS / Linux / WSL (npm install):</strong></p>
+<pre data-lang="bash"><code># Check where npm installed it
+npm config get prefix
+
+# Add that path to your shell config
+# For bash (~/.bashrc or ~/.bash_profile):
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' &gt;&gt; ~/.bashrc
+source ~/.bashrc
+
+# For zsh (~/.zshrc):
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' &gt;&gt; ~/.zshrc
+source ~/.zshrc</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code># The winget installer sets PATH automatically.
+# For npm install, the global bin is usually already in PATH after Node.js install.
+# If not, find the npm prefix with: npm config get prefix
+# Then add that path to your system environment variables.</code></pre>
+<hr>
+<h2 id="next-steps">Next Steps<a href="#next-steps" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="cli-commands.html">cli-commands.md</a> — All CLI flags and options</li>
+<li><a href="slash-commands.html">slash-commands.md</a> — Commands available inside sessions</li>
+<li><a href="claude-md.html">claude-md.md</a> — Teach Claude about your project</li>
+<li><a href="permissions.html">permissions.md</a> — Control what Claude is allowed to do</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

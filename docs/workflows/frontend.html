@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontend Developer Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="frontend-developer-workflow">Frontend Developer Workflow<a href="#frontend-developer-workflow" class="anchor-link">#</a></h1>
+<p>Claude as your frontend pair programmer — for building components, implementing designs, managing state, and writing frontend tests.</p>
+<hr>
+<h2 id="daily-session-setup">Daily Session Setup<a href="#daily-session-setup" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>cd your-project/
+claude --ide          # connects to VS Code — lets Claude see your selected code
+claude -c             # or resume yesterday's session</code></pre>
+<p>The VS Code extension is especially valuable for frontend work — you can highlight a component and ask about it without copy-pasting.</p>
+<hr>
+<h2 id="1-building-components">1. Building Components<a href="#1-building-components" class="anchor-link">#</a></h2>
+<h3 id="new-component-from-a-description">New component from a description<a href="#new-component-from-a-description" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a ProductCard component:
+  - props: { id, name, price, imageUrl, inStock, onAddToCart }
+  - shows image, name, price (formatted as currency)
+  - &quot;Add to Cart&quot; button, disabled and showing &quot;Out of Stock&quot; when inStock is false
+  - follow the patterns in @src/components/ui/Card.tsx
+  - use Tailwind CSS for styling
+  - include TypeScript types</code></pre>
+<h3 id="component-from-scratch-with-a-spec">Component from scratch with a spec<a href="#component-from-scratch-with-a-spec" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need a Pagination component:
+  - shows page numbers with prev/next arrows
+  - highlights current page
+  - shows ellipsis for large page ranges (1 ... 4 5 6 ... 20)
+  - props: { currentPage, totalPages, onPageChange }
+  - accessible (keyboard navigable, aria-labels)
+  - check @src/components/ for our existing component patterns</code></pre>
+<h3 id="modify-an-existing-component">Modify an existing component<a href="#modify-an-existing-component" class="anchor-link">#</a></h3>
+<pre><code>[Select the component in VS Code]
+&gt; add a loading skeleton state to this component.
+  while data is loading, show 3 placeholder cards with a pulse animation.
+  use the Skeleton component from @src/components/ui/Skeleton.tsx</code></pre>
+<hr>
+<h2 id="2-styling-css">2. Styling &amp; CSS<a href="#2-styling-css" class="anchor-link">#</a></h2>
+<h3 id="implement-a-design-with-tailwind">Implement a design with Tailwind<a href="#implement-a-design-with-tailwind" class="anchor-link">#</a></h3>
+<pre><code>&gt; style this form to match these requirements:
+  - card with white background, rounded-lg, shadow-md, p-6
+  - label: text-sm font-medium text-gray-700 mb-1
+  - input: full width, border border-gray-300, rounded-md, px-3 py-2, focus:ring-2 focus:ring-blue-500
+  - error state: border-red-500, text-red-600 error message below input
+  - submit button: full width, bg-blue-600 hover:bg-blue-700, text-white, py-2 rounded-md</code></pre>
+<h3 id="responsive-layout">Responsive layout<a href="#responsive-layout" class="anchor-link">#</a></h3>
+<pre><code>&gt; make @src/components/ProductGrid.tsx responsive:
+  - mobile (&lt; 640px): 1 column
+  - tablet (640-1024px): 2 columns
+  - desktop (&gt; 1024px): 4 columns
+  - maintain the same gap between items on all sizes</code></pre>
+<h3 id="dark-mode">Dark mode<a href="#dark-mode" class="anchor-link">#</a></h3>
+<pre><code>&gt; add dark mode support to @src/components/Navbar.tsx.
+  use Tailwind's dark: prefix.
+  the dark/light toggle is in @src/contexts/ThemeContext.tsx.</code></pre>
+<h3 id="fix-a-layout-issue">Fix a layout issue<a href="#fix-a-layout-issue" class="anchor-link">#</a></h3>
+<pre><code>[Paste a screenshot of the UI bug]
+&gt; the card footer is overlapping the card content on mobile screens.
+  here's a screenshot. @src/components/ui/Card.tsx is the component.
+  fix it.</code></pre>
+<hr>
+<h2 id="3-state-management">3. State Management<a href="#3-state-management" class="anchor-link">#</a></h2>
+<h3 id="add-state-to-a-component">Add state to a component<a href="#add-state-to-a-component" class="anchor-link">#</a></h3>
+<pre><code>[Select the component]
+&gt; this component needs local state for:
+  - which tab is active (tabs: &quot;overview&quot;, &quot;details&quot;, &quot;reviews&quot;)
+  - whether the image modal is open
+  - the currently displayed image index (for the image gallery)
+  Add useState hooks and wire up the UI.</code></pre>
+<h3 id="create-a-context-store">Create a context / store<a href="#create-a-context-store" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a CartContext that:
+  - stores cart items: { productId, quantity, price, name }
+  - exposes: addItem, removeItem, updateQuantity, clearCart, total, itemCount
+  - persists to localStorage
+  - wraps the app (show me where to add the provider)
+  Follow the pattern in @src/contexts/AuthContext.tsx</code></pre>
+<h3 id="react-query-data-fetching">React Query / data fetching<a href="#react-query-data-fetching" class="anchor-link">#</a></h3>
+<pre><code>&gt; add data fetching to @src/pages/ProductListPage.tsx:
+  - fetch from GET /api/products?page=&amp;per_page=20
+  - show loading skeleton while fetching
+  - show error state if the request fails (with retry button)
+  - implement pagination using the API's page/per_page params
+  Use React Query following the pattern in @src/hooks/useOrders.ts</code></pre>
+<h3 id="fixing-state-bugs">Fixing state bugs<a href="#fixing-state-bugs" class="anchor-link">#</a></h3>
+<pre><code>&gt; there's a race condition in @src/components/SearchBar.tsx —
+  if the user types quickly, results from older searches appear after newer ones.
+  fix it by cancelling the previous request when a new one starts.</code></pre>
+<hr>
+<h2 id="4-forms">4. Forms<a href="#4-forms" class="anchor-link">#</a></h2>
+<h3 id="create-a-form">Create a form<a href="#create-a-form" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a registration form with:
+  - fields: name (required), email (required, valid email), password (required, min 8 chars),
+    confirm password (must match password)
+  - show inline validation errors on blur
+  - disable submit while submitting
+  - on success: redirect to /dashboard
+  - on error: show API error message above the form
+  Use React Hook Form + Zod for validation.
+  Follow the pattern in @src/forms/LoginForm.tsx</code></pre>
+<h3 id="add-validation-to-an-existing-form">Add validation to an existing form<a href="#add-validation-to-an-existing-form" class="anchor-link">#</a></h3>
+<pre><code>[Select the form component]
+&gt; add client-side validation to this form.
+  Rules:
+  - phone: required, must be a valid UK mobile number (starts with 07, 11 digits)
+  - postcode: required, valid UK postcode format
+  - date of birth: required, must be 18+ years old
+  Show errors inline below each field after the user has touched it.</code></pre>
+<hr>
+<h2 id="5-performance">5. Performance<a href="#5-performance" class="anchor-link">#</a></h2>
+<h3 id="find-and-fix-performance-issues">Find and fix performance issues<a href="#find-and-fix-performance-issues" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/pages/DashboardPage.tsx is re-rendering too often.
+  analyze it for:
+  - unnecessary re-renders (missing memo/useCallback/useMemo)
+  - expensive computations that should be memoized
+  - components that could be lazy-loaded
+  Suggest fixes with explanations.</code></pre>
+<h3 id="code-splitting">Code splitting<a href="#code-splitting" class="anchor-link">#</a></h3>
+<pre><code>&gt; add code splitting to the router in @src/router.tsx.
+  lazy-load all page components.
+  add loading fallbacks.</code></pre>
+<h3 id="image-optimization">Image optimization<a href="#image-optimization" class="anchor-link">#</a></h3>
+<pre><code>&gt; audit @src/components/ProductCard.tsx for image performance.
+  add: lazy loading, proper width/height to prevent layout shift,
+  srcset for responsive images, WebP with JPEG fallback.</code></pre>
+<hr>
+<h2 id="6-accessibility">6. Accessibility<a href="#6-accessibility" class="anchor-link">#</a></h2>
+<h3 id="audit-a-component">Audit a component<a href="#audit-a-component" class="anchor-link">#</a></h3>
+<pre><code>[Select the component]
+&gt; audit this component for accessibility issues:
+  - missing aria labels
+  - keyboard navigation gaps
+  - color contrast issues
+  - focus management
+  Fix all issues you find.</code></pre>
+<h3 id="add-keyboard-navigation">Add keyboard navigation<a href="#add-keyboard-navigation" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/components/Dropdown.tsx doesn't support keyboard navigation.
+  add: open with Enter/Space, navigate with arrows, close with Escape,
+  trap focus while open, correct aria-expanded/aria-haspopup attributes.</code></pre>
+<hr>
+<h2 id="7-frontend-testing">7. Frontend Testing<a href="#7-frontend-testing" class="anchor-link">#</a></h2>
+<h3 id="component-test">Component test<a href="#component-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; write tests for @src/components/ProductCard.tsx using Vitest + Testing Library.
+  test:
+  - renders product name, price, and image
+  - shows &quot;Out of Stock&quot; and disables button when inStock is false
+  - calls onAddToCart with the product id when button is clicked
+  - price is formatted correctly ($1,234.56)</code></pre>
+<h3 id="integration-test-for-a-page">Integration test for a page<a href="#integration-test-for-a-page" class="anchor-link">#</a></h3>
+<pre><code>&gt; write tests for @src/pages/CheckoutPage.tsx:
+  - user can fill in all fields
+  - validation errors show for empty required fields
+  - form submits and calls the API
+  - success redirects to /order-confirmation
+  - API error shows an error message
+  Mock the API calls using msw.</code></pre>
+<h3 id="snapshot-test-review">Snapshot test review<a href="#snapshot-test-review" class="anchor-link">#</a></h3>
+<pre><code>&gt; the snapshot for @src/components/Button.tsx is failing after I added a size prop.
+  update the snapshot and make sure the new size variants are tested.</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Task</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>New component</td><td><code>create a [Name] component with props: [props]. styling: [requirements]. follow @[example].</code></td></tr>
+<tr><td>Responsive</td><td><code>make @[file] responsive: mobile [x] col, tablet [x] col, desktop [x] col.</code></td></tr>
+<tr><td>Form validation</td><td><code>add validation to this form: [rules]. show errors inline on blur.</code></td></tr>
+<tr><td>State bug</td><td><code>[select code] this has a bug where [symptom]. fix it.</code></td></tr>
+<tr><td>Perf audit</td><td><code>analyze @[file] for unnecessary re-renders and expensive computations.</code></td></tr>
+<tr><td>Accessibility</td><td><code>audit [selected component] for a11y issues and fix them.</code></td></tr>
+<tr><td>Component tests</td><td><code>write tests for @[file]. test: [scenarios]. use Vitest + Testing Library.</code></td></tr>
+<tr><td>Dark mode</td><td><code>add dark mode to [selected component] using Tailwind dark: prefix.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Use the VS Code extension</strong> — open Claude Code in the VS Code panel to highlight code and ask about it without referencing files manually. You can also launch from a terminal with <code>claude --ide</code> to auto-connect to your open editor</li>
+<li><strong>Paste screenshots directly</strong> — <code>Ctrl+V</code> in the prompt box sends images; great for UI bugs and design mockups</li>
+<li><strong>Reference your existing components with <code>@</code></strong> — Claude matches your patterns instead of inventing new ones</li>
+<li><strong>For complex state bugs, enable thinking</strong> — <code>Alt+T</code> / <code>Option+T</code> before asking about race conditions or complex re-render issues</li>
+<li><strong>Test as you build</strong> — after each component, ask Claude to write tests before moving on; it's faster while the code is fresh</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

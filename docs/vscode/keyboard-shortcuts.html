@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Shortcuts — VS Code — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="keyboard-shortcuts">Keyboard Shortcuts<a href="#keyboard-shortcuts" class="anchor-link">#</a></h1>
+<p>Two categories of shortcuts apply when using Claude Code in VS Code: <strong>VS Code-level shortcuts</strong> (open panels, start sessions) and <strong>session-level shortcuts</strong> (control Claude's behavior while it's running).</p>
+<p>Learning these shortcuts is like learning your editor's keybindings — a small investment that pays back every time you use it. The most important ones to internalize: <code>Cmd+N</code> / <code>Ctrl+N</code> for a new conversation, <code>Shift+Tab</code> to change permission mode, and <code>Esc Esc</code> to undo Claude's last change.</p>
+<hr>
+<h2 id="vs-code-level-shortcuts">VS Code-Level Shortcuts<a href="#vs-code-level-shortcuts" class="anchor-link">#</a></h2>
+<p>These work anywhere in VS Code, even when Claude Code is not running:</p>
+<table>
+<thead><tr><th>Action</th><th>macOS</th><th>Windows / Linux</th></tr></thead>
+<tbody>
+<tr><td>Open Command Palette</td><td><code>Cmd+Shift+P</code></td><td><code>Ctrl+Shift+P</code></td></tr>
+<tr><td>New Conversation (Claude Code focused)</td><td><code>Cmd+N</code></td><td><code>Ctrl+N</code></td></tr>
+<tr><td>Open in New Tab</td><td><code>Cmd+Shift+Esc</code></td><td><code>Ctrl+Shift+Esc</code></td></tr>
+<tr><td>Focus Input</td><td><code>Cmd+Esc</code></td><td><code>Ctrl+Esc</code></td></tr>
+<tr><td>Insert @-mention with file path and line number</td><td><code>Option+K</code></td><td><code>Alt+K</code></td></tr>
+<tr><td>Open Extensions sidebar</td><td><code>Cmd+Shift+X</code></td><td><code>Ctrl+Shift+X</code></td></tr>
+<tr><td>Open integrated terminal</td><td>Ctrl+`</td><td>Ctrl+`</td></tr>
+<tr><td>New terminal panel</td><td>Ctrl+Shift+`</td><td>Ctrl+Shift+`</td></tr>
+</tbody>
+</table>
+<h3 id="opening-specific-claude-code-commands-from-the-palette">Opening specific Claude Code commands from the palette<a href="#opening-specific-claude-code-commands-from-the-palette" class="anchor-link">#</a></h3>
+<p>Press <code>Ctrl+Shift+P</code> (or <code>Cmd+Shift+P</code> on macOS) and type any of these:</p>
+<pre><code>Claude Code: Open Panel
+Claude Code: New Session
+Claude Code: Resume Last Session
+Claude Code: Open Settings</code></pre>
+<hr>
+<h2 id="session-level-shortcuts">Session-Level Shortcuts<a href="#session-level-shortcuts" class="anchor-link">#</a></h2>
+<p>These work while you're inside an active Claude Code session (in the prompt box or integrated terminal):</p>
+<h3 id="input-control">Input control<a href="#input-control" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Submit prompt</td><td><code>Enter</code></td><td>Sends your message to Claude</td></tr>
+<tr><td>New line without submitting</td><td><code>Shift+Enter</code></td><td>For multi-line prompts</td></tr>
+<tr><td>Navigate prompt history (back)</td><td><code>↑</code></td><td>Cycles through previous prompts</td></tr>
+<tr><td>Navigate prompt history (forward)</td><td><code>↓</code></td><td>Moves forward in history</td></tr>
+<tr><td>Reverse search command history</td><td><code>Ctrl+R</code></td><td>Incremental reverse search through history</td></tr>
+<tr><td>Cancel current operation</td><td><code>Ctrl+C</code></td><td>Stops Claude mid-response</td></tr>
+<tr><td>Clear input (when prompt is empty)</td><td><code>Ctrl+C</code></td><td>Same key, different context</td></tr>
+<tr><td>Exit the session</td><td><code>Ctrl+D</code></td><td>Ends the session cleanly</td></tr>
+<tr><td>Clear the terminal screen</td><td><code>Ctrl+L</code></td><td>Screen only; context preserved</td></tr>
+</tbody>
+</table>
+<h3 id="editing-the-prompt">Editing the prompt<a href="#editing-the-prompt" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Action</th><th>macOS</th><th>Windows / Linux</th></tr></thead>
+<tbody>
+<tr><td>Open prompt in full editor</td><td><code>Ctrl+G</code></td><td><code>Ctrl+G</code></td></tr>
+<tr><td>Paste from clipboard (text or image)</td><td><code>Cmd+V</code></td><td><code>Ctrl+V</code></td></tr>
+</tbody>
+</table>
+<p><code>Ctrl+G</code> opens your current prompt input in <code>$EDITOR</code> — very useful for long, multi-paragraph prompts where the one-line input feels cramped.</p>
+<h3 id="claude-behavior">Claude behavior<a href="#claude-behavior" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Action</th><th>Shortcut</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Cycle permission modes</td><td><code>Shift+Tab</code></td><td>Normal → Auto-Accept → Plan-only</td></tr>
+<tr><td>Toggle verbose output</td><td><code>Ctrl+O</code></td><td>Shows/hides Claude's internal reasoning steps</td></tr>
+</tbody>
+</table>
+<h3 id="undo--rewind">Undo / rewind<a href="#undo--rewind" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Action</th><th>Shortcut</th></tr></thead>
+<tbody>
+<tr><td>Rewind — undo the last change Claude made</td><td><code>Esc Esc</code> (press twice quickly)</td></tr>
+</tbody>
+</table>
+<p>This is one of the most useful shortcuts: if Claude's edit wasn't what you wanted, press <code>Esc Esc</code> and it reverts the last file operation. Much faster than <code>Ctrl+Z</code> in the editor if Claude touched multiple files.</p>
+<hr>
+<h2 id="permission-mode-cycling-shifttab">Permission Mode Cycling (Shift+Tab)<a href="#permission-mode-cycling-shifttab" class="anchor-link">#</a></h2>
+<p>Pressing <code>Shift+Tab</code> cycles through three modes:</p>
+<table>
+<thead><tr><th>Mode</th><th>What It Means</th><th>When to Use</th></tr></thead>
+<tbody>
+<tr><td><strong>Normal</strong></td><td>Claude asks before risky actions (default)</td><td>Most situations — good for careful work</td></tr>
+<tr><td><strong>Auto-Accept</strong></td><td>Claude does everything without asking — maximum speed</td><td>Trusted projects, rapid iteration</td></tr>
+<tr><td><strong>Plan-only</strong></td><td>Read-only — Claude explores but makes no changes</td><td>Code review, exploration, learning a codebase</td></tr>
+</tbody>
+</table>
+<p>The current mode is shown in the prompt indicator at the bottom of the session.</p>
+<hr>
+<h2 id="vim-mode-shortcuts">Vim Mode Shortcuts<a href="#vim-mode-shortcuts" class="anchor-link">#</a></h2>
+<p>If you enable vim mode (<code>/vim</code> or in settings), additional shortcuts become available:</p>
+<pre><code>&gt; /vim    # toggle vim mode on/off</code></pre>
+<p>In vim mode, the prompt box behaves like vim:</p>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>i</code></td><td>Enter insert mode</td></tr>
+<tr><td><code>Esc</code></td><td>Return to normal mode</td></tr>
+<tr><td><code>v</code></td><td>Visual selection</td></tr>
+<tr><td><code>y</code> / <code>p</code></td><td>Yank / paste</td></tr>
+<tr><td>Standard vim motions</td><td>Navigate and edit</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="customizing-shortcuts">Customizing Shortcuts<a href="#customizing-shortcuts" class="anchor-link">#</a></h2>
+<p>You can remap Claude Code's session shortcuts. The config file location depends on your OS:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre><code>~/.claude/keybindings.json</code></pre>
+<p><strong>Windows (native):</strong></p>
+<pre><code>%USERPROFILE%\.claude\keybindings.json</code></pre>
+<p>Example — swap <code>Enter</code> and <code>Ctrl+Enter</code> (preferred by many chat tool users):</p>
+<pre data-lang="json"><code>[
+  {
+    "command": "submit",
+    "key": "ctrl+enter"
+  },
+  {
+    "command": "new_line",
+    "key": "enter"
+  }
+]</code></pre>
+<h3 id="setting-up-ctrlenter-to-submit-on-macos">Setting up <code>Ctrl+Enter</code> to submit on macOS<a href="#setting-up-ctrlenter-to-submit-on-macos" class="anchor-link">#</a></h3>
+<p>Open <code>~/.claude/keybindings.json</code>:</p>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code>nano ~/.claude/keybindings.json</code></pre>
+<p>Add:</p>
+<pre data-lang="json"><code>[
+  {
+    "command": "submit",
+    "key": "ctrl+enter"
+  },
+  {
+    "command": "new_line",
+    "key": "enter"
+  }
+]</code></pre>
+<p>This is popular for macOS users because <code>Ctrl+Enter</code> matches the behavior of tools like Notion, Linear, and Slack (on some configurations).</p>
+<h3 id="setting-up-ctrlenter-to-submit-on-windows-wsl-or-native">Setting up <code>Ctrl+Enter</code> to submit on Windows (WSL or native)<a href="#setting-up-ctrlenter-to-submit-on-windows-wsl-or-native" class="anchor-link">#</a></h3>
+<p>Same approach — edit <code>~/.claude/keybindings.json</code> (WSL) or <code>%USERPROFILE%\.claude\keybindings.json</code> (native), and add the same JSON.</p>
+<h3 id="chord-shortcuts">Chord shortcuts<a href="#chord-shortcuts" class="anchor-link">#</a></h3>
+<p>You can also define two-key chord shortcuts:</p>
+<pre data-lang="json"><code>[
+  {
+    "command": "toggle_plan_mode",
+    "key": "ctrl+p p"
+  }
+]</code></pre>
+<p>Edit your keybindings from inside a session:</p>
+<pre><code>&gt; /keybindings</code></pre>
+<blockquote><p>What to expect: The <code>/keybindings</code> command opens the keybindings.json file in your <code>$EDITOR</code>. You'll see the current bindings as a JSON array. Add entries for commands you want to remap. Save and close — the changes take effect immediately in the current session.</p></blockquote>
+<hr>
+<h2 id="setting-up-terminal-for-shiftenter-os-specific">Setting Up Terminal for Shift+Enter (OS-specific)<a href="#setting-up-terminal-for-shiftenter-os-specific" class="anchor-link">#</a></h2>
+<p>On some systems, <code>Shift+Enter</code> in the VS Code integrated terminal may not work as a newline by default. Here's how to fix it per OS.</p>
+<h3 id="macos">macOS<a href="#macos" class="anchor-link">#</a></h3>
+<p>In most cases this works out of the box. If not, try adding this to your VS Code <code>settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "terminal.integrated.allowChords": true
+}</code></pre>
+<h3 id="linux-ubuntu">Linux (Ubuntu)<a href="#linux-ubuntu" class="anchor-link">#</a></h3>
+<p>If your terminal doesn't handle <code>Shift+Enter</code> as a newline in Claude Code, you may need to configure the keybinding in VS Code's keyboard shortcuts:</p>
+<ol>
+<li>Open <code>Ctrl+Shift+P</code> → "Open Keyboard Shortcuts (JSON)"</li>
+<li>Add:</li>
+</ol>
+<pre data-lang="json"><code>{
+  "key": "shift+enter",
+  "command": "workbench.action.terminal.sendSequence",
+  "args": { "text": "\n" },
+  "when": "terminalFocus"
+}</code></pre>
+<h3 id="windows-native">Windows (Native)<a href="#windows-native" class="anchor-link">#</a></h3>
+<p>Same approach as Linux above — configure via VS Code's keyboard shortcuts JSON.</p>
+<h3 id="windows-wsl">Windows (WSL)<a href="#windows-wsl" class="anchor-link">#</a></h3>
+<p>WSL terminals inside VS Code typically handle <code>Shift+Enter</code> correctly because they run a Unix shell. If it doesn't work, use the same VS Code keyboard shortcuts fix as above, or configure Claude Code to use <code>Ctrl+Enter</code> for submit (as described in the customization section).</p>
+<hr>
+<h2 id="reference-card">Reference Card<a href="#reference-card" class="anchor-link">#</a></h2>
+<p>Cut this out and keep it handy:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│             Claude Code VS Code Shortcuts               │
+├─────────────────────────┬───────────────────────────────┤
+│ macOS                   │ Windows / Linux               │
+├─────────────────────────┼───────────────────────────────┤
+│ Cmd+N                   │ Ctrl+N         New conversation│
+│ Cmd+Esc                 │ Ctrl+Esc       Focus input    │
+│ Cmd+Shift+Esc           │ Ctrl+Shift+Esc Open new tab   │
+│ Option+K                │ Alt+K          Insert @-mention│
+│ Cmd+Shift+P             │ Ctrl+Shift+P   Command palette│
+├─────────────────────────┴───────────────────────────────┤
+│              (All platforms)                            │
+├─────────────────────────┬───────────────────────────────┤
+│ Enter                   │ Submit                        │
+│ Shift+Enter             │ New line (no submit)          │
+│ Ctrl+C                  │ Cancel / clear                │
+│ Ctrl+D                  │ Exit session                  │
+│ Ctrl+R                  │ Reverse search history        │
+│ Shift+Tab               │ Cycle permission mode         │
+│ Esc Esc                 │ Undo last change              │
+│ Ctrl+G                  │ Open in $EDITOR               │
+│ Ctrl+V / Cmd+V          │ Paste (incl. images)          │
+│ Ctrl+O                  │ Toggle verbose output         │
+│ ↑ / ↓                   │ Prompt history                │
+└─────────────────────────┴───────────────────────────────┘</code></pre>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="prompt-box.html">prompt-box.md</a> — Using the VS Code prompt panel</li>
+<li><a href="../claude-code/keyboard-shortcuts.html">../keyboard-shortcuts.md</a> — Full keyboard shortcut reference (all interfaces)</li>
+<li><a href="settings-configuration.html">settings-configuration.md</a> — Configuring keybindings in settings.json</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

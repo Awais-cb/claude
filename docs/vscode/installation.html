@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installing the VS Code Extension — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="installing-the-claude-code-vs-code-extension">Installing the Claude Code VS Code Extension<a href="#installing-the-claude-code-vs-code-extension" class="anchor-link">#</a></h1>
+<p>The Claude Code extension is published by Anthropic on the VS Code Marketplace. Installation takes under a minute.</p>
+<blockquote><p><strong>Note:</strong> The extension bundles the Claude Code CLI. You don't need to install Node.js or the CLI separately to use the extension. If you only want to use Claude Code through VS Code, skip straight to <a href="#step-1-install-the-vs-code-extension">Step 1: Install the VS Code Extension</a>. The Node.js and CLI installation steps below are only needed if you also want to use the Claude Code CLI directly in your terminal.</p></blockquote>
+<hr>
+<h2 id="prerequisites">Prerequisites<a href="#prerequisites" class="anchor-link">#</a></h2>
+<p>Before installing the extension, make sure you have:</p>
+<table>
+<thead><tr><th>Requirement</th><th>Minimum Version</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>VS Code</td><td>1.98.0+</td><td><code>code --version</code> to check</td></tr>
+<tr><td>Anthropic account</td><td>—</td><td><a href="https://claude.ai">claude.ai</a></td></tr>
+<tr><td>Node.js <em>(CLI only)</em></td><td>18+</td><td>Only needed for terminal CLI use; not required for the extension</td></tr>
+<tr><td>npm <em>(CLI only)</em></td><td>8+</td><td>Only needed for terminal CLI use</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="cli-only-installation-optional">CLI-Only Installation (Optional)<a href="#cli-only-installation-optional" class="anchor-link">#</a></h2>
+<p>The steps in this section — installing Node.js and the Claude Code CLI via npm — are only required if you want to use the Claude Code CLI directly in your terminal. <strong>If you only plan to use Claude Code through the VS Code extension, skip to <a href="#step-1-install-the-vs-code-extension">Step 1: Install the VS Code Extension</a>.</strong> The extension bundles everything it needs.</p>
+<h3 id="install-nodejs-cli-use-only">Install Node.js (CLI use only)<a href="#install-nodejs-cli-use-only" class="anchor-link">#</a></h3>
+<p>Node.js powers the Claude Code CLI. Here's how to install it on each OS.</p>
+<h3 id="macos">macOS<a href="#macos" class="anchor-link">#</a></h3>
+<p><strong>Option A — Homebrew (recommended if you already use brew):</strong></p>
+<pre data-lang="bash"><code># Install Homebrew first if you don't have it:
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Then install Node.js:
+brew install node</code></pre>
+<p><strong>Option B — nvm (recommended for managing multiple Node versions):</strong></p>
+<pre data-lang="bash"><code># Install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Reload your shell config:
+source ~/.zshrc   # or source ~/.bashrc
+
+# Install the latest LTS version of Node.js:
+nvm install --lts
+nvm use --lts</code></pre>
+<p><strong>Option C — Official installer:</strong></p>
+<p>Download from <a href="https://nodejs.org">nodejs.org</a> and run the <code>.pkg</code> file.</p>
+<h3 id="linux-ubuntu-debian">Linux (Ubuntu / Debian)<a href="#linux-ubuntu-debian" class="anchor-link">#</a></h3>
+<p><strong>Option A — nvm (recommended):</strong></p>
+<pre data-lang="bash"><code># Install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Reload your shell:
+source ~/.bashrc
+
+# Install the latest LTS:
+nvm install --lts
+nvm use --lts</code></pre>
+<p><strong>Option B — apt (simpler but may give an older version):</strong></p>
+<pre data-lang="bash"><code># Add the NodeSource repository for Node.js 20:
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+# Install:
+sudo apt-get install -y nodejs</code></pre>
+<p><strong>Verify:</strong></p>
+<pre data-lang="bash"><code>node --version   # e.g., v20.12.0
+npm --version    # e.g., 10.5.0</code></pre>
+<h3 id="windows-native-powershell">Windows — Native (PowerShell)<a href="#windows-native-powershell" class="anchor-link">#</a></h3>
+<p><strong>Option A — nvm-windows (recommended for managing versions):</strong></p>
+<ol>
+<li>Download the installer from <a href="https://github.com/coreybutler/nvm-windows/releases">github.com/coreybutler/nvm-windows/releases</a> — get <code>nvm-setup.exe</code></li>
+<li>Run the installer</li>
+<li>Open a new PowerShell window (as administrator if needed)</li>
+</ol>
+<pre data-lang="powershell"><code>nvm install lts
+nvm use lts
+node --version</code></pre>
+<p><strong>Option B — Official installer:</strong></p>
+<p>Download the Windows installer from <a href="https://nodejs.org">nodejs.org</a> (choose the LTS version).</p>
+<h3 id="windows-wsl-recommended-for-windows-users">Windows — WSL (Recommended for Windows users)<a href="#windows-wsl-recommended-for-windows-users" class="anchor-link">#</a></h3>
+<p>WSL (Windows Subsystem for Linux) gives you a full Linux environment inside Windows. This is the smoothest way to use Claude Code on Windows because it avoids common path and permission issues.</p>
+<p><strong>Why WSL?</strong> The Claude Code CLI is built for Unix-style environments. WSL means you get bash, proper file permissions, symlinks that actually work, and better compatibility with Linux-targeted npm packages.</p>
+<p><strong>Step 1: Install WSL (if you haven't already):</strong></p>
+<p>Open PowerShell as Administrator:</p>
+<pre data-lang="powershell"><code>wsl --install</code></pre>
+<p>This installs Ubuntu by default. Restart your computer when prompted.</p>
+<p><strong>Step 2: Open your Ubuntu terminal and install nvm:</strong></p>
+<pre data-lang="bash"><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+nvm use --lts
+node --version</code></pre>
+<hr>
+<h3 id="install-the-claude-code-cli-cli-use-only">Install the Claude Code CLI (CLI use only)<a href="#install-the-claude-code-cli-cli-use-only" class="anchor-link">#</a></h3>
+<p>Once Node.js is installed, install the Claude Code CLI globally for terminal access:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<p>Verify it's installed:</p>
+<pre data-lang="bash"><code>claude --version</code></pre>
+<p>You should see a version number like <code>1.2.3</code>. If you get "command not found," see the Troubleshooting section at the bottom of this page.</p>
+<hr>
+<h2 id="step-1-install-the-vs-code-extension">Step 1: Install the VS Code Extension<a href="#step-1-install-the-vs-code-extension" class="anchor-link">#</a></h2>
+<h3 id="method-1-vs-code-marketplace-recommended-for-beginners">Method 1: VS Code Marketplace (Recommended for beginners)<a href="#method-1-vs-code-marketplace-recommended-for-beginners" class="anchor-link">#</a></h3>
+<ol>
+<li>Open VS Code</li>
+<li>Open the Extensions sidebar:
+  <ul>
+    <li><strong>macOS</strong>: <code>Cmd+Shift+X</code></li>
+    <li><strong>Windows / Linux</strong>: <code>Ctrl+Shift+X</code></li>
+  </ul>
+</li>
+<li>Search for <strong>Claude Code</strong></li>
+<li>Find the extension published by <strong>Anthropic</strong></li>
+<li>Click <strong>Install</strong></li>
+</ol>
+<p>The extension activates automatically — no restart needed.</p>
+<blockquote><p>What to expect: You'll see the Claude Code extension card with the Anthropic publisher name, a blue Install button, and a star rating. Make sure the publisher says "Anthropic" before clicking Install.</p></blockquote>
+<h3 id="method-2-terminal-one-liner-for-command-line-fans">Method 2: Terminal One-liner (For command-line fans)<a href="#method-2-terminal-one-liner-for-command-line-fans" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>code --install-extension anthropic.claude-code</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>code --install-extension anthropic.claude-code</code></pre>
+<p>This works whether VS Code is open or closed.</p>
+<blockquote><p><strong>macOS note:</strong> If <code>code</code> is not found, open VS Code → <code>Cmd+Shift+P</code> → type "Shell Command: Install 'code' command in PATH" → press Enter. Then try the command again.</p></blockquote>
+<h3 id="method-3-vsix-file-offline-manual">Method 3: VSIX File (Offline / Manual)<a href="#method-3-vsix-file-offline-manual" class="anchor-link">#</a></h3>
+<p>If you need to install without internet access or from a specific version:</p>
+<ol>
+<li>Download the <code>.vsix</code> file from the Anthropic releases page</li>
+<li>In VS Code, open the Extensions sidebar</li>
+<li>Click the <code>···</code> menu (top-right of the sidebar)</li>
+<li>Select <strong>Install from VSIX...</strong></li>
+<li>Pick the downloaded file</li>
+</ol>
+<hr>
+<h2 id="step-2-authenticate">Step 2: Authenticate<a href="#step-2-authenticate" class="anchor-link">#</a></h2>
+<p>If you haven't already authenticated Claude Code CLI, do it now:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>claude auth login</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>claude auth login</code></pre>
+<p>This opens a browser window to link your Anthropic account. The extension uses the same credentials as the CLI — you only log in once. Once authenticated, the <code>ANTHROPIC_API_KEY</code> is stored in your Claude Code config and reused automatically.</p>
+<hr>
+<h2 id="verify-everything-works">Verify Everything Works<a href="#verify-everything-works" class="anchor-link">#</a></h2>
+<p>After installing, run this checklist:</p>
+<ol>
+<li><strong>Check the extension is enabled:</strong>
+  <ul>
+    <li>Open the Extensions sidebar (<code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>)</li>
+    <li>Search for "Claude Code" — it should show as <strong>Enabled</strong></li>
+  </ul>
+</li>
+<li><strong>Check the CLI is accessible:</strong>
+<pre data-lang="bash"><code>claude --version</code></pre>
+</li>
+<li><strong>Check the Command Palette has Claude commands:</strong>
+  <ul>
+    <li>Press <code>Ctrl+Shift+P</code> (Windows/Linux) or <code>Cmd+Shift+P</code> (macOS)</li>
+    <li>Type "Claude Code" — commands like "Open Panel" and "New Session" should appear</li>
+  </ul>
+</li>
+<li><strong>Test the full connection:</strong>
+<pre data-lang="bash"><code># In VS Code's integrated terminal:
+claude --ide</code></pre>
+  <p>The prompt box should appear in VS Code.</p>
+</li>
+</ol>
+<hr>
+<h2 id="keeping-it-updated">Keeping It Updated<a href="#keeping-it-updated" class="anchor-link">#</a></h2>
+<p>VS Code auto-updates extensions by default. To check for updates manually:</p>
+<ol>
+<li>Open the Extensions sidebar</li>
+<li>Click the <code>···</code> menu</li>
+<li>Select <strong>Check for Extension Updates</strong></li>
+</ol>
+<p>To update the CLI:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>npm update -g @anthropic-ai/claude-code</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>npm update -g @anthropic-ai/claude-code</code></pre>
+<p>To pin a specific extension version (useful in team environments):</p>
+<ol>
+<li>Right-click the extension in the sidebar</li>
+<li>Select <strong>Install Another Version...</strong></li>
+</ol>
+<hr>
+<h2 id="uninstalling">Uninstalling<a href="#uninstalling" class="anchor-link">#</a></h2>
+<p><strong>Via terminal:</strong></p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>code --uninstall-extension anthropic.claude-code</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>code --uninstall-extension anthropic.claude-code</code></pre>
+<p><strong>Via sidebar:</strong> Extensions sidebar → right-click the extension → <strong>Uninstall</strong>.</p>
+<p>Uninstalling the extension does not remove the Claude Code CLI or your settings. To also remove the CLI:</p>
+<pre data-lang="bash"><code>npm uninstall -g @anthropic-ai/claude-code</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting<a href="#troubleshooting" class="anchor-link">#</a></h2>
+<h3 id="code-command-not-found-macos"><code>code</code> command not found (macOS)<a href="#code-command-not-found-macos" class="anchor-link">#</a></h3>
+<p>Open the Command Palette (<code>Cmd+Shift+P</code>) and run:</p>
+<pre><code>Shell Command: Install 'code' command in PATH</code></pre>
+<p>Then close and reopen your terminal.</p>
+<h3 id="code-command-not-found-linux"><code>code</code> command not found (Linux)<a href="#code-command-not-found-linux" class="anchor-link">#</a></h3>
+<p>If you installed VS Code via Snap:</p>
+<pre data-lang="bash"><code># The code command may be called 'code' or 'code-insiders'
+which code || which code-insiders</code></pre>
+<p>If installed via apt or the official .deb package, <code>code</code> should already be in your PATH. Try opening a new terminal.</p>
+<h3 id="code-command-not-found-windows"><code>code</code> command not found (Windows)<a href="#code-command-not-found-windows" class="anchor-link">#</a></h3>
+<p>Make sure VS Code was added to PATH during installation. Reinstall VS Code and check the "Add to PATH" option during setup. Alternatively, use the full path:</p>
+<pre data-lang="powershell"><code>&amp; "C:\Users\YourName\AppData\Local\Programs\Microsoft VS Code\bin\code" --install-extension anthropic.claude-code</code></pre>
+<h3 id="npm-install--g-fails-with-permission-error-macos-linux"><code>npm install -g</code> fails with permission error (macOS / Linux)<a href="#npm-install--g-fails-with-permission-error-macos-linux" class="anchor-link">#</a></h3>
+<p>This typically means npm's global directory is owned by root. Fix it:</p>
+<pre data-lang="bash"><code># Create a directory for global packages in your home folder:
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+
+# Add to your ~/.zshrc or ~/.bashrc:
+export PATH=~/.npm-global/bin:$PATH
+
+# Reload shell:
+source ~/.zshrc   # or ~/.bashrc
+
+# Now install:
+npm install -g @anthropic-ai/claude-code</code></pre>
+<h3 id="extension-installed-but-not-working">Extension installed but not working<a href="#extension-installed-but-not-working" class="anchor-link">#</a></h3>
+<p>Make sure the CLI is installed and authenticated:</p>
+<pre data-lang="bash"><code>claude --version    # should print a version number
+claude auth login   # re-authenticate if needed</code></pre>
+<h3 id="extension-not-showing-claude-code-commands">Extension not showing Claude Code commands<a href="#extension-not-showing-claude-code-commands" class="anchor-link">#</a></h3>
+<p>Try reloading VS Code:</p>
+<pre><code>Ctrl+Shift+P → Developer: Reload Window</code></pre>
+<h3 id="claude---version-not-found-after-npm-install-wsl"><code>claude --version</code> not found after npm install (WSL)<a href="#claude---version-not-found-after-npm-install-wsl" class="anchor-link">#</a></h3>
+<p>nvm may not be loading properly. Add these lines to your <code>~/.bashrc</code>:</p>
+<pre data-lang="bash"><code>export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] &amp;&amp; \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] &amp;&amp; \. "$NVM_DIR/bash_completion"</code></pre>
+<p>Then run <code>source ~/.bashrc</code> and try again.</p>
+<h3 id="windows-claude-command-works-in-wsl-but-not-in-powershell">Windows: <code>claude</code> command works in WSL but not in PowerShell<a href="#windows-claude-command-works-in-wsl-but-not-in-powershell" class="anchor-link">#</a></h3>
+<p>You have two separate environments. Install the CLI in both if you want to use it from both:</p>
+<p><strong>In WSL:</strong></p>
+<pre data-lang="bash"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<p><strong>In PowerShell:</strong></p>
+<pre data-lang="powershell"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<hr>
+<h2 id="next-step">Next Step<a href="#next-step" class="anchor-link">#</a></h2>
+<p>With the extension installed, connect it to a live Claude Code session:</p>
+<ul>
+<li><a href="connecting-to-ide.html">connecting-to-ide.md</a> — Start Claude Code and link it to VS Code</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

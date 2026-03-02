@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File References with @ — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="file-references-with-">File References with <code>@</code><a href="#file-references-with-" class="anchor-link">#</a></h1>
+<p>The <code>@</code> syntax lets you reference specific files or folders in your prompts. VS Code autocompletes the paths as you type, so you can point Claude at exactly the right code without copy-pasting paths or opening files first.</p>
+<p>Think of it like tagging someone in a message. When you type <code>@src/services/AuthService.ts</code>, you're saying "hey Claude, look at <em>this specific file</em> when answering." Without <code>@</code>, Claude uses whatever context it currently has — which might be enough, but <code>@</code> makes it precise.</p>
+<hr>
+<h2 id="basic-usage">Basic Usage<a href="#basic-usage" class="anchor-link">#</a></h2>
+<p>In the prompt box or terminal, type <code>@</code> followed by a file path:</p>
+<pre><code>&gt; @src/components/LoginForm.tsx — add form validation
+&gt; @package.json — what testing framework are we using?
+&gt; @routes/web.php — list all GET routes</code></pre>
+<p>Claude reads the referenced file and uses it as context for the response.</p>
+<hr>
+<h2 id="autocomplete">Autocomplete<a href="#autocomplete" class="anchor-link">#</a></h2>
+<p>When you type <code>@</code> in the VS Code prompt box, a file picker autocomplete dropdown appears. Navigate with:</p>
+<ul>
+<li><strong>Arrow keys</strong> to move through suggestions</li>
+<li><strong>Tab</strong> or <strong>Enter</strong> to select</li>
+<li><strong>Type more characters</strong> to filter the list</li>
+</ul>
+<p>This works for any file in your current workspace.</p>
+<p><strong>Fuzzy matching</strong> is supported — you don't need to type the exact filename. Typing <code>@auth</code> can match <code>auth.js</code>, <code>AuthService.ts</code>, <code>useAuth.tsx</code>, and so on. Claude Code ranks matches by relevance, so the most likely file appears at the top.</p>
+<blockquote><p>What to expect: As soon as you type <code>@</code> followed by a few letters, a dropdown appears showing matching files from your project. Files are sorted by recent activity, so the files you've been working with appear near the top.</p></blockquote>
+<hr>
+<h2 id="line-range-references">Line Range References<a href="#line-range-references" class="anchor-link">#</a></h2>
+<p>To reference a specific range of lines within a file, press <code>Option+K</code> (Mac) or <code>Alt+K</code> (Windows/Linux) when the cursor is in the prompt box. This inserts an @-mention with the line range included, for example:</p>
+<pre><code>@src/app.ts#5-10</code></pre>
+<p>This tells Claude to look specifically at lines 5 through 10 of <code>app.ts</code>, rather than the entire file. This is especially useful for large files where you want to focus Claude on a precise location — a particular function, a route definition, or a block of config.</p>
+<hr>
+<h2 id="path-separators-a-note-for-windows-users">Path Separators: A Note for Windows Users<a href="#path-separators-a-note-for-windows-users" class="anchor-link">#</a></h2>
+<p>On macOS and Linux, file paths use forward slashes:</p>
+<pre><code>@src/components/LoginForm.tsx</code></pre>
+<p>On Windows, the native path separator is a backslash (<code>\</code>), but when working with VS Code and Claude Code — especially in WSL — you should use <strong>forward slashes</strong> in <code>@</code> references:</p>
+<pre><code>@src/components/LoginForm.tsx    ✓ Works everywhere
+@src\components\LoginForm.tsx    ✗ May cause issues</code></pre>
+<p><strong>Windows (WSL):</strong> Since WSL uses the Linux filesystem, paths look like:</p>
+<pre><code>@home/user/projects/my-app/src/components/LoginForm.tsx</code></pre>
+<p>But because you're running from your project root, you typically just use the relative path:</p>
+<pre><code>@src/components/LoginForm.tsx</code></pre>
+<p><strong>Windows (Native PowerShell):</strong> Use forward slashes in <code>@</code> references even when on Windows:</p>
+<pre><code>@src/components/LoginForm.tsx</code></pre>
+<p>Claude Code normalizes these paths internally.</p>
+<hr>
+<h2 id="referencing-folders">Referencing Folders<a href="#referencing-folders" class="anchor-link">#</a></h2>
+<p>You can reference an entire directory. When referencing folders, include a <strong>trailing slash</strong> to make clear you're pointing at a directory rather than a file prefix:</p>
+<pre><code>&gt; @src/services/ — which service handles payment processing?
+&gt; @tests/ — what's the test coverage strategy here?
+&gt; @app/Models/ — list all Eloquent models and their relationships</code></pre>
+<p>Claude reads the directory contents and uses all relevant files as context.</p>
+<hr>
+<h2 id="multiple-references-in-one-prompt">Multiple References in One Prompt<a href="#multiple-references-in-one-prompt" class="anchor-link">#</a></h2>
+<p>Chain multiple <code>@</code> references in a single message:</p>
+<pre><code>&gt; @src/auth/login.ts and @src/auth/register.ts — these two files have
+  duplicated validation logic, consolidate it into a shared helper</code></pre>
+<pre><code>&gt; @package.json @tsconfig.json — are there any version conflicts I should know about?</code></pre>
+<pre><code>&gt; @app/Http/Controllers/UserController.php @app/Models/User.php @app/Services/UserService.php
+  — trace how a user creation request flows through these three layers</code></pre>
+<hr>
+<h2 id="when-to-use--vs-just-asking">When to Use <code>@</code> vs. Just Asking<a href="#when-to-use--vs-just-asking" class="anchor-link">#</a></h2>
+<p><strong>Use <code>@</code></strong> when:</p>
+<ul>
+<li>You want Claude to focus on a specific file (not guess which one)</li>
+<li>The file isn't currently open in your editor</li>
+<li>You're referencing a config or dependency file that provides context</li>
+<li>You want to mention multiple specific files</li>
+</ul>
+<p><strong>Just ask naturally</strong> when:</p>
+<ul>
+<li>The file is currently open and selected — Claude already sees it</li>
+<li>You've highlighted the relevant code — Claude has it as context</li>
+<li>You want Claude to search for the right file itself</li>
+</ul>
+<p><strong>Combine both</strong> when you want maximum precision:</p>
+<pre><code>[Select a function in UserController.php]
+&gt; @app/Models/User.php — refactor this function to use the User model's methods</code></pre>
+<hr>
+<h2 id="practical-examples">Practical Examples<a href="#practical-examples" class="anchor-link">#</a></h2>
+<h3 id="explain-a-specific-file">Explain a specific file<a href="#explain-a-specific-file" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/middleware/auth.js — walk me through what this middleware does step by step</code></pre>
+<h3 id="modify-a-file-with-precise-context">Modify a file with precise context<a href="#modify-a-file-with-precise-context" class="anchor-link">#</a></h3>
+<pre><code>&gt; @app/Http/Controllers/UserController.php — add a method to export users as CSV</code></pre>
+<h3 id="compare-two-files">Compare two files<a href="#compare-two-files" class="anchor-link">#</a></h3>
+<pre><code>&gt; @config/payment.php @config/payment.staging.php — what's different between these two configs?</code></pre>
+<h3 id="use-a-config-file-as-context">Use a config file as context<a href="#use-a-config-file-as-context" class="anchor-link">#</a></h3>
+<pre><code>&gt; @.env.example — which of these environment variables am I missing in my .env?</code></pre>
+<h3 id="reference-a-folder-for-a-holistic-task">Reference a folder for a holistic task<a href="#reference-a-folder-for-a-holistic-task" class="anchor-link">#</a></h3>
+<pre><code>&gt; @database/migrations/ — summarize what schema changes have been made in the last 10 migrations</code></pre>
+<h3 id="onboard-claude-on-a-new-codebase">Onboard Claude on a new codebase<a href="#onboard-claude-on-a-new-codebase" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/ — I'm new to this project. Give me a guided tour: what does each major folder do,
+  what are the key patterns used, and what should I understand before making changes?</code></pre>
+<h3 id="cross-reference-two-related-files">Cross-reference two related files<a href="#cross-reference-two-related-files" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/api/endpoints.ts @src/api/middleware.ts — the middleware applies rate limiting,
+  but I think the POST /auth/login endpoint is exempt. Can you confirm and show me why?</code></pre>
+<hr>
+<h2 id="-in-the-terminal"><code>@</code> in the Terminal<a href="#-in-the-terminal" class="anchor-link">#</a></h2>
+<p>The <code>@</code> reference syntax works in the terminal too (not just the VS Code prompt box):</p>
+<pre data-lang="bash"><code>claude --ide
+&gt; @src/utils/helpers.ts — are there any functions here that could be replaced with native JS?</code></pre>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Paths are relative to your project root</strong> — you don't need to type the full absolute path</li>
+<li><strong>Autocomplete shows recently edited files first</strong> — so your active files are always at the top</li>
+<li><strong>You can mix <code>@</code> references with natural language</strong> — write prompts as you normally would, and drop in <code>@file</code> where specific context helps</li>
+<li><strong>Folder references are great for onboarding</strong> — <code>@src/ — give me an overview of this codebase</code> is a quick way to orient Claude on a new project</li>
+<li><strong>Use <code>@</code> for files outside your current tab</strong> — if you're editing <code>UserController.php</code> but need Claude to also check <code>UserService.php</code>, use <code>@</code> to pull in the service file without switching tabs</li>
+</ul>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="selected-code-context.html">selected-code-context.md</a> — Send highlighted code as context without <code>@</code></li>
+<li><a href="prompt-box.html">prompt-box.md</a> — The VS Code prompt panel</li>
+<li><a href="clickable-links.html">clickable-links.md</a> — Click links in Claude's responses to navigate to files</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

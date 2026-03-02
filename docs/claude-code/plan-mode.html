@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Mode — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="plan-mode">Plan Mode<a href="#plan-mode" class="anchor-link">#</a></h1>
+<h2 id="what-is-plan-mode">What is Plan Mode?<a href="#what-is-plan-mode" class="anchor-link">#</a></h2>
+<p>Imagine you're renovating your kitchen. You wouldn't want the contractor to start tearing out cabinets the moment they walk in the door. First, you'd want them to look around, measure everything, and draw up blueprints. Only once you've reviewed the plan and said "yes, this is what I want" would construction begin.</p>
+<p>Plan Mode works the same way. When you activate it, Claude can look at everything — read your files, trace through your code, research approaches — but it cannot touch anything. No edits, no commands, no changes of any kind. It draws up the blueprints first. You review them. Then you decide whether to proceed.</p>
+<pre><code>Without Plan Mode:              With Plan Mode:
+&gt; refactor the auth module      &gt; refactor the auth module
+
+Claude: [immediately starts     Claude: Here's what I'd change:
+editing files]                  1. Extract token logic (auth.ts)
+                                2. Split into 3 smaller services
+                                3. Update 8 route handlers
+                                4. Add 12 new tests
+
+                                Ready to proceed?
+
+                                &gt; yes [switch to Normal Mode]
+                                Claude: Starting implementation...</code></pre>
+<p>The difference: you see the full scope of work before a single file is touched.</p>
+<hr>
+<h2 id="what-is-plan-mode-1">What is Plan Mode?<a href="#what-is-plan-mode-1" class="anchor-link">#</a></h2>
+<p>In Plan Mode:</p>
+<ul>
+<li>Claude <strong>can</strong> read files, search code, browse the web</li>
+<li>Claude <strong>cannot</strong> edit files, run commands, or make any changes</li>
+</ul>
+<p>Think of it as "show me your plan before you do anything."</p>
+<hr>
+<h2 id="enabling-plan-mode">Enabling Plan Mode<a href="#enabling-plan-mode" class="anchor-link">#</a></h2>
+<h3 id="start-a-session-in-plan-mode">Start a session in plan mode<a href="#start-a-session-in-plan-mode" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>claude --permission-mode plan</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>claude --permission-mode plan</code></pre>
+<p>The command is identical on all platforms — only the terminal you run it from differs.</p>
+<h3 id="toggle-during-a-session">Toggle during a session<a href="#toggle-during-a-session" class="anchor-link">#</a></h3>
+<pre><code>Shift+Tab    # cycles: Normal → Auto-Accept → Plan</code></pre>
+<blockquote><p><strong>Keyboard note:</strong> <code>Shift+Tab</code> means hold Shift and press Tab. This works in all terminals on macOS, Linux, and Windows (including WSL and PowerShell). It cycles through the three modes — keep pressing until you see "Plan Mode" in the status bar.</p></blockquote>
+<p>Or use the slash command:</p>
+<pre><code>&gt; /plan</code></pre>
+<hr>
+<h2 id="the-plan-review-execute-workflow">The Plan → Review → Execute Workflow<a href="#the-plan-review-execute-workflow" class="anchor-link">#</a></h2>
+<pre><code>┌────────────────────────────────────────────────────────────┐
+│              Plan Mode Workflow                            │
+└────────────────────────────────────────────────────────────┘
+
+  Step 1: Enter Plan Mode
+  ┌─────────────────────┐
+  │  $ claude           │
+  │    --permission-mode│
+  │    plan             │
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 2: Explore &amp; Ask Questions
+  ┌─────────────────────┐
+  │ &gt; How does auth     │   Claude reads files,
+  │   work here?        │   traces code paths,
+  │                     │   searches the codebase.
+  │ &gt; What would break  │   Cannot change anything.
+  │   if I changed X?   │
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 3: Request a Plan
+  ┌─────────────────────┐
+  │ &gt; I want to add     │   Claude outlines every
+  │   rate limiting.    │   file it would change,
+  │   What's your plan? │   every step it would take.
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 4: Review the Plan
+  ┌─────────────────────┐
+  │ You read the plan.  │   Ask follow-up questions.
+  │ Does it look right? │   Request changes to the plan.
+  │ Any concerns?       │   Clarify scope or approach.
+  └──────────┬──────────┘
+             │
+             ▼
+  Step 5: Approve &amp; Execute
+  ┌─────────────────────┐
+  │ &gt; Yes, go ahead     │   Press Shift+Tab to switch
+  │                     │   to Normal Mode.
+  │  [Shift+Tab]        │   Claude implements the plan.
+  └─────────────────────┘</code></pre>
+<hr>
+<h2 id="why-use-plan-mode">Why Use Plan Mode?<a href="#why-use-plan-mode" class="anchor-link">#</a></h2>
+<h3 id="1-understand-before-changing">1. Understand before changing<a href="#1-understand-before-changing" class="anchor-link">#</a></h3>
+<pre><code>[Plan Mode]
+&gt; How does authentication work in this codebase?
+
+Claude reads the auth module, traces the login flow,
+and explains it — without changing anything.</code></pre>
+<h3 id="2-get-a-plan-before-approving-it">2. Get a plan before approving it<a href="#2-get-a-plan-before-approving-it" class="anchor-link">#</a></h3>
+<pre><code>[Plan Mode]
+&gt; I want to refactor the User model to use UUIDs instead of integer IDs.
+  What would need to change?
+
+Claude: Here's what I'd need to do:
+1. Update the `users` table migration
+2. Change all foreign keys in 8 related tables
+3. Update the User model's $casts
+4. Update all controllers that rely on integer IDs
+5. Update API responses that expose user IDs
+6. Add a migration to backfill UUID values
+
+Want me to proceed with these changes?</code></pre>
+<p>Now you can review the plan, ask follow-up questions, then switch to Normal Mode to execute it.</p>
+<h3 id="3-explore-unfamiliar-code-safely">3. Explore unfamiliar code safely<a href="#3-explore-unfamiliar-code-safely" class="anchor-link">#</a></h3>
+<pre><code>[Plan Mode]
+&gt; Walk me through the payment processing flow from checkout to receipt</code></pre>
+<p>Claude traces through the code — reading files, following function calls — and explains everything without risk of accidental changes.</p>
+<hr>
+<h2 id="when-would-a-beginner-use-this">When Would a Beginner Use This?<a href="#when-would-a-beginner-use-this" class="anchor-link">#</a></h2>
+<p>You don't need to be an expert to benefit from Plan Mode. Here are common beginner scenarios:</p>
+<p><strong>"I've inherited someone else's code and I'm afraid to break it."</strong></p>
+<pre><code>&gt; [Plan Mode] Walk me through how this app handles user login.
+  What files are involved? What would I need to understand before changing anything?</code></pre>
+<p>Claude maps out the codebase for you safely, before you touch a thing.</p>
+<p><strong>"I want to add a feature but I'm not sure how big it is."</strong></p>
+<pre><code>&gt; [Plan Mode] I want to add email notifications when a user places an order.
+  What would that involve? How many files would you need to change?</code></pre>
+<p>Claude tells you the scope upfront — whether it's a 1-file change or a 15-file refactor.</p>
+<p><strong>"I asked Claude to do something and I'm not sure if it's safe."</strong></p>
+<pre><code>&gt; [Plan Mode] What would happen if you ran the database migration script?
+  What exactly would change?</code></pre>
+<p>Plan Mode lets you inspect Claude's intended actions before they happen.</p>
+<p><strong>"I'm learning a new framework and want to understand the patterns."</strong></p>
+<pre><code>&gt; [Plan Mode] Explain how this Django app handles API authentication.
+  Show me each layer from the request to the response.</code></pre>
+<p>Safe exploration — Claude reads and explains, but touches nothing.</p>
+<hr>
+<h2 id="typical-workflow">Typical Workflow<a href="#typical-workflow" class="anchor-link">#</a></h2>
+<pre><code>1. Start in Plan Mode
+   claude --permission-mode plan
+
+2. Explore and ask questions
+   &gt; How does the caching layer work?
+   &gt; What would break if I changed the User.email field?
+   &gt; Show me all the places we call the Stripe API
+
+3. Review Claude's plan
+   &gt; I want to add rate limiting to the API. What's your plan?
+
+4. Approve and switch to Normal Mode
+   Shift+Tab  (switches to Normal or Auto-Accept)
+
+5. Execute the plan
+   &gt; Now go ahead and implement it</code></pre>
+<hr>
+<h2 id="example-big-refactor-planning">Example: Big Refactor Planning<a href="#example-big-refactor-planning" class="anchor-link">#</a></h2>
+<pre><code>$ claude --permission-mode plan
+
+&gt; Our app is getting slow. I think the problem is in how we load data on
+  the dashboard page. Can you investigate?
+
+Claude: [reads DashboardController.php, DashboardService.php, 5 related models]
+
+I found several issues:
+1. **N+1 query** in DashboardService::getUserStats() — loading 150+ queries per request
+2. **No caching** — user stats recalculated on every page load
+3. **Unused joins** — 3 LEFT JOINs in the main query return data never used
+
+Here's my recommended fix:
+- Add eager loading with `with(['sessions', 'bookings'])`
+- Cache user stats in Redis with 5-minute TTL
+- Remove unused columns from the SELECT
+
+This should reduce queries from ~150 to ~5 and cut page load by 80%.
+
+Want me to implement these changes?
+
+&gt; Yes, go ahead
+
+[Switch to Normal Mode with Shift+Tab]
+
+Claude: Starting implementation...</code></pre>
+<hr>
+<h2 id="example-understanding-an-unfamiliar-codebase">Example: Understanding an Unfamiliar Codebase<a href="#example-understanding-an-unfamiliar-codebase" class="anchor-link">#</a></h2>
+<pre><code>$ claude --permission-mode plan
+
+&gt; I just joined this team. Can you give me a tour of the codebase?
+  What are the main parts, how do they connect, and where should I
+  start if I want to add a new API endpoint?
+
+Claude: [reads project structure, key files, routes, controllers]
+
+Here's an overview:
+
+This is a Laravel + Vue.js application with 3 main layers:
+
+1. API Layer (routes/api.php → app/Http/Controllers/Api/)
+   - All endpoints follow REST conventions
+   - Authentication uses JWT via app/Http/Middleware/JwtAuth.php
+
+2. Service Layer (app/Services/)
+   - Business logic lives here, not in controllers
+   - Example: OrderService.php handles all order operations
+
+3. Frontend (resources/js/)
+   - Vue 3 with Composition API
+   - State managed by Pinia stores in resources/js/stores/
+
+To add a new API endpoint, you'd typically:
+1. Add route to routes/api.php
+2. Create a controller in app/Http/Controllers/Api/
+3. Put business logic in a new or existing Service
+4. Add validation in app/Http/Requests/
+5. Write tests in tests/Feature/Api/
+
+Want me to walk through a specific feature in detail?</code></pre>
+<p>This whole exploration happened without a single file being changed.</p>
+<hr>
+<h2 id="plan-mode-vs-review">Plan Mode vs <code>/review</code><a href="#plan-mode-vs-review" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th></th><th>Plan Mode</th><th><code>/review</code></th></tr></thead>
+<tbody>
+<tr><td><strong>When</strong></td><td>Before making changes</td><td>After changes are made</td></tr>
+<tr><td><strong>Focus</strong></td><td>Explore + strategize</td><td>Review existing work</td></tr>
+<tr><td><strong>Result</strong></td><td>A plan to execute</td><td>Feedback on what's done</td></tr>
+<tr><td><strong>Edits?</strong></td><td>No</td><td>No</td></tr>
+</tbody>
+</table>
+<p>Use Plan Mode <strong>before</strong>, <code>/review</code> <strong>after</strong>.</p>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li>Use Plan Mode at the <strong>start of big tasks</strong> to get a roadmap</li>
+<li>You can <strong>ask clarifying questions</strong> in Plan Mode before executing</li>
+<li>Plan Mode <strong>doesn't affect</strong> what Claude has already read — context carries over when you switch modes</li>
+<li>Plan Mode is great for <strong>onboarding</strong> to an unfamiliar codebase: just explore and ask questions</li>
+<li>You can <strong>switch back to Plan Mode mid-task</strong> if you want to pause and re-examine before continuing</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

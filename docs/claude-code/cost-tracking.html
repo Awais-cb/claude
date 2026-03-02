@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cost Tracking — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="cost-tracking-usage-monitoring">Cost Tracking &amp; Usage Monitoring<a href="#cost-tracking-usage-monitoring" class="anchor-link">#</a></h1>
+<p>Think of the cost meter like a taxi meter — you want to know what the ride costs before you get somewhere expensive. Claude Code shows you exactly how many tokens you have used and what it is costing you, so you can manage your usage, set limits, and avoid surprises on your bill.</p>
+<p>Understanding costs also helps you make smarter choices: use a cheaper model for simple tasks, use a powerful model for hard problems, and compact the conversation when it gets long.</p>
+<hr>
+<h2 id="what-are-tokens-plain-english">What Are Tokens? (Plain English)<a href="#what-are-tokens-plain-english" class="anchor-link">#</a></h2>
+<p>Before diving into pricing, it helps to understand what tokens actually are — because "units of text" is not very intuitive.</p>
+<p>A <strong>token</strong> is roughly 3-4 characters of text, or about 0.75 words. Here is a rough feel for it:</p>
+<table>
+<thead><tr><th>Content</th><th>Approximate tokens</th></tr></thead>
+<tbody>
+<tr><td>One word</td><td>~1-2 tokens</td></tr>
+<tr><td>One sentence</td><td>~15-20 tokens</td></tr>
+<tr><td>One paragraph</td><td>~80-100 tokens</td></tr>
+<tr><td>One page of text</td><td>~500 tokens</td></tr>
+<tr><td>A short source file (50 lines)</td><td>~500-800 tokens</td></tr>
+<tr><td>A long source file (300 lines)</td><td>~3,000-5,000 tokens</td></tr>
+<tr><td>A full codebase exploration</td><td>~20,000-100,000+ tokens</td></tr>
+</tbody>
+</table>
+<p>Every time you send a message, Claude reads your message AND the entire conversation history so far (input tokens). Every time Claude responds, those words cost output tokens.</p>
+<p>The longer your conversation goes, the more input tokens each new message costs — because Claude re-reads the whole conversation each time. This is why compacting helps.</p>
+<hr>
+<h2 id="checking-your-costs">Checking Your Costs<a href="#checking-your-costs" class="anchor-link">#</a></h2>
+<h3 id="current-session-cost">Current session cost<a href="#current-session-cost" class="anchor-link">#</a></h3>
+<pre><code>&gt; /cost</code></pre>
+<p>Shows:</p>
+<ul>
+<li>Input tokens used</li>
+<li>Output tokens used</li>
+<li>Estimated cost for this session</li>
+<li>Breakdown by model (if you switched models)</li>
+</ul>
+<p>Example output:</p>
+<pre><code>Session cost summary:
+  Input tokens:  12,450  ($0.037)
+  Output tokens:  3,280  ($0.049)
+  ─────────────────────────────
+  Total:                  $0.086
+
+  Model: claude-sonnet-4-6
+  Duration: 23 minutes</code></pre>
+<blockquote><p>What to expect: A short summary table showing input tokens, output tokens, and the dollar total for the current session. Appears inline in your terminal.</p></blockquote>
+<h3 id="account-usage-limits">Account usage &amp; limits<a href="#account-usage-limits" class="anchor-link">#</a></h3>
+<pre><code>&gt; /usage</code></pre>
+<p>Shows:</p>
+<ul>
+<li>Your plan's monthly limits</li>
+<li>How much you've used this billing period</li>
+<li>Rate limit status</li>
+</ul>
+<h3 id="usage-statistics">Usage statistics<a href="#usage-statistics" class="anchor-link">#</a></h3>
+<pre><code>&gt; /stats</code></pre>
+<p>Shows visual charts of:</p>
+<ul>
+<li>Daily usage over time</li>
+<li>Sessions per day</li>
+<li>Model preferences</li>
+<li>Usage streaks</li>
+</ul>
+<hr>
+<h2 id="token-pricing-approximate">Token Pricing (Approximate)<a href="#token-pricing-approximate" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Model</th><th>Input</th><th>Output</th></tr></thead>
+<tbody>
+<tr><td><strong>Opus</strong> (standard)</td><td>$15/MTok</td><td>$75/MTok</td></tr>
+<tr><td><strong>Opus</strong> (Fast Mode)</td><td>$30/MTok</td><td>$150/MTok</td></tr>
+<tr><td><strong>Sonnet</strong></td><td>$3/MTok</td><td>$15/MTok</td></tr>
+<tr><td><strong>Haiku</strong></td><td>$0.25/MTok</td><td>$1.25/MTok</td></tr>
+</tbody>
+</table>
+<p><em>MTok = million tokens. Prices may change — check anthropic.com for current rates.</em></p>
+<p><strong>Example:</strong> A typical coding session (10,000 input + 3,000 output tokens with Sonnet) costs about <strong>$0.075</strong>.</p>
+<hr>
+<h2 id="practical-cost-comparison">Practical Cost Comparison<a href="#practical-cost-comparison" class="anchor-link">#</a></h2>
+<p>Here is a rough sense of what common tasks cost. These are estimates — actual cost depends on how large your files are and how many back-and-forth turns are involved.</p>
+<table>
+<thead><tr><th>Task</th><th>Approximate cost (Sonnet)</th></tr></thead>
+<tbody>
+<tr><td>Explain a function</td><td>&lt; $0.01</td></tr>
+<tr><td>Fix a small bug</td><td>$0.01–0.05</td></tr>
+<tr><td>Add a new feature</td><td>$0.05–0.25</td></tr>
+<tr><td>Full code review</td><td>$0.10–0.50</td></tr>
+<tr><td>Refactor a module</td><td>$0.10–0.50</td></tr>
+<tr><td>Explore a new codebase</td><td>$0.25–1.00</td></tr>
+</tbody>
+</table>
+<h3 id="real-world-scenarios">Real-world scenarios<a href="#real-world-scenarios" class="anchor-link">#</a></h3>
+<ul>
+<li><strong>Cheap</strong>: "Rename this variable and update all references" — Claude reads one or two files, makes edits, done. Probably $0.01-0.03.</li>
+<li><strong>Medium</strong>: "Add input validation to the registration form" — Claude reads a few files, writes a few hundred lines, maybe runs a test. Around $0.05-0.15.</li>
+<li><strong>Expensive</strong>: "Understand how the auth system works across the whole codebase" — Claude reads 20+ files to build a mental model. Can be $0.50-1.00+.</li>
+<li><strong>Very expensive</strong>: "Refactor the entire data layer to use a new ORM" — Claude reads and rewrites dozens of files, runs tests, iterates. Could be $1-5+.</li>
+</ul>
+<hr>
+<h2 id="setting-a-budget-limit">Setting a Budget Limit<a href="#setting-a-budget-limit" class="anchor-link">#</a></h2>
+<p>In non-interactive (print) mode, stop if the cost exceeds a threshold:</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>claude -p "do this task" --max-budget-usd 0.50</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>claude -p "do this task" --max-budget-usd 0.50</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>claude -p "do this task" --max-budget-usd 0.50</code></pre>
+<p>If Claude is mid-task and the estimated cost would exceed $0.50, it stops.</p>
+<p>This is especially useful in CI pipelines, where you want to prevent a runaway task from spending $10 on a PR review that should cost $0.25.</p>
+<hr>
+<h2 id="reducing-costs">Reducing Costs<a href="#reducing-costs" class="anchor-link">#</a></h2>
+<h3 id="1-use-the-right-model-for-the-task">1. Use the right model for the task<a href="#1-use-the-right-model-for-the-task" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># For simple tasks (rename a variable, explain a line)
+claude --model haiku
+
+# For most coding work
+claude --model sonnet   # default
+
+# For complex reasoning (hard bugs, architecture)
+claude --model opus</code></pre>
+<p>Haiku is 60x cheaper than Opus for the same task.</p>
+<p><strong>When to use Haiku:</strong> Simple lookups, short explanations, small edits to a single file, quick questions.</p>
+<p><strong>When to use Sonnet (default):</strong> Most coding work — bugs, features, tests, reviews.</p>
+<p><strong>When to use Opus:</strong> Hard architectural decisions, complex debugging across many files, situations where you need Claude's best reasoning.</p>
+<h3 id="2-use-lower-effort-levels">2. Use lower effort levels<a href="#2-use-lower-effort-levels" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_EFFORT_LEVEL=low claude    # Minimal thinking
+CLAUDE_CODE_EFFORT_LEVEL=medium claude # Default
+CLAUDE_CODE_EFFORT_LEVEL=high claude   # Maximum thinking</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>$env:CLAUDE_CODE_EFFORT_LEVEL = "low"
+claude
+
+$env:CLAUDE_CODE_EFFORT_LEVEL = "medium"
+claude</code></pre>
+<p>Lower effort = fewer thinking tokens = lower cost. Use <code>low</code> for routine tasks where you do not need deep analysis.</p>
+<h3 id="3-compact-the-conversation">3. Compact the conversation<a href="#3-compact-the-conversation" class="anchor-link">#</a></h3>
+<p>When context gets long, compact it:</p>
+<pre><code>&gt; /compact</code></pre>
+<p>Longer context = more input tokens per message = higher cost. Compacting keeps context lean by summarizing older parts of the conversation.</p>
+<h3 id="4-be-specific-in-requests">4. Be specific in requests<a href="#4-be-specific-in-requests" class="anchor-link">#</a></h3>
+<p>Vague requests lead to more back-and-forth:</p>
+<p>Bad (expensive): "Make the code better"</p>
+<p>Good (cheaper): "Reduce the cyclomatic complexity of calculateTotal() in billing.js"</p>
+<p>The specific version lets Claude go straight to the answer without asking clarifying questions.</p>
+<h3 id="5-avoid-unnecessary-file-reads">5. Avoid unnecessary file reads<a href="#5-avoid-unnecessary-file-reads" class="anchor-link">#</a></h3>
+<p>Claude reads files to understand context. If you're asking about something specific:</p>
+<p>Bad: "Read all files and tell me about the auth system"</p>
+<p>Good: "Read src/auth/middleware.js and explain how token validation works"</p>
+<p>Limiting file reads limits input tokens.</p>
+<h3 id="6-disconnect-unused-mcp-servers">6. Disconnect unused MCP servers<a href="#6-disconnect-unused-mcp-servers" class="anchor-link">#</a></h3>
+<p>MCP server tool descriptions take up context space even when not used:</p>
+<pre><code>&gt; /mcp</code></pre>
+<p>Disconnect servers you're not actively using in the current session.</p>
+<h3 id="7-use-skills-for-reference-content">7. Use skills for reference content<a href="#7-use-skills-for-reference-content" class="anchor-link">#</a></h3>
+<p>Instead of pasting long style guides or API docs into the conversation, create a skill:</p>
+<pre data-lang="markdown"><code>---
+name: api-reference
+description: Internal API reference documentation
+trigger: api
+---
+[Full API reference content here...]</code></pre>
+<p>This loads only when needed, not every message.</p>
+<hr>
+<h2 id="free-vs-paid-usage">Free vs Paid Usage<a href="#free-vs-paid-usage" class="anchor-link">#</a></h2>
+<h3 id="free-tier">Free tier<a href="#free-tier" class="anchor-link">#</a></h3>
+<ul>
+<li>Limited monthly tokens</li>
+<li>Access to Claude Sonnet</li>
+<li>No Fast Mode</li>
+</ul>
+<h3 id="pro-20-month">Pro ($20/month)<a href="#pro-20-month" class="anchor-link">#</a></h3>
+<ul>
+<li>Higher limits</li>
+<li>All models including Opus</li>
+<li>Privacy settings control</li>
+</ul>
+<h3 id="max-100-month">Max ($100/month)<a href="#max-100-month" class="anchor-link">#</a></h3>
+<ul>
+<li>5x higher limits than Pro</li>
+<li>Priority access</li>
+<li>Fast Mode available</li>
+</ul>
+<h3 id="teamsenterprise">Teams/Enterprise<a href="#teamsenterprise" class="anchor-link">#</a></h3>
+<ul>
+<li>Per-seat pricing</li>
+<li>Admin controls</li>
+<li>Usage analytics</li>
+<li>SSO support</li>
+</ul>
+<h3 id="extra-usage">Extra usage<a href="#extra-usage" class="anchor-link">#</a></h3>
+<p>If you exceed plan limits:</p>
+<pre><code>&gt; /extra-usage</code></pre>
+<p>Enables pay-as-you-go tokens on top of your plan.</p>
+<hr>
+<h2 id="monitoring-team-usage-enterprise">Monitoring Team Usage (Enterprise)<a href="#monitoring-team-usage-enterprise" class="anchor-link">#</a></h2>
+<p>Admins can access usage analytics in the admin dashboard:</p>
+<ul>
+<li>Total tokens/cost by team member</li>
+<li>Sessions per day</li>
+<li>Tool use patterns</li>
+<li>Cost by project</li>
+<li>ROI metrics (PRs created, lines of code, etc.)</li>
+</ul>
+<hr>
+<h2 id="cost-insights">Cost Insights<a href="#cost-insights" class="anchor-link">#</a></h2>
+<pre><code>&gt; /insights</code></pre>
+<p>Shows deeper analytics:</p>
+<ul>
+<li>Most expensive sessions</li>
+<li>Cost per type of task</li>
+<li>Efficiency trends over time</li>
+<li>Recommendations for reducing costs</li>
+</ul>
+<hr>
+<h2 id="quick-cost-saving-checklist">Quick Cost-Saving Checklist<a href="#quick-cost-saving-checklist" class="anchor-link">#</a></h2>
+<p>Before starting an expensive task, ask:</p>
+<pre><code>1. Is this a simple task? → Use --model haiku
+2. Is the conversation very long? → /compact first
+3. Is this for a CI pipeline? → Add --max-budget-usd 0.50
+4. Am I asking Claude to read the whole codebase? → Narrow the scope
+5. Do I have MCP servers connected I'm not using? → /mcp and disconnect them</code></pre>
+<p>Following this checklist can cut costs by 50-80% on large tasks.</p>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chrome Integration — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="chrome-browser-integration">Chrome Browser Integration<a href="#chrome-browser-integration" class="anchor-link">#</a></h1>
+<p>Think of Chrome integration like having Claude look over your shoulder while you browse — it can see what's on screen and help you interact with it. Instead of writing Selenium or Playwright automation scripts, you just describe what you want in plain English and Claude drives the browser.</p>
+<p>This is powerful for testing web apps, extracting data from pages, automating repetitive form filling, and debugging frontend issues in a real browser environment.</p>
+<blockquote><p>What to expect: Claude connects to your running Chrome browser via the browser extension, navigates to pages, clicks buttons, fills fields, and reports back what it sees.</p></blockquote>
+<hr>
+<h2 id="prerequisites-and-requirements">Prerequisites and Requirements<a href="#prerequisites-and-requirements" class="anchor-link">#</a></h2>
+<p>Before enabling Chrome integration, make sure you meet all of the following requirements:</p>
+<h3 id="required-claude-in-chrome-browser-extension">Required: "Claude in Chrome" Browser Extension<a href="#required-claude-in-chrome-browser-extension" class="anchor-link">#</a></h3>
+<p>Chrome integration does <strong>not</strong> work by launching Chrome in headless mode or controlling it like Selenium/Playwright. Instead, it works through the <strong>"Claude in Chrome" browser extension</strong>, which enables native messaging between Claude Code CLI and your browser.</p>
+<ul>
+<li>Install the extension from the Chrome Web Store (search for <strong>"Claude in Chrome"</strong>)</li>
+<li><strong>Minimum versions required:</strong> Chrome extension version 1.0.36+ and Claude Code CLI version 2.0.73+</li>
+<li>The extension shares your logged-in browser session — Claude interacts with the same browser you are using, rather than opening a fresh isolated instance</li>
+</ul>
+<h3 id="supported-browsers">Supported Browsers<a href="#supported-browsers" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Browser</th><th>Supported</th></tr></thead>
+<tbody>
+<tr><td>Google Chrome</td><td>Yes</td></tr>
+<tr><td>Microsoft Edge</td><td>Yes</td></tr>
+<tr><td>Brave</td><td>No</td></tr>
+<tr><td>Arc</td><td>No</td></tr>
+<tr><td>Other Chromium-based browsers</td><td>No</td></tr>
+</tbody>
+</table>
+<p>Only Google Chrome and Microsoft Edge are officially supported.</p>
+<h3 id="wsl-is-not-supported">WSL Is Not Supported<a href="#wsl-is-not-supported" class="anchor-link">#</a></h3>
+<p>Chrome integration does <strong>not</strong> work when Claude Code is running inside WSL (Windows Subsystem for Linux). If you need browser integration on Windows, run Claude Code natively in PowerShell or Command Prompt — not inside WSL.</p>
+<hr>
+<h2 id="enabling-chrome-integration">Enabling Chrome Integration<a href="#enabling-chrome-integration" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code># Start with Chrome enabled
+claude --chrome
+
+# Disable for a specific session
+claude --no-chrome
+
+# Enable from inside a session
+&gt; /chrome</code></pre>
+<hr>
+<h2 id="checking-that-chrome-is-installed">Checking that Chrome is Installed<a href="#checking-that-chrome-is-installed" class="anchor-link">#</a></h2>
+<p>Before you start, make sure Chrome is installed on your system.</p>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code># Check if Chrome is installed
+ls /Applications/Google\ Chrome.app
+
+# Or check the binary path
+which google-chrome 2&gt;/dev/null || which chromium 2&gt;/dev/null || echo "Not in PATH"</code></pre>
+<p>If Chrome is not installed, download it from https://www.google.com/chrome/</p>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code># Check if Chrome is installed
+google-chrome --version 2&gt;/dev/null || chromium-browser --version 2&gt;/dev/null || echo "Chrome not found"
+
+# Install Chrome on Ubuntu if needed
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
+
+# Or install Chromium (open-source version)
+sudo apt install chromium-browser</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<blockquote><p>Chrome integration is not supported when running Claude Code inside WSL. Use the Windows (PowerShell) setup below instead.</p></blockquote>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code># Check if Chrome is installed
+Test-Path "C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+# Or check via registry
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe" -ErrorAction SilentlyContinue</code></pre>
+<hr>
+<h2 id="step-by-step-setup">Step-by-Step Setup<a href="#step-by-step-setup" class="anchor-link">#</a></h2>
+<h3 id="macos-setup">macOS Setup<a href="#macos-setup" class="anchor-link">#</a></h3>
+<ol>
+<li>Install Chrome if needed (see above)</li>
+<li>Open Terminal</li>
+<li>Start Claude Code with Chrome:
+<pre data-lang="bash"><code>claude --chrome</code></pre>
+</li>
+<li>Claude will open Chrome automatically when you ask it to browse</li>
+</ol>
+<h3 id="linux-ubuntu-setup">Linux (Ubuntu) Setup<a href="#linux-ubuntu-setup" class="anchor-link">#</a></h3>
+<ol>
+<li>Install Chrome or Chromium (see above)</li>
+<li>If you are running a headless server (no GUI), Claude automatically uses headless mode</li>
+<li>If you have a desktop environment, Claude opens a visible browser window:
+<pre data-lang="bash"><code>claude --chrome</code></pre>
+</li>
+</ol>
+<p>For servers without a display, set up a virtual display if you want to see the browser:</p>
+<pre data-lang="bash"><code># Install virtual display
+sudo apt install xvfb
+
+# Run Claude with virtual display
+Xvfb :99 -screen 0 1280x800x24 &amp;
+export DISPLAY=:99
+claude --chrome</code></pre>
+<h3 id="windows-wsl-setup">Windows (WSL) Setup<a href="#windows-wsl-setup" class="anchor-link">#</a></h3>
+<blockquote><p><strong>WSL is not supported for Chrome integration.</strong> If you are running Claude Code inside WSL, Chrome integration will not work. Use Claude Code natively in PowerShell or Command Prompt instead (see Windows (PowerShell) Setup below).</p></blockquote>
+<h3 id="windows-powershell-setup">Windows (PowerShell) Setup<a href="#windows-powershell-setup" class="anchor-link">#</a></h3>
+<ol>
+<li>Install Chrome for Windows (see above)</li>
+<li>Open PowerShell</li>
+<li>Start Claude Code with Chrome:
+<pre data-lang="powershell"><code>claude --chrome</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="what-you-can-do">What You Can Do<a href="#what-you-can-do" class="anchor-link">#</a></h2>
+<h3 id="test-web-apps">Test web apps<a href="#test-web-apps" class="anchor-link">#</a></h3>
+<pre><code>&gt; go to http://localhost:3000
+&gt; log in with test@example.com and password "testpass"
+&gt; verify that the dashboard shows 5 recent orders</code></pre>
+<p>Claude opens Chrome, navigates to your local app, logs in, and verifies the content.</p>
+<h3 id="fill-forms-automatically">Fill forms automatically<a href="#fill-forms-automatically" class="anchor-link">#</a></h3>
+<pre><code>&gt; fill out the user registration form with realistic test data
+&gt; submit it and capture the confirmation message</code></pre>
+<h3 id="extract-data-from-websites">Extract data from websites<a href="#extract-data-from-websites" class="anchor-link">#</a></h3>
+<pre><code>&gt; go to https://example.com/pricing
+&gt; extract all pricing plans into a JSON format</code></pre>
+<h3 id="run-end-to-end-tests">Run end-to-end tests<a href="#run-end-to-end-tests" class="anchor-link">#</a></h3>
+<pre><code>&gt; test the complete checkout flow:
+  1. Add item to cart
+  2. Proceed to checkout
+  3. Enter test payment info (4242 4242 4242 4242)
+  4. Complete order
+  5. Verify confirmation email text appears</code></pre>
+<h3 id="debug-javascript">Debug JavaScript<a href="#debug-javascript" class="anchor-link">#</a></h3>
+<pre><code>&gt; open http://localhost:3000/app
+&gt; check the browser console for errors
+&gt; fix any JavaScript errors you find</code></pre>
+<h3 id="generate-demo-recordings">Generate demo recordings<a href="#generate-demo-recordings" class="anchor-link">#</a></h3>
+<pre><code>&gt; walk through the main features of the app and record a demo GIF</code></pre>
+<h3 id="web-scraping">Web scraping<a href="#web-scraping" class="anchor-link">#</a></h3>
+<pre><code>&gt; go to https://news.ycombinator.com
+&gt; extract the top 10 story titles and their URLs into a JSON array
+&gt; save the result to scripts/hn-top10.json</code></pre>
+<h3 id="visual-regression-testing">Visual regression testing<a href="#visual-regression-testing" class="anchor-link">#</a></h3>
+<pre><code>&gt; take screenshots of our app at:
+  - http://localhost:3000/home
+  - http://localhost:3000/dashboard
+  - http://localhost:3000/settings
+&gt; compare each with the baseline screenshots in screenshots/baseline/
+&gt; report any layout differences</code></pre>
+<hr>
+<h2 id="practical-examples">Practical Examples<a href="#practical-examples" class="anchor-link">#</a></h2>
+<h3 id="example-1-automated-smoke-test">Example 1: Automated smoke test<a href="#example-1-automated-smoke-test" class="anchor-link">#</a></h3>
+<pre><code>&gt; Run a smoke test on the staging environment:
+  1. Visit https://staging.myapp.com
+  2. Verify the homepage loads (no errors)
+  3. Log in with staging@test.com / testpass123
+  4. Verify the dashboard loads with the user's name
+  5. Create a new task called "smoke test item"
+  6. Verify it appears in the list
+  7. Delete it
+  8. Log out
+  Report pass/fail for each step</code></pre>
+<h3 id="example-2-data-extraction">Example 2: Data extraction<a href="#example-2-data-extraction" class="anchor-link">#</a></h3>
+<pre><code>&gt; Go to our competitor's pricing page at https://competitor.com/pricing
+&gt; Extract all plan names, prices, and features into a comparison table
+&gt; Save it as docs/competitor-pricing.md</code></pre>
+<h3 id="example-3-form-automation">Example 3: Form automation<a href="#example-3-form-automation" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need to submit this bug report to our ticketing system 50 times with
+  different test data. Here's the URL and the data to use:
+  URL: http://internal.company.com/tickets/new
+  Data: [list of test cases]</code></pre>
+<h3 id="example-4-screenshot-testing">Example 4: Screenshot testing<a href="#example-4-screenshot-testing" class="anchor-link">#</a></h3>
+<pre><code>&gt; Take screenshots of our app at these breakpoints:
+  - 375px (mobile)
+  - 768px (tablet)
+  - 1440px (desktop)
+&gt; Save them to screenshots/ folder
+&gt; Compare with the baseline screenshots in screenshots/baseline/
+&gt; Report any visual differences</code></pre>
+<h3 id="example-5-extracting-structured-data">Example 5: Extracting structured data<a href="#example-5-extracting-structured-data" class="anchor-link">#</a></h3>
+<pre><code>&gt; Go to https://store.example.com/products
+&gt; Scroll through all pages (handle pagination)
+&gt; Extract product names, prices, and stock status into CSV
+&gt; Save to data/products.csv</code></pre>
+<hr>
+<h2 id="site-permissions">Site Permissions<a href="#site-permissions" class="anchor-link">#</a></h2>
+<p>Configure Chrome permissions per site:</p>
+<pre><code>&gt; /chrome</code></pre>
+<p>Opens the Chrome settings menu where you can configure:</p>
+<table>
+<thead><tr><th>Permission</th><th>Options</th></tr></thead>
+<tbody>
+<tr><td>Geolocation</td><td>Allow, Block, Ask</td></tr>
+<tr><td>Camera</td><td>Allow, Block, Ask</td></tr>
+<tr><td>Microphone</td><td>Allow, Block, Ask</td></tr>
+<tr><td>Clipboard</td><td>Allow, Block, Ask</td></tr>
+<tr><td>Notifications</td><td>Allow, Block</td></tr>
+</tbody>
+</table>
+<p>You can set global defaults or per-domain rules.</p>
+<hr>
+<h2 id="debugging-with-chrome">Debugging with Chrome<a href="#debugging-with-chrome" class="anchor-link">#</a></h2>
+<h3 id="see-browser-console-logs">See browser console logs<a href="#see-browser-console-logs" class="anchor-link">#</a></h3>
+<pre><code>&gt; open http://localhost:3000
+&gt; show me any JavaScript console errors</code></pre>
+<h3 id="debug-a-specific-interaction">Debug a specific interaction<a href="#debug-a-specific-interaction" class="anchor-link">#</a></h3>
+<pre><code>&gt; when I click the "Submit" button on the form, what happens in the network tab?
+&gt; are there any failed requests?</code></pre>
+<h3 id="check-for-accessibility-issues">Check for accessibility issues<a href="#check-for-accessibility-issues" class="anchor-link">#</a></h3>
+<pre><code>&gt; open the login page
+&gt; run an accessibility audit and list any WCAG violations</code></pre>
+<hr>
+<h2 id="troubleshooting-common-issues">Troubleshooting Common Issues<a href="#troubleshooting-common-issues" class="anchor-link">#</a></h2>
+<h3 id="chrome-wont-open">Chrome won't open<a href="#chrome-wont-open" class="anchor-link">#</a></h3>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code># Make sure Chrome is in Applications
+open /Applications/Google\ Chrome.app
+
+# If Claude can't find it, specify the path
+export CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+claude --chrome</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code># Test that Chrome runs directly
+google-chrome --version
+
+# If missing, reinstall
+sudo apt install --reinstall google-chrome-stable
+
+# On headless server, confirm virtual display is running
+echo $DISPLAY</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<blockquote><p>Chrome integration is not supported in WSL. Switch to running Claude Code natively in PowerShell.</p></blockquote>
+<h3 id="no-display-error-on-linux-server">"No display" error on Linux server<a href="#no-display-error-on-linux-server" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Install and run a virtual framebuffer
+sudo apt install xvfb
+Xvfb :99 -screen 0 1280x800x24 &amp;
+export DISPLAY=:99
+claude --chrome</code></pre>
+<h3 id="chrome-opens-but-claude-cant-control-it">Chrome opens but Claude can't control it<a href="#chrome-opens-but-claude-cant-control-it" class="anchor-link">#</a></h3>
+<p>This usually means another Chrome process is running with a conflicting user profile. Close all Chrome windows and try again:</p>
+<p><strong>macOS / Linux:</strong></p>
+<pre data-lang="bash"><code>pkill -f chrome
+claude --chrome</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>Stop-Process -Name chrome -Force
+claude --chrome</code></pre>
+<h3 id="slow-performance">Slow performance<a href="#slow-performance" class="anchor-link">#</a></h3>
+<p>For automation tasks where you don't need to see the browser, Claude runs Chrome in headless mode automatically in CI. If you are running locally and want faster performance:</p>
+<pre data-lang="bash"><code># Claude handles headless mode automatically in print mode
+claude -p "test the login form" --chrome</code></pre>
+<hr>
+<h2 id="security-considerations">Security Considerations<a href="#security-considerations" class="anchor-link">#</a></h2>
+<ul>
+<li>Chrome integration only works with explicitly enabled sites</li>
+<li>Claude won't enter real credentials (use test accounts)</li>
+<li>Sensitive sites (banking, etc.) should be blocked in your Chrome integration settings</li>
+<li>Chrome runs in a controlled context — it can't access your regular browser profile</li>
+</ul>
+<hr>
+<h2 id="requirements">Requirements<a href="#requirements" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Chrome</strong> or <strong>Microsoft Edge</strong> must be installed</li>
+<li><strong>"Claude in Chrome" browser extension</strong> must be installed (version 1.0.36+)</li>
+<li><strong>Claude Code CLI</strong> version 2.0.73+</li>
+<li>Works on macOS, Windows (native/PowerShell), and Linux</li>
+<li>WSL is <strong>not</strong> supported</li>
+<li>For CI/CD: use headless Chrome mode</li>
+</ul>
+<h3 id="headless-chrome-in-ci">Headless Chrome in CI<a href="#headless-chrome-in-ci" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Claude handles this automatically, but you can force headless:
+claude -p "test the login form" --chrome</code></pre>
+<p>In CI environments without a display, Claude automatically uses Chrome in headless mode.</p>
+<hr>
+<h2 id="combining-with-code">Combining with Code<a href="#combining-with-code" class="anchor-link">#</a></h2>
+<p>The most powerful use: Claude finds a bug in the browser and fixes it in the code immediately.</p>
+<pre><code>&gt; Open http://localhost:3000/checkout
+&gt; The "Place Order" button doesn't work — click it and see what errors appear
+&gt; Then find and fix the bug in the source code
+&gt; Reload and verify the fix works</code></pre>
+<p>Claude switches between the browser (observing behavior) and your code (making fixes) seamlessly.</p>
+<pre><code>Browser observation
+      │
+      ▼
+Identify the error (console, network tab, visual)
+      │
+      ▼
+Find the relevant source file
+      │
+      ▼
+Edit the code
+      │
+      ▼
+Reload browser and verify
+      │
+      ▼
+Report result</code></pre>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast Mode — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="fast-mode">Fast Mode<a href="#fast-mode" class="anchor-link">#</a></h1>
+<p>Think of Fast Mode like choosing express checkout at the grocery store versus the regular lane. You're buying the same items, paying the same prices (actually a bit more for the express convenience), but you get through the line much faster. Fast Mode gives you the same Claude Opus model with the same capabilities — just dramatically lower latency.</p>
+<p>When you're in the middle of a debugging session and need answers quickly, waiting 25 seconds per response breaks your concentration. Fast Mode cuts that to roughly 4–12 seconds, keeping you in the flow.</p>
+<blockquote><p><strong>Note: Research Preview</strong> — Fast Mode is currently in research preview. Features, pricing, availability, and rate limits may change as the feature evolves. Check the official Claude Code documentation for the latest details before relying on it for production workflows.</p></blockquote>
+<hr>
+<h2 id="what-is-fast-mode">What is Fast Mode?<a href="#what-is-fast-mode" class="anchor-link">#</a></h2>
+<p>Normal Claude Code: Claude thinks, then responds in ~10–30 seconds.<br>Fast Mode: Same quality, same model, ~4–12 seconds.</p>
+<p><strong>Same model. Just faster.</strong></p>
+<hr>
+<h2 id="toggle-fast-mode">Toggle Fast Mode<a href="#toggle-fast-mode" class="anchor-link">#</a></h2>
+<pre><code>&gt; /fast          # Toggle on/off
+&gt; /fast on       # Turn on
+&gt; /fast off      # Turn off</code></pre>
+<p>Or use the keyboard shortcut (after <code>/terminal-setup</code>):</p>
+<p><strong>macOS:</strong></p>
+<pre><code>Option+F    # Toggle Fast Mode on/off</code></pre>
+<p><strong>Linux (Ubuntu) / Windows (WSL):</strong></p>
+<pre><code>Alt+F       # Toggle Fast Mode on/off</code></pre>
+<blockquote><p><strong>Note on the shortcut:</strong> The <code>Option</code> key on macOS is the same physical key as <code>Alt</code>, but macOS terminals sometimes handle it differently. If <code>Option+F</code> doesn't work, try running <code>/terminal-setup</code> first, then restart your terminal. On Linux and Windows, <code>Alt+F</code> works directly.</p></blockquote>
+<h3 id="status-indicator">Status indicator<a href="#status-indicator" class="anchor-link">#</a></h3>
+<p>When Fast Mode is on, you'll see a <code>↯</code> icon in the footer bar at the bottom of your terminal:</p>
+<pre><code>↯ claude-opus-4-6  •  Normal  •  $0.12</code></pre>
+<p>Without Fast Mode, the <code>↯</code> icon is absent:</p>
+<pre><code>claude-opus-4-6  •  Normal  •  $0.08</code></pre>
+<hr>
+<h2 id="fast-mode-is-persistent">Fast Mode is Persistent<a href="#fast-mode-is-persistent" class="anchor-link">#</a></h2>
+<p>Once enabled, Fast Mode <strong>stays on</strong> across sessions until you turn it off. This is intentional — if you like it, you don't have to keep re-enabling it.</p>
+<p>To make it the default in settings:</p>
+<pre data-lang="json"><code>{
+  "fastMode": true
+}</code></pre>
+<hr>
+<h2 id="cost-comparison">Cost Comparison<a href="#cost-comparison" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Mode</th><th>Input (per MTok)</th><th>Output (per MTok)</th></tr></thead>
+<tbody>
+<tr><td>Standard (&lt; 200K)</td><td>$15</td><td>$75</td></tr>
+<tr><td>Standard (&gt; 200K)</td><td>$30</td><td>$150</td></tr>
+<tr><td><strong>Fast (&lt; 200K)</strong></td><td><strong>$30</strong></td><td><strong>$150</strong></td></tr>
+<tr><td><strong>Fast (&gt; 200K)</strong></td><td><strong>$60</strong></td><td><strong>$225</strong></td></tr>
+</tbody>
+</table>
+<p>Fast Mode costs approximately 2× more per token. But for interactive work, the time savings are often worth it.</p>
+<p><strong>What does "per MTok" mean?</strong> MTok = million tokens. Tokens are roughly 3/4 of a word. A typical conversation exchange might use 2,000–5,000 tokens total. At those volumes, the difference between Standard and Fast is a fraction of a cent per message — the cost only becomes significant for very long autonomous tasks running for hours.</p>
+<hr>
+<h2 id="decision-flowchart-which-mode-to-use">Decision Flowchart: Which Mode to Use?<a href="#decision-flowchart-which-mode-to-use" class="anchor-link">#</a></h2>
+<p>Use this to decide between Fast Mode, standard mode, or switching to Haiku:</p>
+<pre><code>Are you actively watching and waiting for responses?
+|
++-- YES --&gt; Do you need Opus-level quality?
+|           |
+|           +-- YES --&gt; Use Fast Mode (speed + quality)
+|           |
+|           +-- NO  --&gt; Is the task simple (rename, explain, quick edit)?
+|                       |
+|                       +-- YES --&gt; Use Haiku (cheapest + fast)
+|                       +-- NO  --&gt; Use Fast Mode (balanced choice)
+|
++-- NO  --&gt; Is this a long unattended task (running for hours)?
+            |
+            +-- YES --&gt; Use Standard mode (save money while you're away)
+            +-- NO  --&gt; Use Standard mode (you won't notice the wait)</code></pre>
+<hr>
+<h2 id="when-to-use-fast-mode">When to Use Fast Mode<a href="#when-to-use-fast-mode" class="anchor-link">#</a></h2>
+<h3 id="great-for">Great for:<a href="#great-for" class="anchor-link">#</a></h3>
+<ul>
+<li><strong>Live debugging</strong> — you want answers fast, not in 30 seconds</li>
+<li><strong>Rapid iteration</strong> — making quick edits and checking results</li>
+<li><strong>Short questions</strong> — "what does this function return?"</li>
+<li><strong>Real-time collaboration</strong> — working interactively with a teammate watching</li>
+<li><strong>Time-sensitive work</strong> — you're in a production incident</li>
+</ul>
+<h3 id="not-ideal-for">Not ideal for:<a href="#not-ideal-for" class="anchor-link">#</a></h3>
+<ul>
+<li><strong>Long autonomous tasks</strong> — running for hours unattended</li>
+<li><strong>Batch processing</strong> — analyzing many files sequentially</li>
+<li><strong>Cost-sensitive work</strong> — when every token counts</li>
+<li><strong>Complex reasoning</strong> — Fast Mode doesn't reduce thinking quality, but if you're not in a hurry, save the money</li>
+</ul>
+<hr>
+<h2 id="combining-with-effort-level">Combining with Effort Level<a href="#combining-with-effort-level" class="anchor-link">#</a></h2>
+<p>You can combine Fast Mode with low effort for maximum speed:</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_EFFORT_LEVEL=low claude
+# then inside the session:
+&gt; /fast on</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_EFFORT_LEVEL=low claude</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>$env:CLAUDE_CODE_EFFORT_LEVEL="low"
+claude
+# then inside the session:
+&gt; /fast on</code></pre>
+<p>This gives you:</p>
+<ul>
+<li>Low thinking budget (minimal reasoning overhead)</li>
+<li>Fast Mode API (lower latency)</li>
+<li>Result: near-instant responses</li>
+</ul>
+<p>Use this for simple, repetitive tasks where speed matters most.</p>
+<hr>
+<h2 id="requirements">Requirements<a href="#requirements" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Account type</strong>: Requires extra usage credits enabled</li>
+<li><strong>Model</strong>: Only available on Opus models (not Sonnet/Haiku — those are already fast)</li>
+<li><strong>Cloud providers</strong>: NOT available on AWS Bedrock, Google Vertex AI, or Azure Foundry</li>
+</ul>
+<h3 id="enable-extra-usage">Enable extra usage<a href="#enable-extra-usage" class="anchor-link">#</a></h3>
+<pre><code>&gt; /extra-usage</code></pre>
+<p>Follow the prompts to add extra usage credits to your account.</p>
+<p><strong>What are "extra usage credits"?</strong> Claude Code subscriptions include a base amount of usage. Extra usage credits are an add-on that unlocks Fast Mode (among other premium features). Think of it like upgrading from a basic streaming plan to a premium one — same service, more capabilities. You purchase additional credits through the Claude Code settings or your account dashboard.</p>
+<h3 id="teams-enterprise">Teams/Enterprise<a href="#teams-enterprise" class="anchor-link">#</a></h3>
+<p>Admins must enable Fast Mode in the admin dashboard before users can activate it.</p>
+<hr>
+<h2 id="fast-mode-vs-haiku">Fast Mode vs Haiku<a href="#fast-mode-vs-haiku" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th></th><th>Fast Mode (Opus)</th><th>Haiku</th></tr></thead>
+<tbody>
+<tr><td><strong>Speed</strong></td><td>~2.5× faster than standard Opus</td><td>Fastest model</td></tr>
+<tr><td><strong>Quality</strong></td><td>Full Opus capability</td><td>Lower capability</td></tr>
+<tr><td><strong>Cost</strong></td><td>Higher than Haiku</td><td>Cheapest</td></tr>
+<tr><td><strong>Best for</strong></td><td>Complex tasks where you need speed + quality</td><td>Simple tasks</td></tr>
+</tbody>
+</table>
+<p>Use <strong>Fast Mode</strong> when the task needs Opus-level reasoning but you want it fast.<br>Use <strong>Haiku</strong> when the task is simple and cost matters most.</p>
+<hr>
+<h2 id="disabling-fast-mode-globally">Disabling Fast Mode Globally<a href="#disabling-fast-mode-globally" class="anchor-link">#</a></h2>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_DISABLE_FAST_MODE=true claude</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_DISABLE_FAST_MODE=true claude</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>$env:CLAUDE_CODE_DISABLE_FAST_MODE="true"
+claude</code></pre>
+<p>Or in settings:</p>
+<pre data-lang="json"><code>{
+  "fastMode": false
+}</code></pre>
+<hr>
+<h2 id="rate-limits">Rate Limits<a href="#rate-limits" class="anchor-link">#</a></h2>
+<p>Fast Mode uses a separate rate limit pool from standard mode. If you hit the Fast Mode rate limit, Claude automatically falls back to standard Opus — you won't see an error, just slightly slower responses.</p>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

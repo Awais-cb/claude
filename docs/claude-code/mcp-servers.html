@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Servers — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="mcp-servers-model-context-protocol">MCP Servers — Model Context Protocol<a href="#mcp-servers-model-context-protocol" class="anchor-link">#</a></h1>
+<p>Imagine your smartphone before you discovered the App Store. It could call, text, and browse the web — but that was it. Then you installed apps: a map, a bank, a camera with filters, a food delivery service. Suddenly it could do almost anything. MCP servers work the same way for Claude. Out of the box, Claude can read files, write code, and run terminal commands. But with MCP servers installed, it can query your live database, open GitHub pull requests, post to Slack, browse the web, and much more — each server gives Claude a new superpower.</p>
+<p>MCP stands for <strong>Model Context Protocol</strong> — an open standard that defines how AI assistants communicate with external tools and data sources. You install an MCP server once, and Claude can use its capabilities in any conversation.</p>
+<hr>
+<h2 id="what-can-mcp-servers-do">What Can MCP Servers Do?<a href="#what-can-mcp-servers-do" class="anchor-link">#</a></h2>
+<p>An MCP server can expose three types of capabilities:</p>
+<ul>
+<li><strong>Tools</strong> — actions Claude can take (e.g., run a database query, send a Slack message, create a GitHub issue)</li>
+<li><strong>Resources</strong> — data Claude can read on demand (e.g., a specific database table, a file on a remote server, an API response)</li>
+<li><strong>Prompts</strong> — reusable prompt templates you can trigger with a slash command</li>
+</ul>
+<pre><code>Without MCP:                     With MCP (GitHub server):
+─────────────────────────        ─────────────────────────────────────
+Claude sees:                     Claude sees:
+  • Your local files              • Your local files
+  • Terminal output               • Terminal output
+  • What you paste in             • All your GitHub issues and PRs
+                                  • Commit history and diffs
+                                  • Ability to open/close/comment PRs</code></pre>
+<hr>
+<h2 id="how-mcp-servers-work-plain-english">How MCP Servers Work (Plain English)<a href="#how-mcp-servers-work-plain-english" class="anchor-link">#</a></h2>
+<p>When you add an MCP server, Claude Code launches a small background process (or connects to a remote URL). That process acts as a bridge between Claude and the external service. When you ask Claude "how many open bugs do we have?", Claude calls the GitHub MCP server's tool, gets the answer, and tells you — without you having to leave the conversation.</p>
+<pre><code>You ask Claude a question
+        │
+        ▼
+Claude decides it needs external data
+        │
+        ▼
+Claude calls the MCP server (e.g., GitHub server)
+        │
+        ▼
+MCP server talks to the real service (GitHub API)
+        │
+        ▼
+MCP server returns structured data to Claude
+        │
+        ▼
+Claude gives you a useful answer</code></pre>
+<hr>
+<h2 id="setting-up-mcp-servers">Setting Up MCP Servers<a href="#setting-up-mcp-servers" class="anchor-link">#</a></h2>
+<h3 id="the-claude-mcp-cli-primary-method">The <code>claude mcp</code> CLI (Primary Method)<a href="#the-claude-mcp-cli-primary-method" class="anchor-link">#</a></h3>
+<p>The fastest way to add, list, and remove MCP servers is the <code>claude mcp</code> CLI — no manual JSON editing required:</p>
+<pre data-lang="bash"><code># Add a local (stdio) server, passing environment variables and the command
+claude mcp add my-server -e API_KEY=abc123 -- /path/to/server args
+
+# Add an HTTP or streamable-HTTP server
+claude mcp add --transport http my-server https://example.com/mcp
+
+# List all configured servers
+claude mcp list
+
+# Remove a server
+claude mcp remove my-server</code></pre>
+<blockquote><p><strong>Note on SSE transport:</strong> The <code>--transport sse</code> option is deprecated. Use <code>--transport http</code> (streamable-HTTP) instead for remote servers — it is faster, more reliable, and the current standard.</p></blockquote>
+<hr>
+<h3 id="how-to-add-your-first-mcp-server-in-3-steps">How to Add Your First MCP Server in 3 Steps<a href="#how-to-add-your-first-mcp-server-in-3-steps" class="anchor-link">#</a></h3>
+<p><strong>Step 1: Choose a server</strong></p>
+<p>Pick one from the popular list below (e.g., the GitHub server).</p>
+<p><strong>Step 2: Create the config file</strong></p>
+<p>Create a file called <code>.mcp.json</code> in your project folder (for all projects, user-scope MCP config is stored in <code>~/.claude.json</code>):</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_token_here"
+      }
+    }
+  }
+}</code></pre>
+<p><strong>Step 3: Start Claude and verify</strong></p>
+<pre data-lang="bash"><code>claude</code></pre>
+<p>Then type <code>/mcp</code> to see connected servers and available tools.</p>
+<hr>
+<h3 id="method-1-interactive-setup">Method 1: Interactive setup<a href="#method-1-interactive-setup" class="anchor-link">#</a></h3>
+<pre><code>&gt; /mcp</code></pre>
+<p>Opens the MCP management interface where you can add, configure, and test servers.</p>
+<h3 id="method-2-config-file">Method 2: Config file<a href="#method-2-config-file" class="anchor-link">#</a></h3>
+<p>Create <code>.mcp.json</code> in your project:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_token_here"
+      }
+    }
+  }
+}</code></pre>
+<h3 id="method-3-cli-flag">Method 3: CLI flag<a href="#method-3-cli-flag" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --mcp-config ./mcp-servers.json</code></pre>
+<hr>
+<h2 id="mcp-config-locations">MCP Config Locations<a href="#mcp-config-locations" class="anchor-link">#</a></h2>
+<p>Config files are loaded in priority order. A project-level config overrides your user-wide config:</p>
+<pre><code>.mcp.json          ← Project root (highest priority, shared with team via git)
+~/.claude.json     ← User-wide (all projects, personal)</code></pre>
+<blockquote><p><strong>Important:</strong> User-scope MCP configuration is stored inside <code>~/.claude.json</code> — not in a separate <code>~/.claude/.mcp.json</code> file. Project-scope configuration lives in <code>.mcp.json</code> at your project root.</p></blockquote>
+<h3 id="where-to-find-these-files-by-os">Where to find these files by OS<a href="#where-to-find-these-files-by-os" class="anchor-link">#</a></h3>
+<p><strong>macOS:</strong></p>
+<table>
+<thead><tr><th>Scope</th><th>Path</th></tr></thead>
+<tbody>
+<tr><td>All projects (user-wide)</td><td><code>~/.claude.json</code> (e.g., <code>/Users/yourname/.claude.json</code>)</td></tr>
+<tr><td>Current project only</td><td><code>.mcp.json</code> in your project root</td></tr>
+<tr><td>Enterprise policy</td><td><code>/Library/Application Support/ClaudeCode/mcp.json</code></td></tr>
+</tbody>
+</table>
+<p><strong>Linux (Ubuntu):</strong></p>
+<table>
+<thead><tr><th>Scope</th><th>Path</th></tr></thead>
+<tbody>
+<tr><td>All projects (user-wide)</td><td><code>~/.claude.json</code> (e.g., <code>/home/yourname/.claude.json</code>)</td></tr>
+<tr><td>Current project only</td><td><code>.mcp.json</code> in your project root</td></tr>
+<tr><td>Enterprise policy</td><td><code>/etc/claude-code/mcp.json</code></td></tr>
+</tbody>
+</table>
+<p><strong>Windows (WSL):</strong></p>
+<table>
+<thead><tr><th>Scope</th><th>Path</th></tr></thead>
+<tbody>
+<tr><td>All projects (user-wide)</td><td><code>~/.claude.json</code> inside your WSL home (e.g., <code>/home/yourname/.claude.json</code>)</td></tr>
+<tr><td>Current project only</td><td><code>.mcp.json</code> in your project root (inside WSL filesystem)</td></tr>
+<tr><td>Windows native path</td><td><code>%APPDATA%\ClaudeCode\mcp.json</code> (if using native Windows Claude)</td></tr>
+</tbody>
+</table>
+<p>The easiest way to manage user-wide servers is with the CLI (see above). To edit the file directly:</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>$EDITOR ~/.claude.json</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>nano ~/.claude.json</code></pre>
+<hr>
+<h2 id="popular-mcp-servers">Popular MCP Servers<a href="#popular-mcp-servers" class="anchor-link">#</a></h2>
+<h3 id="github">GitHub<a href="#github" class="anchor-link">#</a></h3>
+<p><strong>When to use:</strong> When you want Claude to read issues, manage pull requests, review code changes, or search repository contents without copy-pasting things manually.</p>
+<p>Query issues, PRs, repos, and files on GitHub:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_..."
+      }
+    }
+  }
+}</code></pre>
+<p><strong>Real-world scenario:</strong> You just fixed a bug. Instead of opening a browser, navigating to GitHub, and manually creating a PR, you just say:</p>
+<pre><code>&gt; List all open issues labeled "bug" in my repository
+&gt; Create a PR from the current branch to main
+&gt; What files changed in PR #47?
+&gt; Summarize the discussion on issue #23</code></pre>
+<p><strong>How to get a GitHub token:</strong> Go to GitHub Settings &gt; Developer settings &gt; Personal access tokens &gt; Generate new token. Select the <code>repo</code> scope.</p>
+<hr>
+<h3 id="postgresql-database">PostgreSQL / Database<a href="#postgresql-database" class="anchor-link">#</a></h3>
+<p><strong>When to use:</strong> When you want to explore your data, run ad-hoc queries, or understand your database schema without writing SQL manually.</p>
+<p>Query your database directly:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://user:password@localhost/mydb"
+      }
+    }
+  }
+}</code></pre>
+<p><strong>Real-world scenario:</strong> Your product manager asks "how many users signed up last week and which plan did most of them choose?" Instead of switching to a DB client, you ask:</p>
+<pre><code>&gt; How many users registered in the last 30 days?
+&gt; Show me the top 10 most purchased products
+&gt; Find all orders where payment_status is 'pending'
+&gt; What's the average session length for premium users?</code></pre>
+<p><strong>Security note:</strong> Only connect to databases with read-only credentials when possible, especially on shared machines.</p>
+<hr>
+<h3 id="filesystem-extended">Filesystem (Extended)<a href="#filesystem-extended" class="anchor-link">#</a></h3>
+<p><strong>When to use:</strong> When your project references files outside the current directory — like shared config files, a documentation folder in another location, or a shared scripts directory.</p>
+<p>Access files beyond the current directory:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/you/Documents"]
+    }
+  }
+}</code></pre>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code># Replace /Users/yourname/Documents with the directory you want Claude to access
+npx @modelcontextprotocol/server-filesystem /Users/yourname/Documents</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>npx @modelcontextprotocol/server-filesystem /home/yourname/Documents</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>npx @modelcontextprotocol/server-filesystem /mnt/c/Users/yourname/Documents</code></pre>
+<hr>
+<h3 id="slack">Slack<a href="#slack" class="anchor-link">#</a></h3>
+<p><strong>When to use:</strong> When you want Claude to draft and post summaries, deployment notes, or updates to Slack channels automatically as part of your workflow.</p>
+<p>Read channels and send messages:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-...",
+        "SLACK_TEAM_ID": "T..."
+      }
+    }
+  }
+}</code></pre>
+<p><strong>Real-world scenario:</strong> After deploying, you run:</p>
+<pre><code>&gt; Post a summary of today's changes to #deployments
+&gt; What was discussed in #engineering this week?
+&gt; Draft a message to #backend about the API change we just made</code></pre>
+<hr>
+<h3 id="google-drive">Google Drive<a href="#google-drive" class="anchor-link">#</a></h3>
+<p><strong>When to use:</strong> When your team stores specs, requirements, or documentation in Google Docs and you want Claude to reference them directly.</p>
+<p>Access Google Docs, Sheets, and Drive:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "gdrive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"]
+    }
+  }
+}</code></pre>
+<hr>
+<h2 id="using-mcp-tools-in-a-session">Using MCP Tools in a Session<a href="#using-mcp-tools-in-a-session" class="anchor-link">#</a></h2>
+<p>Once configured, MCP tools are available automatically:</p>
+<pre><code>&gt; Search GitHub for issues related to "memory leak"
+&gt; Query the database for the top 10 users by session count
+&gt; Post "Deployment complete" to the #releases Slack channel</code></pre>
+<h3 id="reference-mcp-resources-with">Reference MCP resources with <code>@</code><a href="#reference-mcp-resources-with" class="anchor-link">#</a></h3>
+<pre><code>&gt; @github:issues/47  what's the status of this issue?
+&gt; @postgres:users    show me the table schema</code></pre>
+<h3 id="use-mcp-prompts-as-commands">Use MCP prompts as commands<a href="#use-mcp-prompts-as-commands" class="anchor-link">#</a></h3>
+<pre><code>/mcp__github__create-pr
+/mcp__slack__summarize-channel</code></pre>
+<hr>
+<h2 id="server-types">Server Types<a href="#server-types" class="anchor-link">#</a></h2>
+<p>There are three ways MCP servers run. Most beginners will use stdio servers (local process), but remote HTTP servers are useful for shared team setups.</p>
+<h3 id="stdio-servers-local-process">Stdio servers (local process)<a href="#stdio-servers-local-process" class="anchor-link">#</a></h3>
+<p>The most common type — runs a local process on your machine:</p>
+<pre data-lang="json"><code>{
+  "command": "npx",
+  "args": ["-y", "some-mcp-server"],
+  "env": { "API_KEY": "..." }
+}</code></pre>
+<pre><code>Your Machine
+┌─────────────────────────────────┐
+│  Claude Code                    │
+│       │                         │
+│       ▼                         │
+│  MCP Server Process             │
+│  (npx some-mcp-server)          │
+│       │                         │
+│       ▼                         │
+│  External API / Database        │
+└─────────────────────────────────┘</code></pre>
+<h3 id="http-servers-remote-endpoint">HTTP servers (remote endpoint)<a href="#http-servers-remote-endpoint" class="anchor-link">#</a></h3>
+<p><strong>When to use:</strong> When your team runs a shared MCP server that everyone connects to, hosted on a server rather than each person's laptop.</p>
+<p>Connect to a remote MCP server:</p>
+<pre data-lang="json"><code>{
+  "url": "https://mcp.example.com/api",
+  "headers": {
+    "Authorization": "Bearer your-token"
+  }
+}</code></pre>
+<h3 id="sse-servers-server-sent-events">SSE servers (server-sent events)<a href="#sse-servers-server-sent-events" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "url": "https://mcp.example.com/sse"
+}</code></pre>
+<hr>
+<h2 id="environment-variables-in-mcp-config">Environment Variables in MCP Config<a href="#environment-variables-in-mcp-config" class="anchor-link">#</a></h2>
+<p>Use <code>${VAR_NAME}</code> to reference environment variables:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}</code></pre>
+<p>This keeps secrets out of your config file. Set the actual values in your shell:</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>export GITHUB_TOKEN="ghp_your_actual_token"
+# Add this line to ~/.zshrc or ~/.bashrc to make it permanent</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>export GITHUB_TOKEN="ghp_your_actual_token"
+# Add to ~/.bashrc in WSL
+echo 'export GITHUB_TOKEN="ghp_your_actual_token"' &gt;&gt; ~/.bashrc</code></pre>
+<hr>
+<h2 id="building-a-custom-mcp-server">Building a Custom MCP Server<a href="#building-a-custom-mcp-server" class="anchor-link">#</a></h2>
+<p><strong>When to use:</strong> When your company has internal tools, proprietary APIs, or databases that don't have a public MCP server yet. Building your own takes about 30 minutes for a simple server.</p>
+<p>You can build your own MCP server for any internal tool or API.</p>
+<h3 id="simple-nodejs-mcp-server">Simple Node.js MCP server<a href="#simple-nodejs-mcp-server" class="anchor-link">#</a></h3>
+<pre data-lang="javascript"><code>import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+const server = new McpServer({
+  name: "my-company-tools",
+  version: "1.0.0"
+});
+
+// Add a tool
+server.tool(
+  "get-employee",
+  "Fetch employee information by ID",
+  {
+    employee_id: { type: "string", description: "Employee ID" }
+  },
+  async ({ employee_id }) =&gt; {
+    const employee = await fetchFromHR(employee_id);
+    return {
+      content: [{ type: "text", text: JSON.stringify(employee) }]
+    };
+  }
+);
+
+// Start server
+const transport = new StdioServerTransport();
+await server.connect(transport);</code></pre>
+<p>Configure it:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "company-tools": {
+      "command": "node",
+      "args": ["./mcp-servers/company-tools.js"]
+    }
+  }
+}</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; Get information about employee E-12345</code></pre>
+<hr>
+<h2 id="mcp-security">MCP Security<a href="#mcp-security" class="anchor-link">#</a></h2>
+<p>Claude Code has protections for MCP:</p>
+<ul>
+<li><strong>Tool search</strong> — by default, tools beyond 10% of context are deferred to avoid prompt injection</li>
+<li><strong>Permission prompts</strong> — MCP tool calls respect permission mode settings</li>
+<li><strong>Admin control</strong> — Enterprise admins can allowlist/denylist MCP servers</li>
+</ul>
+<h3 id="strict-mcp-config">Strict MCP config<a href="#strict-mcp-config" class="anchor-link">#</a></h3>
+<p>Only use explicitly configured MCP servers (ignore any others):</p>
+<pre data-lang="bash"><code>claude --strict-mcp-config --mcp-config ./safe-servers.json</code></pre>
+<p><strong>When to use strict mode:</strong> In CI/CD pipelines, or any environment where you want to guarantee that only pre-approved servers are used, regardless of what might be in project config files.</p>
+<hr>
+<h2 id="debugging-mcp">Debugging MCP<a href="#debugging-mcp" class="anchor-link">#</a></h2>
+<pre><code>&gt; /mcp</code></pre>
+<p>The MCP interface shows:</p>
+<ul>
+<li>Connected servers</li>
+<li>Available tools from each server</li>
+<li>Connection status</li>
+<li>Error messages</li>
+</ul>
+<p>Or use debug mode:</p>
+<pre data-lang="bash"><code>claude --debug mcp</code></pre>
+<p><strong>Common issues:</strong></p>
+<table>
+<thead><tr><th>Problem</th><th>Likely cause</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Server shows "disconnected"</td><td>Bad API token</td><td>Double-check your token in the <code>env</code> section</td></tr>
+<tr><td>"command not found" error</td><td><code>npx</code> not installed</td><td>Run <code>npm install -g npx</code> first</td></tr>
+<tr><td>Tools don't appear</td><td>Config file not found</td><td>Check the file path and JSON syntax</td></tr>
+<tr><td>Server connects but queries fail</td><td>Wrong connection string</td><td>Test the connection string directly in a DB client</td></tr>
+</tbody>
+</table>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="2">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laravel Frontend Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="laravel-frontend-developer-workflow">Laravel Frontend Developer Workflow<a href="#laravel-frontend-developer-workflow" class="anchor-link">#</a></h1>
+<p>Claude as your frontend pair programmer in Laravel — for Blade templating, Livewire components, Alpine.js interactivity, Inertia.js + Vue/React, Vite asset compilation, and Tailwind CSS.</p>
+<hr>
+<h2 id="daily-session-setup">Daily Session Setup<a href="#daily-session-setup" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>cd your-laravel-project/
+claude --ide          # connects to VS Code
+npm run dev           # Vite dev server in a separate terminal</code></pre>
+<p>Name your session per feature:</p>
+<pre><code>&gt; /rename feat/TICKET-88-order-dashboard-ui</code></pre>
+<hr>
+<h2 id="1-blade-templating">1. Blade Templating<a href="#1-blade-templating" class="anchor-link">#</a></h2>
+<h3 id="read-conventions-before-building">Read conventions before building<a href="#read-conventions-before-building" class="anchor-link">#</a></h3>
+<pre><code>&gt; read resources/views/layouts/ to understand our layout structure.
+  Then read 2-3 pages in resources/views/pages/ to understand how
+  sections, components, and includes are used.
+  I'm about to build the order history page — what's the pattern I should follow?</code></pre>
+<h3 id="build-a-new-blade-page">Build a new Blade page<a href="#build-a-new-blade-page" class="anchor-link">#</a></h3>
+<pre><code>&gt; create the order history page at resources/views/pages/patient/order-history.blade.php.
+  It should:
+  - extend the main layout (@extends / @section pattern used in our codebase)
+  - receive $orders (paginated collection from the controller)
+  - show a table: order number, date, status badge, total, &quot;View&quot; button
+  - show an empty state if no orders
+  - include pagination links at the bottom using Laravel's $orders-&gt;links()
+
+  Use our existing CSS classes and Bootstrap/Tailwind (check which we use in existing views).</code></pre>
+<h3 id="reusable-blade-components">Reusable Blade components<a href="#reusable-blade-components" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a reusable Blade component StatusBadge.
+  - Path: resources/views/components/status-badge.blade.php
+  - Props: $status (string), $size ('sm' | 'md', default 'md')
+  - Renders a pill badge with color based on status:
+    pending=yellow, active=green, cancelled=red, completed=gray
+  - Usage: &lt;x-status-badge :status=&quot;$order-&gt;status&quot; /&gt;
+
+  Check resources/views/components/ for existing component examples.</code></pre>
+<h3 id="blade-partials-and-includes">Blade partials and includes<a href="#blade-partials-and-includes" class="anchor-link">#</a></h3>
+<pre><code>&gt; the order history page needs a filter bar (date range, status dropdown, search input).
+  Extract it into a partial at resources/views/partials/order-filter-bar.blade.php.
+  It should read the current filter values from request() and mark the active selection.
+  Include it in the order history page with @include.</code></pre>
+<hr>
+<h2 id="2-livewire-components">2. Livewire Components<a href="#2-livewire-components" class="anchor-link">#</a></h2>
+<h3 id="orient-claude-on-your-livewire-setup">Orient Claude on your Livewire setup<a href="#orient-claude-on-your-livewire-setup" class="anchor-link">#</a></h3>
+<pre><code>&gt; read app/Livewire/ and resources/views/livewire/ to understand how
+  we structure Livewire components. Are we using Livewire 2 or 3?
+  What naming conventions do we use? What's the folder structure?</code></pre>
+<h3 id="create-a-livewire-component">Create a Livewire component<a href="#create-a-livewire-component" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a Livewire component OrderFilters for filtering the order list.
+  - Class: app/Livewire/OrderFilters.php
+  - View: resources/views/livewire/order-filters.blade.php
+  - Properties: $status (string, default 'all'), $dateFrom, $dateTo, $search
+  - Methods: updatedStatus(), applyFilters() — both emit a 'filtersUpdated' event
+  - The parent Livewire component listens for 'filtersUpdated' and re-runs the query
+
+  Use Livewire 3 syntax (wire:model.live, #[On], #[Reactive]).
+  Follow the pattern in @app/Livewire/ for existing components.</code></pre>
+<h3 id="real-time-search-with-livewire">Real-time search with Livewire<a href="#real-time-search-with-livewire" class="anchor-link">#</a></h3>
+<pre><code>&gt; update the OrderList Livewire component to support real-time search.
+  - Add a $search property bound to a text input with wire:model.debounce.300ms
+  - When $search changes, re-run the query with a LIKE filter on order_number and customer name
+  - Add a loading indicator (wire:loading) while the list refreshes</code></pre>
+<h3 id="livewire-modals">Livewire modals<a href="#livewire-modals" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a Livewire modal component CancelOrderModal.
+  - Opens when the user clicks &quot;Cancel Order&quot; on any order row
+  - Accepts the order ID via a dispatch event
+  - Shows the order number and asks for a cancellation reason (required, min 10 chars)
+  - On confirm: calls OrderService::cancelOrder() and dispatches 'orderCancelled' event
+  - On success: closes modal and shows a flash message
+  - On error: shows the error message inline without closing
+
+  Follow the existing modal components in @app/Livewire/ if any exist.</code></pre>
+<h3 id="livewire-pagination">Livewire pagination<a href="#livewire-pagination" class="anchor-link">#</a></h3>
+<pre><code>&gt; the OrderList component currently loads all orders. Add Livewire pagination:
+  - Use Laravel's WithPagination trait
+  - 20 items per page
+  - Reset pagination when filters change (call $this-&gt;resetPage() in filter methods)
+  - The view should use $this-&gt;render() returning the paginated query</code></pre>
+<hr>
+<h2 id="3-alpinejs">3. Alpine.js<a href="#3-alpinejs" class="anchor-link">#</a></h2>
+<h3 id="add-alpinejs-interactivity-to-a-blade-component">Add Alpine.js interactivity to a Blade component<a href="#add-alpinejs-interactivity-to-a-blade-component" class="anchor-link">#</a></h3>
+<pre><code>&gt; add Alpine.js to the notification bell in resources/views/components/notification-bell.blade.php.
+  - Toggle a dropdown panel open/close when the bell is clicked
+  - Close the dropdown when clicking outside (using @click.outside)
+  - Animate open/close with x-transition
+  - Track open state with x-data=&quot;{ open: false }&quot;
+  Do not add a Livewire component — keep this pure Alpine.js.</code></pre>
+<h3 id="alpinejs-tabs">Alpine.js tabs<a href="#alpinejs-tabs" class="anchor-link">#</a></h3>
+<pre><code>&gt; add tab switching to the therapist profile page using Alpine.js.
+  Tabs: &quot;About&quot;, &quot;Sessions&quot;, &quot;Reviews&quot;, &quot;Availability&quot;
+  - No page reload — switch content by showing/hiding sections
+  - Active tab gets a highlighted style
+  - Default to &quot;About&quot; tab
+  - Use x-data, x-show, x-bind:class</code></pre>
+<h3 id="form-interactivity-without-livewire">Form interactivity without Livewire<a href="#form-interactivity-without-livewire" class="anchor-link">#</a></h3>
+<pre><code>&gt; the booking form at resources/views/pages/booking.blade.php needs:
+  - Show/hide the &quot;session notes&quot; textarea based on session type dropdown (x-show)
+  - Dynamically calculate and display the total price as the user selects package and quantity
+  - Disable the submit button while form is submitting (x-bind:disabled on Axios submit)
+  Use Alpine.js with Axios for the price calculation (GET /api/packages/{id}/price).</code></pre>
+<hr>
+<h2 id="4-inertiajs-vue-or-react">4. Inertia.js (Vue or React)<a href="#4-inertiajs-vue-or-react" class="anchor-link">#</a></h2>
+<h3 id="understand-the-inertia-setup">Understand the Inertia setup<a href="#understand-the-inertia-setup" class="anchor-link">#</a></h3>
+<pre><code>&gt; read resources/js/ to understand if we're using Inertia.js with Vue or React.
+  What's the page component folder structure? How are layouts defined?
+  Read the first 3 page components to understand the conventions.</code></pre>
+<h3 id="build-an-inertia-page">Build an Inertia page<a href="#build-an-inertia-page" class="anchor-link">#</a></h3>
+<pre><code>&gt; create the Order History page as an Inertia + Vue component.
+  - Path: resources/js/Pages/Patient/OrderHistory.vue
+  - Props from controller: orders (paginated), filters (current filter values)
+  - Show a table with: order number, date, status badge, total, &quot;View&quot; link
+  - Add filter controls: status dropdown, date range, search — use Inertia's router.get()
+    for filter changes so URL stays in sync (preserve scroll, preserve state)
+  - Livewire-style empty state when no orders
+
+  Read @resources/js/Pages/ for existing page component examples.
+  Use @resources/js/Components/ for any existing UI components.</code></pre>
+<h3 id="sharing-data-with-inertia">Sharing data with Inertia<a href="#sharing-data-with-inertia" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need to share the authenticated user and their unread notification count
+  with every Inertia page without passing it from every controller.
+  Read @app/Http/Middleware/HandleInertiaRequests.php — add these to share().</code></pre>
+<hr>
+<h2 id="5-vite-asset-compilation">5. Vite &amp; Asset Compilation<a href="#5-vite-asset-compilation" class="anchor-link">#</a></h2>
+<h3 id="add-a-new-css-or-js-entry-point">Add a new CSS or JS entry point<a href="#add-a-new-css-or-js-entry-point" class="anchor-link">#</a></h3>
+<pre><code>&gt; we need a separate JS bundle for the admin dashboard.
+  Read @vite.config.js (or vite.config.ts) to see the current input configuration.
+  Add resources/js/admin.js as a new entry point and include it in the admin layout.</code></pre>
+<h3 id="import-a-new-npm-package">Import a new npm package<a href="#import-a-new-npm-package" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need to add the flatpickr date picker to the booking form.
+  - Install it: npm install flatpickr
+  - Import and initialize it in resources/js/pages/booking.js (or the relevant file)
+  - Add the CSS import
+  - Initialize it on the date input with options: minDate today, disable weekends</code></pre>
+<h3 id="debugging-vite-build-errors">Debugging Vite build errors<a href="#debugging-vite-build-errors" class="anchor-link">#</a></h3>
+<pre><code>&gt; running npm run build gives this error:
+  [paste the error]
+  Read @vite.config.js and identify what's misconfigured. Fix it.</code></pre>
+<hr>
+<h2 id="6-tailwind-css">6. Tailwind CSS<a href="#6-tailwind-css" class="anchor-link">#</a></h2>
+<h3 id="check-the-tailwind-setup-first">Check the Tailwind setup first<a href="#check-the-tailwind-setup-first" class="anchor-link">#</a></h3>
+<pre><code>&gt; read tailwind.config.js and resources/css/app.css to understand our
+  Tailwind configuration. What custom colors, fonts, or plugins are we using?
+  What's in the base layer?</code></pre>
+<h3 id="build-a-styled-component">Build a styled component<a href="#build-a-styled-component" class="anchor-link">#</a></h3>
+<pre><code>&gt; style the OrderCard Blade component at resources/views/components/order-card.blade.php
+  using Tailwind CSS.
+  It should show: order number, status badge, date, total, and a &quot;View Details&quot; button.
+  Use the color palette from our tailwind.config.js custom colors.
+  The card should have a hover state and a border that changes color based on order status.</code></pre>
+<h3 id="responsive-layout">Responsive layout<a href="#responsive-layout" class="anchor-link">#</a></h3>
+<pre><code>&gt; make the order history table responsive.
+  On mobile (&lt; sm): show a card-based layout instead of a table.
+  On tablet (sm–lg): show a compact table with fewer columns.
+  On desktop (lg+): show the full table.
+  Read the existing responsive patterns in resources/views/ first.</code></pre>
+<hr>
+<h2 id="7-javascript-axios">7. JavaScript &amp; Axios<a href="#7-javascript-axios" class="anchor-link">#</a></h2>
+<h3 id="add-an-axios-request">Add an Axios request<a href="#add-an-axios-request" class="anchor-link">#</a></h3>
+<pre><code>&gt; add an Axios call to the booking form that:
+  - fires when the user selects a therapist from the dropdown
+  - calls GET /api/therapists/{id}/available-slots?date={selectedDate}
+  - populates the time slot radio buttons dynamically from the response
+  - shows a loading spinner during the request
+  - shows an error message if the request fails
+
+  Read resources/js/ for how we configure Axios (baseURL, CSRF token header, etc.).</code></pre>
+<h3 id="handle-csrf-tokens-correctly">Handle CSRF tokens correctly<a href="#handle-csrf-tokens-correctly" class="anchor-link">#</a></h3>
+<pre><code>&gt; read @resources/js/bootstrap.js (or wherever Axios is configured).
+  Is the CSRF token being sent as X-XSRF-TOKEN from the cookie?
+  If not, fix the Axios default headers so all POST/PUT/DELETE requests include it.</code></pre>
+<hr>
+<h2 id="8-debugging-frontend-issues">8. Debugging Frontend Issues<a href="#8-debugging-frontend-issues" class="anchor-link">#</a></h2>
+<h3 id="tracing-a-livewire-bug">Tracing a Livewire bug<a href="#tracing-a-livewire-bug" class="anchor-link">#</a></h3>
+<pre><code>&gt; the CancelOrderModal doesn't close after a successful cancellation.
+  The success event fires (I can see it in the browser console).
+  Check:
+  1. @app/Livewire/CancelOrderModal.php — is the dispatch() or $this-&gt;dispatch() correct?
+  2. @resources/views/livewire/cancel-order-modal.blade.php — is the event listener correct?
+  3. Is the parent listening with the right event name?</code></pre>
+<h3 id="debug-a-blade-rendering-issue">Debug a Blade rendering issue<a href="#debug-a-blade-rendering-issue" class="anchor-link">#</a></h3>
+<pre><code>&gt; the order history page shows no orders even though the database has data.
+  The controller passes $orders = Order::paginate(20).
+  Read @resources/views/pages/patient/order-history.blade.php and
+  @app/Http/Controllers/OrderController.php.
+  Trace why the orders aren't rendering.</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Task</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>Blade page</td><td><code>create [page] at resources/views/[path]. extends [layout]. receives [vars]. shows [content].</code></td></tr>
+<tr><td>Blade component</td><td><code>create reusable component [Name]. props: [list]. renders [description]. usage: &lt;x-[name] /&gt;.</code></td></tr>
+<tr><td>Livewire component</td><td><code>create Livewire component [Name]. properties: [list]. methods: [list]. emits: [events]. Livewire 3 syntax.</code></td></tr>
+<tr><td>Alpine.js</td><td><code>add Alpine.js to [component] for [interaction]. use x-data, [directives]. no Livewire.</code></td></tr>
+<tr><td>Inertia page</td><td><code>create [Page].vue. props: [list]. show [content]. read @resources/js/Pages/ for conventions.</code></td></tr>
+<tr><td>Responsive</td><td><code>make [component] responsive: mobile=[layout], tablet=[layout], desktop=[layout]. check existing patterns first.</code></td></tr>
+<tr><td>Axios call</td><td><code>add Axios call to [form/component] that calls [endpoint], [behavior on success], [behavior on error].</code></td></tr>
+<tr><td>Debug Livewire</td><td><code>[symptom]. check @[livewire class] and @[view]. trace the event flow.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Read the views folder before creating anything</strong> — Laravel projects have wildly different view structures; always ask Claude to read before writing</li>
+<li><strong>Specify Livewire version explicitly</strong> — Livewire 2 and 3 have different syntax; always mention which you're using</li>
+<li><strong>One component per session</strong> — for complex Livewire components, give Claude the full requirements upfront; mid-session pivots break the component structure</li>
+<li><strong>Use Alpine.js for pure UI state</strong> — dropdowns, tabs, toggles don't need Livewire; keep Livewire for server state</li>
+<li><strong>Always check existing components first</strong> — <code>read resources/views/components/ and tell me what UI components already exist before I build a new one</code></li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings &amp; Configuration — VS Code — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="settings-and-configuration">Settings and Configuration<a href="#settings-and-configuration" class="anchor-link">#</a></h1>
+<p>Claude Code's behavior in VS Code is controlled through settings files and environment variables. Settings apply at different scopes — user-wide, project-wide, or local-only — so teams can share project-level config while keeping personal preferences separate.</p>
+<p>Think of it like a layered system: the bottom layer is system defaults, then your personal preferences sit on top, then project-wide team settings, and finally your private local overrides on the very top. Each layer can add to or override what's below it.</p>
+<hr>
+<h2 id="settings-file-locations">Settings File Locations<a href="#settings-file-locations" class="anchor-link">#</a></h2>
+<p>Claude Code reads settings from four locations, in order of priority (lower number = higher priority):</p>
+<table>
+<thead><tr><th>Priority</th><th>File</th><th>Scope</th></tr></thead>
+<tbody>
+<tr><td>1 (lowest)</td><td><code>/etc/claude-code/settings.json</code></td><td>System-wide (managed by IT/admin)</td></tr>
+<tr><td>2</td><td><code>~/.claude/settings.json</code></td><td>Your user account (all projects)</td></tr>
+<tr><td>3</td><td><code>.claude/settings.json</code></td><td>This project (shared with team via git)</td></tr>
+<tr><td>4 (highest)</td><td><code>.claude/settings.local.json</code></td><td>This project, local only (not committed)</td></tr>
+</tbody>
+</table>
+<p>Higher-priority settings override lower-priority ones.</p>
+<h3 id="os-specific-paths">OS-specific paths<a href="#os-specific-paths" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre><code>/etc/claude-code/settings.json          (system-wide)
+~/.claude/settings.json                 (user-level)
+/path/to/project/.claude/settings.json  (project-level)
+/path/to/project/.claude/settings.local.json  (local override)</code></pre>
+<p><strong>Windows (native):</strong></p>
+<pre><code>C:\ProgramData\claude-code\settings.json              (system-wide)
+%USERPROFILE%\.claude\settings.json                   (user-level)
+C:\path\to\project\.claude\settings.json              (project-level)
+C:\path\to\project\.claude\settings.local.json        (local override)</code></pre>
+<p>Which typically looks like:</p>
+<pre><code>C:\Users\YourName\.claude\settings.json</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<p>Settings live in the WSL Linux filesystem:</p>
+<pre><code>~/.claude/settings.json                 (user-level, at /home/yourname/.claude/)
+.claude/settings.json                   (project-level)</code></pre>
+<hr>
+<h2 id="opening-and-editing-settings">Opening and Editing Settings<a href="#opening-and-editing-settings" class="anchor-link">#</a></h2>
+<h3 id="from-inside-a-session-recommended-for-beginners">From inside a session (recommended for beginners)<a href="#from-inside-a-session-recommended-for-beginners" class="anchor-link">#</a></h3>
+<pre><code>&gt; /config</code></pre>
+<p>Opens a visual, interactive settings editor. Navigate with arrow keys, toggle options, and save — no JSON editing required.</p>
+<pre><code>&gt; /settings</code></pre>
+<p>Opens <code>settings.json</code> directly in your <code>$EDITOR</code>.</p>
+<blockquote><p>What to expect: The <code>/config</code> command opens a full-screen terminal UI showing all settings grouped by category. Use arrow keys to navigate, Space or Enter to toggle/change values, and follow the on-screen prompts to save. No JSON knowledge required.</p></blockquote>
+<h3 id="manually-via-terminal-or-editor">Manually via terminal or editor<a href="#manually-via-terminal-or-editor" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code># User-level settings
+code ~/.claude/settings.json
+
+# Project-level settings
+code .claude/settings.json</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code># User-level settings
+code "$env:USERPROFILE\.claude\settings.json"
+
+# Project-level settings
+code .claude\settings.json</code></pre>
+<hr>
+<h2 id="key-settings">Key Settings<a href="#key-settings" class="anchor-link">#</a></h2>
+<h3 id="permissions">Permissions<a href="#permissions" class="anchor-link">#</a></h3>
+<p>Control what Claude is allowed to do without asking:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(src/*)",
+      "Bash(git *)",
+      "Bash(npm test)",
+      "Bash(npm run *)"
+    ],
+    "deny": [
+      "Write(.env*)",
+      "Write(secrets/*)",
+      "Bash(rm -rf *)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}</code></pre>
+<table>
+<thead><tr><th>Value for <code>defaultMode</code></th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><em>(unset)</em></td><td>Ask mode — Claude asks before risky actions (default)</td></tr>
+<tr><td><code>"acceptEdits"</code></td><td>Auto-approve file edits, ask for commands</td></tr>
+<tr><td><code>"bypassPermissions"</code></td><td>Skip all prompts — auto-approve everything (use carefully)</td></tr>
+<tr><td><code>"plan"</code></td><td>Plan-only — read-only, no modifications</td></tr>
+</tbody>
+</table>
+<h3 id="model-preference">Model preference<a href="#model-preference" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "model": "claude-opus-4-6"
+}</code></pre>
+<p>Available models: <code>claude-opus-4-6</code>, <code>claude-sonnet-4-6</code>, <code>claude-haiku-4-5-20251001</code></p>
+<h3 id="thinking-mode">Thinking mode<a href="#thinking-mode" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "alwaysThinkingEnabled": false
+}</code></pre>
+<p>Set to <code>true</code> to always use extended thinking (slower but more thorough).</p>
+<h3 id="fast-mode">Fast mode<a href="#fast-mode" class="anchor-link">#</a></h3>
+<p>Fast mode is not controlled by a settings key. To toggle it, use the <code>/fast</code> command inside a session, or set the environment variable <code>CLAUDE_CODE_DISABLE_FAST_MODE=true</code> to disable it system-wide.</p>
+<h3 id="auto-memory">Auto-memory<a href="#auto-memory" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "autoMemoryEnabled": true
+}</code></pre>
+<p>Claude automatically extracts and saves key facts about your project to memory. Set to <code>false</code> to disable.</p>
+<h3 id="co-authorship-in-commits">Co-authorship in commits<a href="#co-authorship-in-commits" class="anchor-link">#</a></h3>
+<p>Co-authorship attribution is configured via the <code>attribution</code> object:</p>
+<pre data-lang="json"><code>{
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
+}</code></pre>
+<p><code>attribution.commit</code> adds a <code>Co-Authored-By: Claude</code> line to commits Claude creates. <code>attribution.pr</code> adds a note to pull requests.</p>
+<hr>
+<h2 id="starter-settings-by-user-type">Starter Settings by User Type<a href="#starter-settings-by-user-type" class="anchor-link">#</a></h2>
+<h3 id="beginner-safe-defaults-maximum-guidance">Beginner (safe defaults, maximum guidance)<a href="#beginner-safe-defaults-maximum-guidance" class="anchor-link">#</a></h3>
+<p>Save to <code>~/.claude/settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  },
+  "model": "claude-sonnet-4-6",
+  "autoMemoryEnabled": true,
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
+}</code></pre>
+<p>This uses <code>acceptEdits</code> mode (Claude asks before running commands but auto-accepts file edits), a balanced model, and auto-memory to help Claude learn your project. Leave <code>defaultMode</code> unset entirely to use the default ask mode where Claude prompts before every action.</p>
+<h3 id="power-user-speed-optimized-for-trusted-personal-projects">Power user (speed-optimized for trusted personal projects)<a href="#power-user-speed-optimized-for-trusted-personal-projects" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(src/*)",
+      "Write(tests/*)",
+      "Bash(npm *)",
+      "Bash(git *)",
+      "Bash(make *)"
+    ],
+    "deny": [
+      "Write(.env*)",
+      "Write(secrets/*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "model": "claude-opus-4-6",
+  "autoMemoryEnabled": true
+}</code></pre>
+<p>Auto-accepts file edits, pre-approves common commands, but still protects sensitive files. To enable fast mode, use <code>/fast</code> inside a session or set <code>CLAUDE_CODE_DISABLE_FAST_MODE</code> in your environment.</p>
+<h3 id="team-lead-shared-project-config">Team lead (shared project config)<a href="#team-lead-shared-project-config" class="anchor-link">#</a></h3>
+<p>Save to <code>.claude/settings.json</code> in your project root (commit this to git):</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(src/*)",
+      "Write(tests/*)",
+      "Write(docs/*)",
+      "Bash(npm *)",
+      "Bash(git *)",
+      "Bash(php artisan *)"
+    ],
+    "deny": [
+      "Write(.env*)",
+      "Write(config/secrets*)",
+      "Bash(rm -rf *)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
+}</code></pre>
+<p>Each team member can add their personal preferences in <code>.claude/settings.local.json</code> (add this to <code>.gitignore</code>).</p>
+<hr>
+<h2 id="environment-variables">Environment Variables<a href="#environment-variables" class="anchor-link">#</a></h2>
+<p>Set these in your shell profile or system environment. They override settings file values.</p>
+<table>
+<thead><tr><th>Variable</th><th>Description</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>ANTHROPIC_API_KEY</code></td><td>Your Anthropic API key (required)</td><td><code>sk-ant-...</code></td></tr>
+<tr><td><code>CLAUDE_CODE_EFFORT_LEVEL</code></td><td>Thinking effort: <code>low</code>, <code>medium</code>, <code>high</code></td><td><code>medium</code></td></tr>
+<tr><td><code>CLAUDE_CODE_DISABLE_AUTO_MEMORY</code></td><td>Disable auto-memory</td><td><code>true</code></td></tr>
+<tr><td><code>CLAUDE_CODE_DISABLE_FAST_MODE</code></td><td>Disable fast mode</td><td><code>true</code></td></tr>
+<tr><td><code>ANTHROPIC_BASE_URL</code></td><td>Custom API endpoint (for proxies)</td><td><code>https://proxy.example.com</code></td></tr>
+<tr><td><code>CLAUDE_CODE_MAX_OUTPUT_TOKENS</code></td><td>Limit response length</td><td><code>8000</code></td></tr>
+<tr><td><code>EDITOR</code></td><td>Editor for <code>/settings</code> and <code>Ctrl+G</code></td><td><code>vim</code>, <code>nano</code>, <code>code --wait</code></td></tr>
+</tbody>
+</table>
+<h3 id="setting-environment-variables-per-os">Setting environment variables per OS<a href="#setting-environment-variables-per-os" class="anchor-link">#</a></h3>
+<p><strong>macOS (add to <code>~/.zshrc</code>):</strong></p>
+<pre data-lang="bash"><code>export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+export CLAUDE_CODE_EFFORT_LEVEL="high"</code></pre>
+<p>Then reload: <code>source ~/.zshrc</code></p>
+<p><strong>Linux / WSL (add to <code>~/.bashrc</code>):</strong></p>
+<pre data-lang="bash"><code>export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+export CLAUDE_CODE_EFFORT_LEVEL="medium"</code></pre>
+<p>Then reload: <code>source ~/.bashrc</code></p>
+<p><strong>Windows (PowerShell — persistent across sessions):</strong></p>
+<pre data-lang="powershell"><code>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-ant-your-key-here", "User")</code></pre>
+<p>Or add to your PowerShell profile (<code>$PROFILE</code>):</p>
+<pre data-lang="powershell"><code>$env:ANTHROPIC_API_KEY = "sk-ant-your-key-here"</code></pre>
+<p><strong>Windows (WSL):</strong>
+Same as Linux — add to <code>~/.bashrc</code>.</p>
+<h3 id="setting-the-api-key-for-vs-code-specifically">Setting the API key for VS Code specifically<a href="#setting-the-api-key-for-vs-code-specifically" class="anchor-link">#</a></h3>
+<p>You can also set environment variables in <code>.env</code> at the project root (not committed to git). VS Code picks these up in the integrated terminal:</p>
+<pre><code>ANTHROPIC_API_KEY=sk-ant-your-key-here</code></pre>
+<p>Add <code>.env</code> to your <code>.gitignore</code>:</p>
+<pre><code>.env
+.claude/settings.local.json</code></pre>
+<hr>
+<h2 id="project-level-configuration-team-setup">Project-Level Configuration (Team Setup)<a href="#project-level-configuration-team-setup" class="anchor-link">#</a></h2>
+<p>Share settings with your team by committing <code>.claude/settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(src/*)",
+      "Write(tests/*)",
+      "Bash(npm *)",
+      "Bash(git *)"
+    ],
+    "deny": [
+      "Write(.env*)",
+      "Write(config/secrets*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "attribution": {
+    "commit": true,
+    "pr": true
+  }
+}</code></pre>
+<p>Keep personal preferences in <code>.claude/settings.local.json</code> (add to <code>.gitignore</code>):</p>
+<pre data-lang="json"><code>{
+  "model": "claude-haiku-4-5-20251001"
+}</code></pre>
+<hr>
+<h2 id="keybindings-configuration">Keybindings Configuration<a href="#keybindings-configuration" class="anchor-link">#</a></h2>
+<p>Edit <code>~/.claude/keybindings.json</code> to remap session shortcuts:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>code ~/.claude/keybindings.json</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>code "$env:USERPROFILE\.claude\keybindings.json"</code></pre>
+<p>Example keybindings:</p>
+<pre data-lang="json"><code>[
+  {
+    "command": "submit",
+    "key": "ctrl+enter"
+  },
+  {
+    "command": "new_line",
+    "key": "enter"
+  },
+  {
+    "command": "toggle_plan_mode",
+    "key": "ctrl+p p"
+  }
+]</code></pre>
+<p>Edit from within a session:</p>
+<pre><code>&gt; /keybindings</code></pre>
+<hr>
+<h2 id="viewing-current-configuration">Viewing Current Configuration<a href="#viewing-current-configuration" class="anchor-link">#</a></h2>
+<p>From inside a session:</p>
+<pre><code>&gt; /status</code></pre>
+<p>Shows current model, mode, API key status, and active settings.</p>
+<pre><code>&gt; /config</code></pre>
+<p>Visual overview of all current settings with the ability to change them interactively.</p>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Commit <code>.claude/settings.json</code></strong> to standardize Claude's behavior across your team</li>
+<li><strong>Add <code>.claude/settings.local.json</code> to <code>.gitignore</code></strong> so personal preferences don't interfere</li>
+<li><strong>Set <code>ANTHROPIC_API_KEY</code> in your shell profile</strong> so you never have to set it per-project</li>
+<li><strong>Use <code>defaultMode: "acceptEdits"</code></strong> on trusted personal projects to skip edit confirmation prompts</li>
+<li><strong>Tighten permissions for sensitive repos</strong> — add <code>deny</code> rules for config and secrets directories</li>
+<li><strong>Check <code>/status</code> if something feels off</strong> — it shows exactly which model and mode you're in</li>
+</ul>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="../claude-code/settings.html">../settings.md</a> — Full settings reference</li>
+<li><a href="../claude-code/permissions.html">../permissions.md</a> — Deep dive into permission modes</li>
+<li><a href="keyboard-shortcuts.html">keyboard-shortcuts.md</a> — Keybindings configuration</li>
+<li><a href="slash-commands-in-vscode.html">slash-commands-in-vscode.md</a> — <code>/config</code>, <code>/settings</code>, <code>/permissions</code> commands</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

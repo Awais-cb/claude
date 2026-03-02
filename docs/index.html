@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="0">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Hub — Claude Code Docs</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="claude-code-documentation">Claude Code Documentation<a href="#claude-code-documentation" class="anchor-link">#</a></h1>
+<p>A complete, beginner-friendly reference for every feature of <strong>Claude Code</strong> — Anthropic's official CLI for Claude.</p>
+<h2 id="whats-inside">What's Inside<a href="#whats-inside" class="anchor-link">#</a></h2>
+<p>24 guides covering everything from getting started to advanced automation:</p>
+<table>
+<thead><tr><th>Guide</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><a href="claude-code/getting-started.html">Getting Started</a></td><td>Installation, first session, basic workflow</td></tr>
+<tr><td><a href="claude-code/cli-commands.html">CLI Commands</a></td><td>All <code>claude</code> flags and options</td></tr>
+<tr><td><a href="claude-code/slash-commands.html">Slash Commands</a></td><td>Every <code>/command</code> available inside a session</td></tr>
+<tr><td><a href="claude-code/keyboard-shortcuts.html">Keyboard Shortcuts</a></td><td>Hotkeys, vim mode, custom bindings</td></tr>
+<tr><td><a href="claude-code/claude-md.html">CLAUDE.md</a></td><td>Teach Claude about your project</td></tr>
+<tr><td><a href="claude-code/memory-system.html">Memory System</a></td><td>Persistent memory across sessions</td></tr>
+<tr><td><a href="claude-code/permissions.html">Permissions</a></td><td>Control what Claude can and can't do</td></tr>
+<tr><td><a href="claude-code/plan-mode.html">Plan Mode</a></td><td>Explore and plan before making changes</td></tr>
+<tr><td><a href="claude-code/thinking-mode.html">Thinking Mode</a></td><td>Extended reasoning for complex problems</td></tr>
+<tr><td><a href="claude-code/fast-mode.html">Fast Mode</a></td><td>2.5× faster responses</td></tr>
+<tr><td><a href="claude-code/subagents.html">Subagents</a></td><td>Spawn specialized parallel workers</td></tr>
+<tr><td><a href="claude-code/skills.html">Skills</a></td><td>Create your own custom <code>/commands</code></td></tr>
+<tr><td><a href="claude-code/hooks.html">Hooks</a></td><td>Automate actions on events</td></tr>
+<tr><td><a href="claude-code/mcp-servers.html">MCP Servers</a></td><td>Connect Claude to external tools</td></tr>
+<tr><td><a href="claude-code/git-integration.html">Git Integration</a></td><td>Commits, PRs, worktrees, GitHub</td></tr>
+<tr><td><a href="claude-code/ide-integration.html">IDE Integration</a></td><td>VS Code and JetBrains extensions</td></tr>
+<tr><td><a href="claude-code/settings.html">Settings</a></td><td>settings.json and environment variables</td></tr>
+<tr><td><a href="claude-code/context-management.html">Context Management</a></td><td>Context window, compaction, rewind</td></tr>
+<tr><td><a href="claude-code/task-list.html">Task List</a></td><td>Built-in progress tracking</td></tr>
+<tr><td><a href="claude-code/output-formats.html">Output Formats</a></td><td>JSON mode, piping, scripting</td></tr>
+<tr><td><a href="claude-code/vision-multimodal.html">Vision &amp; Multimodal</a></td><td>Images and screenshots</td></tr>
+<tr><td><a href="claude-code/chrome-integration.html">Chrome Integration</a></td><td>Browser automation</td></tr>
+<tr><td><a href="claude-code/headless-mode.html">Headless Mode</a></td><td>Non-interactive / CI/CD usage</td></tr>
+<tr><td><a href="claude-code/cost-tracking.html">Cost Tracking</a></td><td>Monitor usage and reduce costs</td></tr>
+</tbody>
+</table>
+<h2 id="vs-code-extension">VS Code Extension<a href="#vs-code-extension" class="anchor-link">#</a></h2>
+<p>13 focused guides for the Claude Code VS Code extension:</p>
+<table>
+<thead><tr><th>Guide</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><a href="vscode/index.html">Overview</a></td><td>What the extension does and quick start</td></tr>
+<tr><td><a href="vscode/installation.html">Installation</a></td><td>Installing from Marketplace, terminal, or VSIX</td></tr>
+<tr><td><a href="vscode/connecting-to-ide.html">Connecting to VS Code</a></td><td>The <code>--ide</code> flag and auto-connect setup</td></tr>
+<tr><td><a href="vscode/prompt-box.html">Prompt Box</a></td><td>Submitting prompts without leaving the editor</td></tr>
+<tr><td><a href="vscode/file-references.html">File References</a></td><td><code>@filename</code> autocomplete for files and folders</td></tr>
+<tr><td><a href="vscode/selected-code-context.html">Selected Code Context</a></td><td>Highlighted code as automatic context</td></tr>
+<tr><td><a href="vscode/clickable-links.html">Clickable Links</a></td><td>Jump to files and lines from Claude's responses</td></tr>
+<tr><td><a href="vscode/session-management.html">Session Management</a></td><td>Naming, resuming, and running multiple sessions</td></tr>
+<tr><td><a href="vscode/keyboard-shortcuts.html">Keyboard Shortcuts</a></td><td>VS Code-level and session-level shortcuts</td></tr>
+<tr><td><a href="vscode/remote-development.html">Remote Development</a></td><td>SSH, Dev Containers, WSL, and Codespaces</td></tr>
+<tr><td><a href="vscode/slash-commands-in-vscode.html">Slash Commands</a></td><td>All slash commands available in VS Code sessions</td></tr>
+<tr><td><a href="vscode/settings-configuration.html">Settings &amp; Configuration</a></td><td>Settings files, options, and environment variables</td></tr>
+<tr><td><a href="vscode/workflow-tips.html">Workflow Tips</a></td><td>Best practices, layouts, and productivity patterns</td></tr>
+</tbody>
+</table>
+<h2 id="workflows">Workflows<a href="#workflows" class="anchor-link">#</a></h2>
+<p>Role-based guides for teams — how each role uses Claude Code day-to-day:</p>
+<table>
+<thead><tr><th>Guide</th><th>Who it's for</th></tr></thead>
+<tbody>
+<tr><td><a href="workflows/team-lead-setup.html">Team Lead Setup</a></td><td>Configure Claude for the whole team</td></tr>
+<tr><td><a href="workflows/backend.html">Backend</a></td><td>APIs, databases, migrations, backend testing</td></tr>
+<tr><td><a href="workflows/frontend.html">Frontend</a></td><td>Components, styling, state, frontend testing</td></tr>
+<tr><td><a href="workflows/fullstack.html">Fullstack</a></td><td>End-to-end feature development</td></tr>
+<tr><td><a href="workflows/figma-to-frontend.html">Figma to Frontend</a></td><td>Convert Figma designs to code</td></tr>
+<tr><td><a href="workflows/frontend-to-backend.html">Frontend to Backend</a></td><td>API integration, type sharing</td></tr>
+<tr><td><a href="workflows/testing.html">Testing</a></td><td>Unit, integration, E2E, and TDD</td></tr>
+<tr><td><a href="workflows/code-review.html">Code Review</a></td><td>PR review, security, performance audits</td></tr>
+</tbody>
+</table>
+<p><strong>Laravel teams:</strong> see <a href="workflows/laravel/index.html">workflows/laravel/</a> for Laravel-specific guides (service layer, Eloquent, Livewire, Blade, testing, PR review).</p>
+<h2 id="quick-start">Quick Start<a href="#quick-start" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code># Install Claude Code
+curl -fsSL https://claude.ai/install.sh | bash
+# macOS: brew install claude  |  Windows: winget install Anthropic.Claude
+
+# Log in
+claude auth login
+
+# Start a session
+claude</code></pre>
+<h2 id="other-resources">Other Resources<a href="#other-resources" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>File</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td><a href="overview.html">OVERVIEW.md</a></td><td>One-liner feature map with analogies — skim to discover what's possible</td></tr>
+<tr><td><a href="cheatsheet.html">CHEATSHEET.md</a></td><td>Single-page command reference — print this for your desk</td></tr>
+</tbody>
+</table>
+<h2 id="who-this-is-for">Who This Is For<a href="#who-this-is-for" class="anchor-link">#</a></h2>
+<p>Anyone new to Claude Code who wants to understand what it can do and how to use it effectively — from basic file editing to advanced automation pipelines.</p>
+      </article>
+    </main>
+  </div>
+  <script src="assets/main.js"></script>
+</body>
+</html>

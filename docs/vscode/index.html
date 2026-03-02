@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VS Code Extension — Overview — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="claude-code-vs-code-extension">Claude Code — VS Code Extension<a href="#claude-code-vs-code-extension" class="anchor-link">#</a></h1>
+<p>A complete guide to using Claude Code inside Visual Studio Code. Each doc covers one feature in depth.</p>
+<hr>
+<h2 id="what-is-the-vs-code-extension">What Is the VS Code Extension?<a href="#what-is-the-vs-code-extension" class="anchor-link">#</a></h2>
+<p>Think of the Claude Code VS Code extension like hiring a co-pilot who sits right next to you while you code. Instead of switching between a terminal and your editor — like constantly looking over your shoulder — your AI assistant lives <em>inside</em> VS Code, sees exactly what you're looking at, and responds right there without you leaving your workspace.</p>
+<p>The extension bridges your editor and the Claude Code CLI. You get a <strong>prompt box inside VS Code</strong>, automatic context from your open files and selections, and clickable file links directly in Claude's responses. When Claude says "the bug is in <code>auth.ts</code> line 47," you click that reference and VS Code jumps there instantly.</p>
+<p>The extension does not replace the CLI — it enhances it. Claude Code still runs as a process (in your terminal or background), and the extension connects VS Code to that process over a local bidirectional channel.</p>
+<hr>
+<h2 id="guides-in-this-folder">Guides in This Folder<a href="#guides-in-this-folder" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Guide</th><th>What It Covers</th></tr></thead>
+<tbody>
+<tr><td><a href="installation.html">installation.md</a></td><td>Installing the extension from the Marketplace or terminal</td></tr>
+<tr><td><a href="connecting-to-ide.html">connecting-to-ide.md</a></td><td><code>claude --ide</code> — auto-connecting Claude Code to VS Code</td></tr>
+<tr><td><a href="prompt-box.html">prompt-box.md</a></td><td>The VS Code prompt panel — submitting prompts without leaving the editor</td></tr>
+<tr><td><a href="file-references.html">file-references.md</a></td><td><code>@filename</code> autocomplete for referencing files and folders</td></tr>
+<tr><td><a href="selected-code-context.html">selected-code-context.md</a></td><td>Highlight code → Claude sees it automatically as context</td></tr>
+<tr><td><a href="clickable-links.html">clickable-links.md</a></td><td>File links in responses that jump directly to the right line</td></tr>
+<tr><td><a href="session-management.html">session-management.md</a></td><td>Resuming sessions, naming sessions, running multiple sessions</td></tr>
+<tr><td><a href="keyboard-shortcuts.html">keyboard-shortcuts.md</a></td><td>Every shortcut available in VS Code + inside sessions</td></tr>
+<tr><td><a href="remote-development.html">remote-development.md</a></td><td>SSH, Dev Containers, WSL, and GitHub Codespaces</td></tr>
+<tr><td><a href="slash-commands-in-vscode.html">slash-commands-in-vscode.md</a></td><td>All slash commands available inside a VS Code session</td></tr>
+<tr><td><a href="settings-configuration.html">settings-configuration.md</a></td><td>Settings files, key options, and environment variables</td></tr>
+<tr><td><a href="workflow-tips.html">workflow-tips.md</a></td><td>Best practices, recommended layouts, and productivity patterns</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="quick-start">Quick Start<a href="#quick-start" class="anchor-link">#</a></h2>
+<h3 id="macos">macOS<a href="#macos" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># 1. Install the extension
+code --install-extension anthropic.claude-code
+
+# 2. Open your project in VS Code, then in the integrated terminal:
+cd ~/projects/my-app
+claude --ide</code></pre>
+<blockquote><p>If <code>code</code> is not found, open VS Code → <code>Cmd+Shift+P</code> → type "Shell Command: Install 'code' command in PATH" → press Enter.</p></blockquote>
+<h3 id="linux-ubuntu-debian">Linux (Ubuntu/Debian)<a href="#linux-ubuntu-debian" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># 1. Install the extension
+code --install-extension anthropic.claude-code
+
+# 2. Open your project and start Claude with IDE integration
+cd ~/projects/my-app
+claude --ide</code></pre>
+<h3 id="windows-native-powershell">Windows — Native (PowerShell)<a href="#windows-native-powershell" class="anchor-link">#</a></h3>
+<pre data-lang="powershell"><code># 1. Install the extension
+code --install-extension anthropic.claude-code
+
+# 2. Open your project and start Claude
+cd C:\projects\my-app
+claude --ide</code></pre>
+<h3 id="windows-wsl-recommended-for-windows-users">Windows — WSL (Recommended for Windows users)<a href="#windows-wsl-recommended-for-windows-users" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Inside your WSL terminal (Ubuntu, Debian, etc.)
+# 1. Install the extension in VS Code (do this from the Windows side, or from WSL with code --install-extension)
+code --install-extension anthropic.claude-code
+
+# 2. Open VS Code connected to WSL: Ctrl+Shift+P → "WSL: New WSL Window"
+# 3. In the WSL integrated terminal:
+cd ~/projects/my-app
+claude --ide</code></pre>
+<p>The Claude Code prompt box appears in VS Code. You're ready.</p>
+<hr>
+<h2 id="how-it-all-connects">How It All Connects<a href="#how-it-all-connects" class="anchor-link">#</a></h2>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│                   VS Code Editor                    │
+│                                                     │
+│  ┌──────────────────┐     ┌───────────────────────┐ │
+│  │   Your Code      │     │   Claude Code         │ │
+│  │   (editor tabs)  │     │   Prompt Box / Panel  │ │
+│  │                  │     │                       │ │
+│  │  &gt; select code   │────▶│  &gt; ask about it       │ │
+│  │  &gt; see edits     │◀────│  &gt; Claude edits here  │ │
+│  └──────────────────┘     └───────────────────────┘ │
+│         ▲                           │               │
+│    File edits                  Prompts sent         │
+│    appear here                 from here            │
+└─────────────────────┬───────────────────────────────┘
+                      │  bidirectional sync
+                      │  (local socket connection)
+┌─────────────────────▼───────────────────────────────┐
+│           Claude Code CLI (background process)      │
+│   Reads files, runs tools, edits code, runs tests   │
+└─────────────────────────────────────────────────────┘
+                      │
+                      │  HTTPS API calls
+                      ▼
+┌─────────────────────────────────────────────────────┐
+│              Anthropic API (Claude model)           │
+└─────────────────────────────────────────────────────┘</code></pre>
+<p><strong>What this means in practice:</strong></p>
+<ul>
+<li>Your code editor and Claude share the same workspace awareness</li>
+<li>When you select code, Claude sees it without you doing anything extra</li>
+<li>When Claude edits a file, VS Code refreshes it instantly</li>
+<li>File references in Claude's responses (<code>auth.ts:47</code>) are clickable links</li>
+</ul>
+<hr>
+<h2 id="prerequisites">Prerequisites<a href="#prerequisites" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Requirement</th><th>Minimum Version</th><th>Per-OS Notes</th></tr></thead>
+<tbody>
+<tr><td>VS Code</td><td>1.80+</td><td>Works on Windows, macOS, Linux</td></tr>
+<tr><td>Node.js</td><td>18+</td><td>macOS: use <code>brew</code> or <code>nvm</code>; Windows: use <code>nvm-windows</code> or WSL; Linux: use <code>nvm</code> or <code>apt</code></td></tr>
+<tr><td>Claude Code CLI</td><td>Latest</td><td>Install via <code>npm install -g @anthropic-ai/claude-code</code></td></tr>
+<tr><td>Anthropic account</td><td>—</td><td>Sign up free at <a href="https://claude.ai">claude.ai</a></td></tr>
+</tbody>
+</table>
+<h3 id="nodejs-version-check">Node.js version check<a href="#nodejs-version-check" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>node --version   # Should print v18.0.0 or higher</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>node --version</code></pre>
+<p>If Node.js is missing or outdated, see <a href="installation.html">installation.md</a> for full OS-specific install instructions.</p>
+<hr>
+<h2 id="related-docs">Related Docs<a href="#related-docs" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="../claude-code/ide-integration.html">../ide-integration.md</a> — High-level IDE overview (VS Code + JetBrains)</li>
+<li><a href="../claude-code/getting-started.html">../getting-started.md</a> — Installing and using Claude Code</li>
+<li><a href="../claude-code/keyboard-shortcuts.html">../keyboard-shortcuts.md</a> — Full keyboard shortcut reference</li>
+<li><a href="../claude-code/slash-commands.html">../slash-commands.md</a> — All slash commands</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

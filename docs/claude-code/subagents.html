@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subagents — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="subagents-parallel-specialized-workers">Subagents — Parallel &amp; Specialized Workers<a href="#subagents-parallel-specialized-workers" class="anchor-link">#</a></h1>
+<p>Imagine you're a project manager with a big deliverable. You could do every task yourself — the research, the writing, the review, the testing — one by one, slowly. Or you could delegate: send the researcher off to gather information, the writer to draft content, and the tester to run tests, all at the same time. You check in when each finishes and combine the results.</p>
+<p>That's exactly how subagents work in Claude Code. Your main Claude session acts as the project manager, spawning specialized Claude instances (subagents) to handle specific tasks — sometimes in parallel — and collecting their results.</p>
+<pre><code>                    Your Main Claude Session
+                           |
+           +---------------+---------------+
+           |               |               |
+     [Explore Agent]  [Plan Agent]  [Custom Agent]
+     searches code    designs arch   writes tests
+           |               |               |
+           +---------------+---------------+
+                           |
+                    Results combined
+                    back to main session</code></pre>
+<hr>
+<h2 id="built-in-subagents">Built-in Subagents<a href="#built-in-subagents" class="anchor-link">#</a></h2>
+<p>Claude Code ships with three built-in agents:</p>
+<table>
+<thead><tr><th>Agent</th><th>Best for</th><th>Can edit files?</th></tr></thead>
+<tbody>
+<tr><td><strong>Explore</strong></td><td>Fast codebase search and exploration</td><td>No (read-only)</td></tr>
+<tr><td><strong>Plan</strong></td><td>Research and design implementation plans</td><td>No (read-only)</td></tr>
+<tr><td><strong>General-purpose</strong></td><td>Complex multi-step tasks</td><td>Yes</td></tr>
+</tbody>
+</table>
+<p>Claude automatically picks the right agent based on your request. You can also request one explicitly:</p>
+<pre><code>&gt; Use the Explore agent to find all the places we log errors in this codebase</code></pre>
+<hr>
+<h2 id="when-to-use-subagents-vs-just-asking-claude-directly">When to Use Subagents vs Just Asking Claude Directly<a href="#when-to-use-subagents-vs-just-asking-claude-directly" class="anchor-link">#</a></h2>
+<p>This is the most common beginner question. Here's a practical guide:</p>
+<p><strong>Use subagents when:</strong></p>
+<ul>
+<li>You want multiple things done in parallel (saves real time)</li>
+<li>The task requires a specialist mindset (e.g., "only look, never touch")</li>
+<li>You want to isolate risky work (worktree isolation)</li>
+<li>The task is very large and would exceed Claude's context window if done inline</li>
+<li>You want a second opinion — run two agents with different approaches</li>
+</ul>
+<p><strong>Just ask Claude directly when:</strong></p>
+<ul>
+<li>The task is simple and quick</li>
+<li>You want to stay in one conversation thread</li>
+<li>The task requires back-and-forth with you</li>
+<li>You're still figuring out what you want</li>
+</ul>
+<p><strong>Real-world analogy:</strong> You wouldn't hire a contractor to replace one lightbulb. But you would hire one to renovate a kitchen. Subagents are for the kitchen-sized jobs.</p>
+<hr>
+<h2 id="creating-custom-subagents">Creating Custom Subagents<a href="#creating-custom-subagents" class="anchor-link">#</a></h2>
+<h3 id="where-to-create-them">Where to create them<a href="#where-to-create-them" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>~/.claude/agents/          # Available in all your projects (user-wide)
+.claude/agents/            # Only for the current project</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>~/.claude/agents/          # Translates to /home/yourname/.claude/agents/
+.claude/agents/            # In your current project directory</code></pre>
+<p><strong>Windows (PowerShell / native path):</strong></p>
+<pre><code>%USERPROFILE%\.claude\agents\     # User-wide agents
+.claude\agents\                   # Project-specific agents</code></pre>
+<blockquote><p><strong>Tip:</strong> If the <code>agents/</code> folder doesn't exist yet, create it. On macOS/Linux: <code>mkdir -p ~/.claude/agents</code>. On Windows PowerShell: <code>New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\agents" -Force</code>.</p></blockquote>
+<h3 id="agent-file-format">Agent file format<a href="#agent-file-format" class="anchor-link">#</a></h3>
+<p>Create a <code>.md</code> file with YAML frontmatter:</p>
+<pre data-lang="markdown"><code>---
+name: code-reviewer
+description: Reviews code for security issues and best practices
+model: opus
+---
+
+You are a strict code reviewer. When reviewing code:
+
+1. Look for security vulnerabilities (SQL injection, XSS, etc.)
+2. Check for performance issues
+3. Verify error handling is complete
+4. Ensure tests cover edge cases
+
+Always be specific about line numbers and explain why each issue matters.</code></pre>
+<h3 id="use-your-custom-agent">Use your custom agent<a href="#use-your-custom-agent" class="anchor-link">#</a></h3>
+<pre><code>&gt; Use the code-reviewer agent to review the payment processing module</code></pre>
+<hr>
+<h2 id="agent-configuration-frontmatter">Agent Configuration (Frontmatter)<a href="#agent-configuration-frontmatter" class="anchor-link">#</a></h2>
+<pre data-lang="yaml"><code>---
+name: my-agent                    # Agent name (used to call it)
+description: What this agent does # Shown in /agents list
+model: opus                       # opus, sonnet, haiku, or inherit
+tools:                            # Allowlist of tools
+  - Read
+  - Grep
+  - Glob
+  - WebSearch
+disallowedTools:                  # Tools explicitly denied
+  - Bash
+  - Write
+permissionMode: plan              # default, acceptEdits, bypassPermissions, plan, dontAsk
+maxTurns: 20                      # Max agentic turns before stopping
+memory: project                   # user, project, local, or omit
+isolation: worktree               # Run in isolated git worktree
+---</code></pre>
+<hr>
+<h2 id="step-by-step-create-your-first-subagent">Step-by-Step: Create Your First Subagent<a href="#step-by-step-create-your-first-subagent" class="anchor-link">#</a></h2>
+<p>Here's a beginner walkthrough to create a simple "file summarizer" agent.</p>
+<p><strong>Step 1: Create the agents folder (if needed)</strong></p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude/agents</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude/agents</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude\agents" -Force</code></pre>
+<p><strong>Step 2: Create the agent file</strong></p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>nano ~/.claude/agents/file-summarizer.md</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>nano ~/.claude/agents/file-summarizer.md</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>notepad "$env:USERPROFILE\.claude\agents\file-summarizer.md"</code></pre>
+<p><strong>Step 3: Paste this content into the file:</strong></p>
+<pre data-lang="markdown"><code>---
+name: file-summarizer
+description: Reads files and produces concise plain-English summaries
+model: haiku
+tools:
+  - Read
+  - Glob
+permissionMode: plan
+---
+
+You summarize files clearly and concisely. When given a file or folder:
+1. Read the contents
+2. Identify the main purpose
+3. List the key functions, classes, or sections
+4. Write a 3-5 sentence plain-English summary
+
+Never modify any files. Just read and report.</code></pre>
+<p><strong>Step 4: Use it in Claude Code</strong></p>
+<pre><code>&gt; Use the file-summarizer agent to summarize everything in the src/ folder</code></pre>
+<p>That's it. Claude will spawn the agent, have it read the files, and return a summary.</p>
+<hr>
+<h2 id="practical-examples">Practical Examples<a href="#practical-examples" class="anchor-link">#</a></h2>
+<h3 id="example-1-exploration-agent">Example 1: Exploration agent<a href="#example-1-exploration-agent" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: explorer
+description: Finds and summarizes code without making changes
+model: haiku
+tools:
+  - Read
+  - Grep
+  - Glob
+  - WebSearch
+permissionMode: plan
+---
+
+You are a code exploration specialist. When asked to find or understand
+code, you:
+- Search systematically using Grep and Glob
+- Read relevant files completely
+- Summarize what you found clearly
+- Never modify anything</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; Use the explorer agent to find all database queries that don't use
+  parameterized inputs</code></pre>
+<h3 id="example-2-test-writer-agent">Example 2: Test writer agent<a href="#example-2-test-writer-agent" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: test-writer
+description: Writes unit and integration tests for existing code
+model: sonnet
+tools:
+  - Read
+  - Grep
+  - Write
+  - Bash(npm test)
+---
+
+You write comprehensive tests. For every function you test:
+- Cover happy path
+- Cover edge cases (null, empty, boundary values)
+- Cover error cases
+- Use the project's existing test framework and conventions
+
+Always read existing tests first to match the style.</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code>&gt; Use the test-writer agent to add tests for the OrderService class</code></pre>
+<h3 id="example-3-documentation-agent">Example 3: Documentation agent<a href="#example-3-documentation-agent" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>---
+name: doc-writer
+description: Writes clear, beginner-friendly documentation
+model: sonnet
+tools:
+  - Read
+  - Glob
+  - Write
+---
+
+You write documentation for developers. Your docs are:
+- Clear and concise
+- Include working code examples
+- Explain the "why", not just the "what"
+- Use consistent formatting</code></pre>
+<h3 id="example-4-realistic-beginner-scenario-refactoring-safely">Example 4: Realistic beginner scenario — refactoring safely<a href="#example-4-realistic-beginner-scenario-refactoring-safely" class="anchor-link">#</a></h3>
+<p>You want to refactor a large file but don't want to accidentally break other parts of the codebase. Here's how to use subagents safely:</p>
+<pre><code>&gt; I want to refactor UserService.js. Before I do, use the explorer agent
+  to find every file that imports or depends on UserService. Then use
+  the test-writer agent to make sure those files have tests before
+  I start changing anything.</code></pre>
+<p>Claude spawns both agents, the explorer maps all dependencies, the test writer adds missing tests, and then you can refactor with confidence.</p>
+<hr>
+<h2 id="running-agents-in-parallel">Running Agents in Parallel<a href="#running-agents-in-parallel" class="anchor-link">#</a></h2>
+<p>One of the most powerful uses of subagents: running multiple tasks simultaneously.</p>
+<pre><code>&gt; I need to:
+  1. Find all API endpoints in the codebase
+  2. Check if any have missing authentication
+  3. Look up best practices for API security
+
+Can you run these in parallel using subagents?</code></pre>
+<p>Claude spawns three agents simultaneously, then combines results — much faster than doing them sequentially.</p>
+<pre><code>Main Session
+    |
+    +---&gt; [Agent 1] Find API endpoints ----&gt; returns list of 23 routes
+    |
+    +---&gt; [Agent 2] Check auth on routes --&gt; finds 3 unprotected
+    |
+    +---&gt; [Agent 3] Research API security --&gt; returns best practices
+    |
+    All three finish, main session combines into one report</code></pre>
+<hr>
+<h2 id="worktree-isolation">Worktree Isolation<a href="#worktree-isolation" class="anchor-link">#</a></h2>
+<p>You can run agents in isolated git worktrees — each agent works on its own copy of the repo:</p>
+<pre data-lang="yaml"><code>---
+name: safe-experimenter
+description: Experiments with code changes without affecting main work
+isolation: worktree
+---</code></pre>
+<p>This is useful for:</p>
+<ul>
+<li>Running multiple implementations in parallel to compare them</li>
+<li>Experimental changes that might not work out</li>
+<li>Keeping your main branch clean while exploring ideas</li>
+</ul>
+<hr>
+<h2 id="persistent-memory-for-agents">Persistent Memory for Agents<a href="#persistent-memory-for-agents" class="anchor-link">#</a></h2>
+<p>Agents can build their own memory across sessions:</p>
+<pre data-lang="yaml"><code>---
+name: security-reviewer
+memory: project
+---</code></pre>
+<p>Memory options:</p>
+<ul>
+<li><code>user</code> — stored in <code>~/.claude/</code> (macOS/Linux) or <code>%USERPROFILE%\.claude\</code> (Windows), available across all projects</li>
+<li><code>project</code> — stored in <code>.claude/</code>, scoped to this project</li>
+<li><code>local</code> — stored locally, not committed to git</li>
+</ul>
+<p>With <code>memory: project</code>, the security-reviewer agent remembers which files it's reviewed, what patterns it's seen before, and past vulnerabilities found.</p>
+<hr>
+<h2 id="managing-agents">Managing Agents<a href="#managing-agents" class="anchor-link">#</a></h2>
+<pre><code>&gt; /agents</code></pre>
+<p>Opens an interactive menu to:</p>
+<ul>
+<li><strong>List</strong> all available agents (user, project, CLI)</li>
+<li><strong>Create</strong> a new agent</li>
+<li><strong>Edit</strong> an existing agent</li>
+<li><strong>Delete</strong> an agent</li>
+<li><strong>Test</strong> an agent</li>
+</ul>
+<hr>
+<h2 id="foreground-vs-background-agents">Foreground vs Background Agents<a href="#foreground-vs-background-agents" class="anchor-link">#</a></h2>
+<p>When Claude spawns an agent, it can run:</p>
+<p><strong>Foreground</strong> — Claude waits for the agent to finish before continuing:</p>
+<pre><code>&gt; Research the best approach for this problem [blocks until done]</code></pre>
+<p><strong>Background</strong> — Claude continues working while the agent runs:</p>
+<pre><code>&gt; Run the test suite in the background while I keep coding</code></pre>
+<p>Check background tasks:</p>
+<pre><code>Ctrl+T       # Toggle task list
+&gt; /tasks     # List all tasks</code></pre>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Use Haiku</strong> for simple exploration tasks — much cheaper and fast</li>
+<li><strong>Use Opus</strong> for agents doing complex reasoning or critical reviews</li>
+<li><strong>Restrict tools</strong> to what the agent actually needs — safer and faster</li>
+<li><strong>Add <code>permissionMode: plan</code></strong> for any agent that shouldn't make changes</li>
+<li><strong>Custom descriptions</strong> are important — Claude uses them to decide when to use which agent</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

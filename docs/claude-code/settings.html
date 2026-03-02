@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings &amp; Configuration — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="settings-configuration">Settings &amp; Configuration<a href="#settings-configuration" class="anchor-link">#</a></h1>
+<p>Think of Claude Code's settings like the Preferences panel in any app you use — your browser, your code editor, your email client. You open it once, set your preferences, and from then on the app behaves exactly the way you want without you having to re-explain yourself every time. Claude Code's <code>settings.json</code> works the same way: you define what commands Claude can run without asking, which files it should never touch, and how it should behave in your team's projects — and those rules apply automatically every time you open a session.</p>
+<p>Claude Code is configured through <code>settings.json</code> files and environment variables. This covers every available option.</p>
+<hr>
+<h2 id="settings-file-locations">Settings File Locations<a href="#settings-file-locations" class="anchor-link">#</a></h2>
+<p>Settings are loaded in this order (later entries override earlier ones):</p>
+<pre><code>1. Managed policy       /etc/claude-code/settings.json (Linux)
+                        /Library/Application Support/ClaudeCode/settings.json (macOS)
+                        C:\Program Files\ClaudeCode\settings.json (Windows)
+
+2. User settings        ~/.claude/settings.json
+
+3. Project settings     .claude/settings.json
+
+4. Local settings       .claude/settings.local.json  ← add to .gitignore
+
+5. CLI flags            --model, --allowedTools, etc. (highest priority, session-only)</code></pre>
+<p><strong>Most developers use:</strong></p>
+<ul>
+<li><code>~/.claude/settings.json</code> for personal preferences</li>
+<li><code>.claude/settings.json</code> for project-specific settings (committed to git)</li>
+<li><code>.claude/settings.local.json</code> for local overrides (not committed)</li>
+</ul>
+<h3 id="settings-file-paths-by-os">Settings file paths by OS<a href="#settings-file-paths-by-os" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Level</th><th>macOS</th><th>Linux (Ubuntu)</th><th>Windows (WSL)</th></tr></thead>
+<tbody>
+<tr><td>Enterprise policy</td><td><code>/Library/Application Support/ClaudeCode/settings.json</code></td><td><code>/etc/claude-code/settings.json</code></td><td><code>C:\Program Files\ClaudeCode\settings.json</code></td></tr>
+<tr><td>User-wide</td><td><code>~/.claude/settings.json</code></td><td><code>~/.claude/settings.json</code></td><td><code>~/.claude/settings.json</code> (inside WSL home)</td></tr>
+<tr><td>Project</td><td><code>.claude/settings.json</code></td><td><code>.claude/settings.json</code></td><td><code>.claude/settings.json</code></td></tr>
+<tr><td>Local override</td><td><code>.claude/settings.local.json</code></td><td><code>.claude/settings.local.json</code></td><td><code>.claude/settings.local.json</code></td></tr>
+</tbody>
+</table>
+<h3 id="how-to-open-your-user-settings">How to open your user settings<a href="#how-to-open-your-user-settings" class="anchor-link">#</a></h3>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code># Create the directory if it doesn't exist, then open in your editor
+mkdir -p ~/.claude &amp;&amp; open -e ~/.claude/settings.json
+# or with VS Code:
+mkdir -p ~/.claude &amp;&amp; code ~/.claude/settings.json</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude &amp;&amp; nano ~/.claude/settings.json
+# or with VS Code:
+mkdir -p ~/.claude &amp;&amp; code ~/.claude/settings.json</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude &amp;&amp; nano ~/.claude/settings.json
+# To open in Windows Notepad from WSL:
+mkdir -p ~/.claude &amp;&amp; notepad.exe "$(wslpath -w ~/.claude/settings.json)"</code></pre>
+<hr>
+<h2 id="settings-hierarchy-which-settings-win">Settings Hierarchy (Which Settings Win)<a href="#settings-hierarchy-which-settings-win" class="anchor-link">#</a></h2>
+<p>When the same setting exists in multiple files, the more specific one wins. Think of it like CSS cascade — the most specific rule applies.</p>
+<pre><code>Priority (highest to lowest):
+─────────────────────────────────────────────────────────────────────
+5. CLI flags                        ← --model, --allowedTools, etc. (session-only)
+         │  wins over
+4. .claude/settings.local.json      ← YOU (local overrides, not committed)
+         │  wins over
+3. .claude/settings.json            ← PROJECT TEAM (committed to repo)
+         │  wins over
+2. ~/.claude/settings.json          ← YOU (all your projects)
+         │  wins over
+1. /etc/claude-code/settings.json   ← ENTERPRISE ADMIN (everyone)
+─────────────────────────────────────────────────────────────────────
+
+Example: If enterprise policy denies "Bash(sudo *)",
+         no user or project setting can override that.
+
+         If project settings allow "Bash(npm *)",
+         you can still override it locally in settings.local.json
+         without affecting your teammates.</code></pre>
+<hr>
+<h2 id="full-settings-reference">Full Settings Reference<a href="#full-settings-reference" class="anchor-link">#</a></h2>
+<pre data-lang="json"><code>{
+  // ── Permissions ────────────────────────────────────────────────
+  "permissions": {
+    "allow": [
+      "Bash(git *)",           // Auto-approve all git commands
+      "Bash(npm test)",        // Auto-approve test runs
+      "Read(*)",               // Auto-approve all file reads
+      "Write(src/*)"           // Auto-approve writes in src/
+    ],
+    "ask": [
+      "Bash(git push *)"       // Always prompt before pushing
+    ],
+    "deny": [
+      "Bash(rm -rf *)",        // Block dangerous deletions
+      "Bash(sudo *)",          // Block sudo commands
+      "Write(.env*)"           // Block editing .env files
+    ],
+    "defaultMode": "normal",   // "normal", "plan", or "auto-accept"
+    "additionalDirectories": [ // Extra directories Claude can access
+      "../shared-lib"
+    ]
+  },
+
+  // ── Model ──────────────────────────────────────────────────────
+  "model": "claude-sonnet-4-6",       // Default model for this scope
+  "availableModels": [                 // Restrict which models users can pick
+    "claude-sonnet-4-6",
+    "claude-haiku-4-5-20251001"
+  ],
+
+  // ── Hooks ──────────────────────────────────────────────────────
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+      }
+    ],
+    "Notification": [
+      {
+        "command": "osascript -e 'display notification \"Claude needs you\" with title \"Claude Code\"'"
+      }
+    ]
+  },
+
+  // ── Environment Variables ──────────────────────────────────────
+  "env": {
+    "NODE_ENV": "development",         // Set env vars for every session
+    "MY_CUSTOM_VAR": "value"
+  },
+
+  // ── Language &amp; Attribution ─────────────────────────────────────
+  "language": "en",                    // Preferred response language
+  "attribution": {
+    "gitAuthorName": "Claude Code",    // Name in git commits
+    "gitAuthorEmail": "noreply@example.com"
+  },
+
+  // ── Model &amp; Behavior ───────────────────────────────────────────
+  "alwaysThinkingEnabled": false,     // Extended thinking on by default
+  "fastMode": false,                   // Fast mode on by default
+
+  // ── Memory ─────────────────────────────────────────────────────
+  "autoMemoryEnabled": true,           // Auto-save memories between sessions
+
+  // ── CLAUDE.md ──────────────────────────────────────────────────
+  "claudeMdExcludes": [
+    "node_modules/*",                  // Skip CLAUDE.md files in these paths
+    "vendor/*"
+  ],
+
+  // ── Plugins ────────────────────────────────────────────────────
+  "enabledPlugins": [
+    "my-plugin"
+  ],
+  "extraKnownMarketplaces": [
+    "https://github.com/my-org/claude-plugins"
+  ],
+  "strictKnownMarketplaces": false,    // Only allow known marketplaces
+
+  // ── Display ────────────────────────────────────────────────────
+  "disableAllHooks": false,            // Disable all hooks globally
+
+  // ── Session ────────────────────────────────────────────────────
+  "cleanupPeriodDays": 30              // Auto-delete old sessions after N days
+}</code></pre>
+<hr>
+<h2 id="starter-settings-for-a-new-developer">Starter Settings for a New Developer<a href="#starter-settings-for-a-new-developer" class="anchor-link">#</a></h2>
+<p>If you're just getting started with Claude Code, here's a solid settings file that gives Claude useful freedoms without opening security risks. Copy this to <code>~/.claude/settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(yarn *)",
+      "Bash(npx *)",
+      "Read(*)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo rm *)",
+      "Write(.env*)",
+      "Write(*.pem)",
+      "Write(*.key)"
+    ],
+    "defaultMode": "normal"
+  },
+  "autoMemoryEnabled": true,
+  "cleanupPeriodDays": 30
+}</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li>Lets Claude run git, npm, yarn, and basic shell commands without asking each time</li>
+<li>Lets Claude read any file freely (it can't do much without this)</li>
+<li>Blocks Claude from deleting things recursively or editing your secrets files</li>
+<li>Keeps normal mode (Claude still asks before anything risky)</li>
+<li>Enables memory so Claude remembers things between sessions</li>
+</ul>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude
+cat &gt; ~/.claude/settings.json &lt;&lt; 'EOF'
+{
+  "permissions": {
+    "allow": ["Bash(git *)", "Bash(npm *)", "Bash(yarn *)", "Read(*)"],
+    "deny": ["Bash(rm -rf *)", "Write(.env*)"],
+    "defaultMode": "normal"
+  },
+  "autoMemoryEnabled": true
+}
+EOF</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude
+cat &gt; ~/.claude/settings.json &lt;&lt; 'EOF'
+{
+  "permissions": {
+    "allow": ["Bash(git *)", "Bash(npm *)", "Bash(yarn *)", "Read(*)"],
+    "deny": ["Bash(rm -rf *)", "Write(.env*)"],
+    "defaultMode": "normal"
+  },
+  "autoMemoryEnabled": true
+}
+EOF</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>mkdir -p ~/.claude
+cat &gt; ~/.claude/settings.json &lt;&lt; 'EOF'
+{
+  "permissions": {
+    "allow": ["Bash(git *)", "Bash(npm *)", "Bash(yarn *)", "Read(*)"],
+    "deny": ["Bash(rm -rf *)", "Write(.env*)"],
+    "defaultMode": "normal"
+  },
+  "autoMemoryEnabled": true
+}
+EOF</code></pre>
+<hr>
+<h2 id="common-configuration-examples">Common Configuration Examples<a href="#common-configuration-examples" class="anchor-link">#</a></h2>
+<h3 id="developer-workflow-setup">Developer workflow setup<a href="#developer-workflow-setup" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>// ~/.claude/settings.json
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(yarn *)",
+      "Read(*)"
+    ]
+  },
+  "alwaysThinkingEnabled": false,
+  "autoMemoryEnabled": true
+}</code></pre>
+<h3 id="project-level-setup-committed-to-repo">Project-level setup (committed to repo)<a href="#project-level-setup-committed-to-repo" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>// .claude/settings.json
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(php artisan *)",
+      "Bash(composer *)",
+      "Bash(npm run *)"
+    ],
+    "deny": [
+      "Bash(php artisan migrate:fresh)",
+      "Bash(php artisan migrate:rollback)",
+      "Bash(php artisan db:seed)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "if [[ $CLAUDE_TOOL_INPUT_FILE_PATH == *.php ]]; then cd $CLAUDE_PROJECT_DIR &amp;&amp; ./vendor/bin/pint \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2&gt;/dev/null; fi"
+      }
+    ]
+  }
+}</code></pre>
+<h3 id="team-security-setup">Team security setup<a href="#team-security-setup" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>// .claude/settings.json
+{
+  "permissions": {
+    "defaultMode": "normal",
+    "deny": [
+      "Write(.env*)",
+      "Write(config/secrets*)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | sh)"
+    ]
+  }
+}</code></pre>
+<hr>
+<h2 id="environment-variables">Environment Variables<a href="#environment-variables" class="anchor-link">#</a></h2>
+<p>Environment variables let you configure Claude Code without editing files. They're also useful for setting per-session options that you don't want saved permanently.</p>
+<h3 id="key-variables">Key Variables<a href="#key-variables" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>Variable</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>ANTHROPIC_API_KEY</code></td><td>Your Anthropic API key</td></tr>
+<tr><td><code>CLAUDE_CODE_EFFORT_LEVEL</code></td><td>Thinking effort: <code>low</code>, <code>medium</code>, <code>high</code></td></tr>
+<tr><td><code>CLAUDE_CODE_DISABLE_AUTO_MEMORY</code></td><td>Set to <code>true</code> to disable auto-memory</td></tr>
+<tr><td><code>CLAUDE_CODE_DISABLE_FAST_MODE</code></td><td>Set to <code>true</code> to disable fast mode</td></tr>
+<tr><td><code>CLAUDE_AUTOCOMPACT_PCT_OVERRIDE</code></td><td>Context % before auto-compaction (default: 95)</td></tr>
+<tr><td><code>MAX_THINKING_TOKENS</code></td><td>Cap on thinking token budget</td></tr>
+<tr><td><code>CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING</code></td><td>Use fixed thinking budget (not dynamic)</td></tr>
+<tr><td><code>CLAUDE_CODE_DISABLE_BACKGROUND_TASKS</code></td><td>Disable background task execution</td></tr>
+<tr><td><code>CLAUDE_CODE_TASK_LIST_ID</code></td><td>Directory path for shared task lists</td></tr>
+<tr><td><code>CLAUDE_ENV_FILE</code></td><td>Path to persistent env var file</td></tr>
+<tr><td><code>CLAUDE_CODE_SKILL_PATHS</code></td><td>Extra directories to scan for skills</td></tr>
+</tbody>
+</table>
+<h3 id="example-set-thinking-level-for-a-session">Example: Set thinking level for a session<a href="#example-set-thinking-level-for-a-session" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_EFFORT_LEVEL=high claude</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_EFFORT_LEVEL=high claude</code></pre>
+<h3 id="example-persistent-env-vars">Example: Persistent env vars<a href="#example-persistent-env-vars" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Store in a file that Claude always loads
+echo 'CLAUDE_CODE_EFFORT_LEVEL=high' &gt;&gt; ~/.claude/env</code></pre>
+<p>Then set:</p>
+<pre data-lang="bash"><code>CLAUDE_ENV_FILE=~/.claude/env claude</code></pre>
+<p>Or add <code>CLAUDE_ENV_FILE</code> to your shell profile.</p>
+<p><strong>macOS (add to ~/.zshrc):</strong></p>
+<pre data-lang="bash"><code>echo 'export CLAUDE_ENV_FILE=~/.claude/env' &gt;&gt; ~/.zshrc
+source ~/.zshrc</code></pre>
+<p><strong>Linux (Ubuntu) (add to ~/.bashrc):</strong></p>
+<pre data-lang="bash"><code>echo 'export CLAUDE_ENV_FILE=~/.claude/env' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<p><strong>Windows (WSL) (add to ~/.bashrc):</strong></p>
+<pre data-lang="bash"><code>echo 'export CLAUDE_ENV_FILE=~/.claude/env' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<hr>
+<h2 id="settings-for-specific-use-cases">Settings for Specific Use Cases<a href="#settings-for-specific-use-cases" class="anchor-link">#</a></h2>
+<h3 id="ci-cd-github-actions">CI/CD (GitHub Actions)<a href="#ci-cd-github-actions" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "defaultMode": "auto-accept"
+  },
+  "autoMemoryEnabled": false,
+  "cleanupPeriodDays": 1
+}</code></pre>
+<p><strong>When to use:</strong> In automated pipelines where there's no human to approve prompts. <code>auto-accept</code> lets Claude execute everything without pausing.</p>
+<h3 id="security-conscious-team">Security-conscious team<a href="#security-conscious-team" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "defaultMode": "normal",
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Bash(chmod *)",
+      "Write(.env*)",
+      "Write(*.pem)",
+      "Write(*.key)"
+    ]
+  },
+  "disableAllHooks": false
+}</code></pre>
+<h3 id="read-only-code-review">Read-only code review<a href="#read-only-code-review" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "defaultMode": "plan",
+    "allow": ["Read(*)", "Glob(*)", "Grep(*)"],
+    "deny": ["Write(*)", "Edit(*)", "Bash(*)"]
+  }
+}</code></pre>
+<p><strong>When to use:</strong> When you want Claude to analyze and explain code, but you absolutely don't want it making any changes. Useful for security audits or getting a second opinion.</p>
+<hr>
+<h2 id="editing-settings">Editing Settings<a href="#editing-settings" class="anchor-link">#</a></h2>
+<h3 id="from-inside-a-session">From inside a session<a href="#from-inside-a-session" class="anchor-link">#</a></h3>
+<pre><code>&gt; /config
+&gt; /settings</code></pre>
+<h3 id="from-the-command-line">From the command line<a href="#from-the-command-line" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># View current settings
+cat ~/.claude/settings.json
+
+# Edit with your editor
+$EDITOR ~/.claude/settings.json</code></pre>
+<h3 id="create-settings-interactively">Create settings interactively<a href="#create-settings-interactively" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --init</code></pre>
+<p>Runs an interactive setup wizard.</p>
+<hr>
+<h2 id="managed-policy-enterprise">Managed Policy (Enterprise)<a href="#managed-policy-enterprise" class="anchor-link">#</a></h2>
+<p>Admins can set organization-wide policies that users can't override:</p>
+<pre><code>/Library/Application Support/ClaudeCode/settings.json  # macOS
+/etc/claude-code/settings.json                         # Linux</code></pre>
+<p>Managed settings take precedence over all user/project settings. Use this to enforce security policies across a team.</p>
+<hr>
+<h2 id="troubleshooting-my-settings-arent-being-applied">Troubleshooting: My Settings Aren't Being Applied<a href="#troubleshooting-my-settings-arent-being-applied" class="anchor-link">#</a></h2>
+<p>If Claude keeps prompting for permissions you thought you allowed, or isn't using the settings you configured, here's how to diagnose it:</p>
+<p><strong>1. Check which settings file is being read</strong></p>
+<p>Run this inside a Claude session:</p>
+<pre><code>&gt; /settings</code></pre>
+<p>This shows the merged effective settings — what Claude is actually using.</p>
+<p><strong>2. Verify JSON is valid</strong></p>
+<p>Invalid JSON silently causes the file to be ignored.</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>cat ~/.claude/settings.json | python3 -m json.tool
+# If it prints the JSON back, it's valid.
+# If it shows an error, find and fix the JSON syntax issue.</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>cat ~/.claude/settings.json | python3 -m json.tool</code></pre>
+<p><strong>3. Check file permissions</strong></p>
+<p>The settings file must be readable by your user.</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>ls -la ~/.claude/settings.json
+# Should show something like: -rw-r--r-- 1 yourname yourname
+chmod 644 ~/.claude/settings.json  # Fix if needed</code></pre>
+<p><strong>4. Confirm you're editing the right file</strong></p>
+<p>If you have both <code>~/.claude/settings.json</code> (user) and <code>.claude/settings.json</code> (project), the project one wins. Make sure you're editing whichever applies.</p>
+<p><strong>5. Restart Claude after changes</strong></p>
+<p>Settings are read at startup. Changes to <code>settings.json</code> take effect next time you run <code>claude</code>.</p>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

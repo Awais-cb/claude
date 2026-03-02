@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code — Complete Feature Documentation — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="claude-code--complete-feature-documentation">Claude Code — Complete Feature Documentation<a href="#claude-code--complete-feature-documentation" class="anchor-link">#</a></h1>
+<p>A beginner-friendly reference covering every feature of Claude Code, Anthropic's official CLI for Claude.</p>
+<hr>
+<h2 id="what-is-claude-code">What is Claude Code?<a href="#what-is-claude-code" class="anchor-link">#</a></h2>
+<p>Claude Code is an AI-powered terminal assistant that helps you write, edit, debug, and understand code. You run it in your terminal, and it can read files, run commands, search the web, manage git, and much more — all through natural conversation.</p>
+<pre data-lang="bash"><code># Install
+npm install -g @anthropic-ai/claude-code
+
+# Start
+claude</code></pre>
+<hr>
+<h2 id="documentation-index">Documentation Index<a href="#documentation-index" class="anchor-link">#</a></h2>
+<h3 id="getting-started">Getting Started<a href="#getting-started" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>File</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="getting-started.html">getting-started.md</a></td><td>Installation, first session, basic workflow</td></tr>
+<tr><td><a href="cli-commands.html">cli-commands.md</a></td><td>All CLI flags and options</td></tr>
+<tr><td><a href="slash-commands.html">slash-commands.md</a></td><td>Every <code>/command</code> available inside a session</td></tr>
+<tr><td><a href="keyboard-shortcuts.html">keyboard-shortcuts.md</a></td><td>All hotkeys and key bindings</td></tr>
+</tbody>
+</table>
+<h3 id="configuration--instructions">Configuration &amp; Instructions<a href="#configuration--instructions" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>File</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="claude-md.html">claude-md.md</a></td><td>CLAUDE.md project instructions — teach Claude about your project</td></tr>
+<tr><td><a href="memory-system.html">memory-system.md</a></td><td>Auto-memory (MEMORY.md) — Claude remembers across sessions</td></tr>
+<tr><td><a href="settings.html">settings.md</a></td><td>settings.json, environment variables, all config options</td></tr>
+<tr><td><a href="permissions.html">permissions.md</a></td><td>Permission modes — control what Claude can do</td></tr>
+</tbody>
+</table>
+<h3 id="core-workflows">Core Workflows<a href="#core-workflows" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>File</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="plan-mode.html">plan-mode.md</a></td><td>Plan before coding — review before Claude changes anything</td></tr>
+<tr><td><a href="context-management.html">context-management.md</a></td><td>Managing the context window, compaction, checkpoints</td></tr>
+<tr><td><a href="task-list.html">task-list.md</a></td><td>Built-in task/todo tracking for multi-step work</td></tr>
+<tr><td><a href="output-formats.html">output-formats.md</a></td><td>Output styles, JSON mode, piping to files</td></tr>
+</tbody>
+</table>
+<h3 id="advanced-features">Advanced Features<a href="#advanced-features" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>File</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="thinking-mode.html">thinking-mode.md</a></td><td>Extended thinking / reasoning mode</td></tr>
+<tr><td><a href="fast-mode.html">fast-mode.md</a></td><td>2.5× faster responses with Fast Mode</td></tr>
+<tr><td><a href="subagents.html">subagents.md</a></td><td>Spawn specialized sub-agents for parallel work</td></tr>
+<tr><td><a href="skills.html">skills.md</a></td><td>Custom <code>/commands</code> you define yourself</td></tr>
+<tr><td><a href="hooks.html">hooks.md</a></td><td>Automate actions on events (pre/post tool use, etc.)</td></tr>
+</tbody>
+</table>
+<h3 id="integrations">Integrations<a href="#integrations" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>File</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="mcp-servers.html">mcp-servers.md</a></td><td>Model Context Protocol — connect Claude to external tools</td></tr>
+<tr><td><a href="git-integration.html">git-integration.md</a></td><td>Git, GitHub PRs, worktrees</td></tr>
+<tr><td><a href="ide-integration.html">ide-integration.md</a></td><td>VS Code and JetBrains IDE extensions</td></tr>
+<tr><td><a href="chrome-integration.html">chrome-integration.md</a></td><td>Browser automation with Chrome</td></tr>
+</tbody>
+</table>
+<h3 id="other-capabilities">Other Capabilities<a href="#other-capabilities" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>File</th><th>What it covers</th></tr></thead>
+<tbody>
+<tr><td><a href="vision-multimodal.html">vision-multimodal.md</a></td><td>Images, screenshots, diagrams</td></tr>
+<tr><td><a href="headless-mode.html">headless-mode.md</a></td><td>Non-interactive / CI/CD / scripting mode</td></tr>
+<tr><td><a href="cost-tracking.html">cost-tracking.md</a></td><td>Monitor token usage and costs</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="quick-start-cheat-sheet">Quick-Start Cheat Sheet<a href="#quick-start-cheat-sheet" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude                          # Start interactive session
+claude "fix the login bug"      # Start with a prompt
+claude -c                       # Resume last conversation
+claude --model opus             # Use a specific model
+claude -p "summarize file.txt"  # Non-interactive, print result</code></pre>
+<p><strong>Inside a session:</strong></p>
+<pre><code>/help           Show all commands
+/plan           Switch to plan mode (read-only)
+/fast           Toggle fast mode
+/cost           Show token usage &amp; cost
+/clear          Start a fresh conversation
+Ctrl+C          Cancel current action
+Esc Esc         Rewind last change</code></pre>
+<hr>
+<h2 id="folder-structure-of-these-docs">Folder Structure of These Docs<a href="#folder-structure-of-these-docs" class="anchor-link">#</a></h2>
+<pre><code>claude-code/
+├── README.md                  ← You are here
+├── getting-started.md
+├── cli-commands.md
+├── slash-commands.md
+├── keyboard-shortcuts.md
+├── claude-md.md
+├── memory-system.md
+├── settings.md
+├── permissions.md
+├── plan-mode.md
+├── context-management.md
+├── task-list.md
+├── output-formats.md
+├── thinking-mode.md
+├── fast-mode.md
+├── subagents.md
+├── skills.md
+├── hooks.md
+├── mcp-servers.md
+├── git-integration.md
+├── ide-integration.md
+├── chrome-integration.md
+├── vision-multimodal.md
+├── headless-mode.md
+└── cost-tracking.md</code></pre>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

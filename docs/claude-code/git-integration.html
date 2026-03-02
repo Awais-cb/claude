@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Integration — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="git-integration">Git Integration<a href="#git-integration" class="anchor-link">#</a></h1>
+<p>Imagine having a seasoned git expert sitting right next to you. You don't have to remember the exact flags for an interactive rebase, or the right way to write a commit message, or the <code>gh</code> CLI syntax to open a pull request. You just describe what you want — "commit this, push it, and open a PR against main" — and they handle all the commands while you stay focused on writing code. That's what Claude Code's git integration feels like.</p>
+<p>Claude Code has deep integration with Git and GitHub — from making commits to reviewing PRs to running parallel experiments in isolated worktrees.</p>
+<hr>
+<h2 id="basic-git-operations">Basic Git Operations<a href="#basic-git-operations" class="anchor-link">#</a></h2>
+<p>Claude can run any git command. Just ask naturally:</p>
+<pre><code>&gt; commit these changes with a meaningful message
+&gt; create a new branch called feature/user-auth
+&gt; what changed in the last 3 commits?
+&gt; rebase onto main
+&gt; show me the diff for the payment module</code></pre>
+<p>Claude understands git and follows safe practices:</p>
+<ul>
+<li>Creates new commits (never force-amends unless asked)</li>
+<li>Writes descriptive commit messages</li>
+<li>Checks status before making changes</li>
+<li>Warns before destructive operations</li>
+</ul>
+<hr>
+<h2 id="git-setup-by-os">Git Setup by OS<a href="#git-setup-by-os" class="anchor-link">#</a></h2>
+<p>Before Claude can push to remote repositories, git needs to be configured with your credentials. Here's how to do that on each OS:</p>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code># Install git (if not already installed via Xcode tools)
+xcode-select --install
+
+# Configure your identity
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+# Use macOS Keychain to store credentials (recommended)
+git config --global credential.helper osxkeychain
+
+# Install GitHub CLI for PR creation
+brew install gh
+gh auth login</code></pre>
+<p><strong>Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code># Install git and GitHub CLI
+sudo apt update &amp;&amp; sudo apt install git gh -y
+
+# Configure your identity
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+# Store credentials for HTTPS remotes
+git config --global credential.helper store
+
+# Authenticate GitHub CLI
+gh auth login</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code># Inside WSL terminal — install git and GitHub CLI
+sudo apt update &amp;&amp; sudo apt install git -y
+
+# Install GitHub CLI in WSL
+(type -p wget &gt;/dev/null || (sudo apt update &amp;&amp; sudo apt install wget -y)) \
+  &amp;&amp; sudo mkdir -p -m 755 /etc/apt/keyrings \
+  &amp;&amp; wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+     | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg &gt; /dev/null \
+  &amp;&amp; sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+  &amp;&amp; echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+     | sudo tee /etc/apt/sources.list.d/github-cli.list &gt; /dev/null \
+  &amp;&amp; sudo apt update &amp;&amp; sudo apt install gh -y
+
+# Configure your identity
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+# Use the Windows Credential Manager from WSL (bridges to Windows)
+git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager.exe"
+
+# Authenticate GitHub CLI
+gh auth login</code></pre>
+<hr>
+<h2 id="creating-commits">Creating Commits<a href="#creating-commits" class="anchor-link">#</a></h2>
+<pre><code>&gt; commit the changes I just made</code></pre>
+<p>Claude will:</p>
+<ol>
+<li>Run <code>git status</code> to see what changed</li>
+<li>Run <code>git diff</code> to understand the changes</li>
+<li>Stage the relevant files</li>
+<li>Write a descriptive commit message</li>
+<li>Create the commit</li>
+</ol>
+<h3 id="example-output">Example output<a href="#example-output" class="anchor-link">#</a></h3>
+<pre><code>I'll commit the authentication changes.
+
+Changes:
+- src/auth/login.ts — added JWT validation
+- src/middleware/auth.ts — updated token check
+- tests/auth.test.ts — added 5 new test cases
+
+Creating commit: "Add JWT token validation to auth middleware"</code></pre>
+<h3 id="i-just-wrote-some-code-what-do-i-do-next-step-by-step-for-beginners">"I just wrote some code — what do I do next?" (Step by step for beginners)<a href="#i-just-wrote-some-code-what-do-i-do-next-step-by-step-for-beginners" class="anchor-link">#</a></h3>
+<p>This is the most common scenario. You've been coding, and now you want to save your work and share it. Here's the full flow:</p>
+<pre><code>Step 1: Tell Claude what you built
+─────────────────────────────────
+&gt; I just added user authentication with email and password.
+  Commit these changes.
+
+Step 2: Claude reviews and commits
+───────────────────────────────────
+Claude runs git status, git diff, stages files,
+and creates a commit with a descriptive message.
+
+Step 3: Push to remote
+───────────────────────
+&gt; push this to GitHub
+
+Step 4: Open a pull request
+────────────────────────────
+&gt; open a PR to merge this into main
+
+Step 5: Share the PR URL
+─────────────────────────
+Claude gives you the GitHub PR link to share with your team.</code></pre>
+<hr>
+<h2 id="creating-pull-requests">Creating Pull Requests<a href="#creating-pull-requests" class="anchor-link">#</a></h2>
+<pre><code>&gt; create a PR for this branch</code></pre>
+<p>Claude will:</p>
+<ol>
+<li>Check the current branch and commits</li>
+<li>Compare with the base branch</li>
+<li>Generate a PR title and description</li>
+<li>Run <code>gh pr create</code> to open the PR</li>
+</ol>
+<h3 id="commit-push-and-pr-workflow-visual">Commit → Push → PR workflow (visual)<a href="#commit-push-and-pr-workflow-visual" class="anchor-link">#</a></h3>
+<pre><code>Local Machine                        GitHub
+─────────────────────────────────    ────────────────────────────
+Your Code Changes
+      │
+      │  &gt; commit these changes
+      ▼
+  git commit ─────────────────────►  (not yet on GitHub)
+      │
+      │  &gt; push to GitHub
+      ▼
+  git push ────────────────────────► feature/my-branch (on GitHub)
+      │
+      │  &gt; create a PR
+      ▼
+  gh pr create ────────────────────► Pull Request #47
+                                          │
+                                          │  Team reviews
+                                          ▼
+                                     PR merged into main</code></pre>
+<h3 id="example-pr-description-claude-writes">Example PR description Claude writes<a href="#example-pr-description-claude-writes" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code>## Summary
+- Add JWT validation to authentication middleware
+- Fix token expiry edge case for refresh tokens
+- Add unit tests for token validation logic
+
+## Test plan
+- [ ] Run `npm test` — all tests pass
+- [ ] Manually test login with valid token
+- [ ] Verify expired tokens are rejected
+
+Generated with Claude Code</code></pre>
+<hr>
+<h2 id="reviewing-pull-requests">Reviewing Pull Requests<a href="#reviewing-pull-requests" class="anchor-link">#</a></h2>
+<pre><code>&gt; /review 47</code></pre>
+<p>Or:</p>
+<pre><code>&gt; review pull request #47 for security issues</code></pre>
+<p>Claude will:</p>
+<ul>
+<li>Fetch the PR diff</li>
+<li>Review for correctness, security, performance</li>
+<li>Suggest improvements with specific line references</li>
+</ul>
+<p><strong>When to use:</strong> Before merging any PR, especially ones that touch authentication, payments, or database queries. Claude catches things humans miss after staring at code all day.</p>
+<hr>
+<h2 id="fetching-pr-comments">Fetching PR Comments<a href="#fetching-pr-comments" class="anchor-link">#</a></h2>
+<pre><code>&gt; /pr-comments 47</code></pre>
+<p>Shows all review comments on a PR so you can address them:</p>
+<pre><code>&gt; fetch the comments on PR #47 and fix the issues</code></pre>
+<p><strong>Real-world scenario:</strong> A teammate left 6 review comments on your PR. Instead of reading each one and manually making changes, you run this command and Claude reads all the comments, understands what's needed, and makes all the fixes in one pass.</p>
+<hr>
+<h2 id="commit-push-and-pr-in-one-step">Commit, Push, and PR in One Step<a href="#commit-push-and-pr-in-one-step" class="anchor-link">#</a></h2>
+<pre><code>&gt; /commit-push-pr</code></pre>
+<p>Claude will:</p>
+<ol>
+<li>Stage changed files</li>
+<li>Create a commit</li>
+<li>Push to remote</li>
+<li>Open a pull request</li>
+</ol>
+<p><strong>When to use:</strong> When you're done with a feature and want to get it to GitHub in one go without thinking about the individual steps.</p>
+<hr>
+<h2 id="git-worktrees-parallel-work">Git Worktrees — Parallel Work<a href="#git-worktrees-parallel-work" class="anchor-link">#</a></h2>
+<p>Worktrees let you work on multiple things simultaneously without switching branches. Each worktree is an isolated copy of your repo.</p>
+<p>Think of your project folder like a workbench. Normally you can only work on one thing at a time — you have to put one project away before starting another. Worktrees are like having multiple workbenches side by side. Your half-built refactor stays on one bench while you do a hotfix on another, and they never get mixed up.</p>
+<pre><code>Main Worktree                    Worktree: hotfix-login
+─────────────────────────────    ────────────────────────────────
+Branch: feature/big-refactor     Branch: worktree-hotfix-login
+Working on: payment overhaul     Working on: JWT token fix
+Status: 40 files changed         Status: 2 files changed
+
+     Both exist independently — you can switch between them
+     without stashing, without losing your place.</code></pre>
+<h3 id="create-a-worktree">Create a worktree<a href="#create-a-worktree" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Start a session in a new worktree
+claude -w "new-feature"
+
+# Equivalent to:
+claude --worktree "new-feature"</code></pre>
+<p>This creates:</p>
+<pre><code>.claude/worktrees/new-feature/    ← isolated copy of your repo</code></pre>
+<p>On a new branch: <code>worktree-new-feature</code></p>
+<h3 id="why-use-worktrees">Why use worktrees?<a href="#why-use-worktrees" class="anchor-link">#</a></h3>
+<p><strong>Scenario:</strong> You're in the middle of a big refactor, but there's a critical bug to fix.</p>
+<p>Without worktrees: stash your work, switch branches, fix bug, switch back, unstash — messy.</p>
+<p>With worktrees: keep your refactor going in the main session, open a worktree for the bug fix.</p>
+<pre data-lang="bash"><code># Terminal 1: Continue refactor
+claude  # (your main session)
+
+# Terminal 2: Fix the bug independently
+claude -w "hotfix-login-bug"</code></pre>
+<h3 id="worktree-visual-diagram">Worktree visual diagram<a href="#worktree-visual-diagram" class="anchor-link">#</a></h3>
+<pre><code>Your Project Directory
+├── src/                     ← main worktree (feature/big-refactor)
+├── tests/
+├── package.json
+│
+└── .claude/
+    └── worktrees/
+        ├── hotfix-login/    ← isolated copy (branch: worktree-hotfix-login)
+        │   ├── src/
+        │   ├── tests/
+        │   └── package.json
+        │
+        └── experiment-v2/   ← another isolated copy
+            ├── src/
+            ├── tests/
+            └── package.json</code></pre>
+<p>Each worktree shares the same git history but has its own working files. Changes in one worktree never bleed into another.</p>
+<h3 id="worktree-use-cases">Worktree use cases<a href="#worktree-use-cases" class="anchor-link">#</a></h3>
+<pre><code>&gt; /batch</code></pre>
+<p>The <code>/batch</code> command uses worktrees automatically to:</p>
+<ol>
+<li>Plan a large-scale change (e.g., rename a function across 50 files)</li>
+<li>Execute changes in parallel across multiple worktrees</li>
+<li>Merge results back</li>
+</ol>
+<hr>
+<h2 id="worktree-for-subagents">Worktree for Subagents<a href="#worktree-for-subagents" class="anchor-link">#</a></h2>
+<p>You can run subagents in isolated worktrees:</p>
+<pre data-lang="yaml"><code>---
+name: experimenter
+description: Try risky changes without affecting main work
+isolation: worktree
+---</code></pre>
+<p>Each time this agent runs, it gets its own clean worktree.</p>
+<hr>
+<h2 id="github-app-integration">GitHub App Integration<a href="#github-app-integration" class="anchor-link">#</a></h2>
+<p>Set up Claude as a GitHub Actions bot:</p>
+<pre><code>&gt; /install-github-app</code></pre>
+<p>This configures Claude to:</p>
+<ul>
+<li>Automatically respond to PR comments that tag <code>@claude</code></li>
+<li>Run code reviews when PRs are opened</li>
+<li>Fix issues when asked via comments</li>
+</ul>
+<h3 id="example-github-actions-usage">Example GitHub Actions usage<a href="#example-github-actions-usage" class="anchor-link">#</a></h3>
+<p>After installation, in any PR comment:</p>
+<pre><code>@claude please review this for security issues
+@claude fix the failing tests
+@claude refactor the getUserData function to be more readable</code></pre>
+<p><strong>When to use:</strong> Teams that want Claude automatically available for every PR, without anyone having to manually invoke it.</p>
+<hr>
+<h2 id="viewing-diffs">Viewing Diffs<a href="#viewing-diffs" class="anchor-link">#</a></h2>
+<pre><code>&gt; /diff</code></pre>
+<p>Opens an interactive diff view of recent changes.</p>
+<pre><code>&gt; show me what changed since last commit
+&gt; compare main and this branch
+&gt; what's different in the auth module from 3 commits ago?</code></pre>
+<hr>
+<h2 id="security-review">Security Review<a href="#security-review" class="anchor-link">#</a></h2>
+<pre><code>&gt; /security-review</code></pre>
+<p>Reviews all changes on the current branch vs main for security vulnerabilities:</p>
+<ul>
+<li>Injection vulnerabilities</li>
+<li>Authentication/authorization issues</li>
+<li>Exposed credentials</li>
+<li>Unsafe dependencies</li>
+<li>Input validation gaps</li>
+</ul>
+<p><strong>When to use:</strong> Before merging any branch that touches user data, authentication, payments, file uploads, or external API integrations.</p>
+<hr>
+<h2 id="practical-git-workflow">Practical Git Workflow<a href="#practical-git-workflow" class="anchor-link">#</a></h2>
+<h3 id="feature-development-workflow">Feature development workflow<a href="#feature-development-workflow" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># 1. Start new feature
+cd my-project
+claude
+
+&gt; create a branch for the new payment feature
+
+# 2. Develop
+&gt; implement the Stripe payment integration
+
+# 3. Review your work
+&gt; /diff
+
+# 4. Commit and PR
+&gt; /commit-push-pr
+
+# 5. Address review comments
+&gt; /pr-comments 52
+&gt; fix the issues from the PR review</code></pre>
+<h3 id="bug-fix-workflow">Bug fix workflow<a href="#bug-fix-workflow" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Quick worktree for the hotfix
+claude -w "hotfix-auth"
+
+&gt; the login is broken in production — JWT tokens are being rejected
+  even when valid. Find and fix the issue.
+
+&gt; /commit-push-pr</code></pre>
+<hr>
+<h2 id="troubleshooting-common-git-issues">Troubleshooting Common Git Issues<a href="#troubleshooting-common-git-issues" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Error</th><th>What it means</th><th>What to tell Claude</th></tr></thead>
+<tbody>
+<tr><td><code>Permission denied (publickey)</code></td><td>SSH key not configured</td><td>"Set up SSH keys for GitHub on this machine"</td></tr>
+<tr><td><code>failed to push — non-fast-forward</code></td><td>Remote has commits you don't have locally</td><td>"Pull the latest changes from remote and then push"</td></tr>
+<tr><td><code>fatal: not a git repository</code></td><td>You're not inside a git project</td><td>"Initialize a new git repository here"</td></tr>
+<tr><td><code>nothing to commit, working tree clean</code></td><td>No changes to commit</td><td>Check if you saved your files</td></tr>
+<tr><td><code>Merge conflict in file.ts</code></td><td>Two branches changed the same lines</td><td>"Help me resolve the merge conflicts in this file"</td></tr>
+<tr><td><code>detached HEAD state</code></td><td>You checked out a commit directly</td><td>"Get me back on the main branch"</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li>Claude follows git best practices: feature branches, descriptive commits, no force-pushing to main</li>
+<li>Claude will <strong>warn you</strong> before running destructive operations like <code>git reset --hard</code> or <code>git push --force</code></li>
+<li>Use <code>--allowedTools "Bash(git *)"</code> to auto-approve all git commands</li>
+<li>Claude understands your git history and uses it as context when debugging</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

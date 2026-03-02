@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remote Development — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="remote-development">Remote Development<a href="#remote-development" class="anchor-link">#</a></h1>
+<p>Claude Code works with all of VS Code's remote development modes — SSH, Dev Containers, WSL, and GitHub Codespaces. The key principle: <strong>Claude Code runs where your code lives</strong>, and the VS Code extension renders the output locally.</p>
+<p>Think of it like a remote-controlled car: you hold the controller (VS Code on your local machine), but the car (Claude Code + your files) is running somewhere else. The extension is the radio signal connecting them.</p>
+<hr>
+<h2 id="how-remote-development-works">How Remote Development Works<a href="#how-remote-development-works" class="anchor-link">#</a></h2>
+<p>In VS Code Remote setups, VS Code splits into two parts:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│              Your Local Machine                         │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  VS Code UI (editor, panels, prompt box)        │    │
+│  │  Claude Code extension (rendering responses)    │    │
+│  └───────────────────────┬─────────────────────────┘    │
+└──────────────────────────│──────────────────────────────┘
+                           │  SSH / Container / WSL tunnel
+┌──────────────────────────│──────────────────────────────┐
+│              Remote Environment                         │
+│                                                         │
+│  ┌───────────────────────▼─────────────────────────┐    │
+│  │  Files, terminal, processes                     │    │
+│  │  Claude Code CLI (runs here)                    │    │
+│  │  Node.js + npm                                  │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘</code></pre>
+<ul>
+<li><strong>Local</strong>: VS Code UI (your screen, your keyboard)</li>
+<li><strong>Remote</strong>: File system, terminal, running processes (the server/container/WSL)</li>
+</ul>
+<p>Claude Code runs on the <strong>remote side</strong> — where your files are — and connects to the local VS Code window via the extension. This means Claude can read and edit your remote files without any manual file transfer.</p>
+<hr>
+<h2 id="vs-code-remote-ssh">VS Code Remote SSH<a href="#vs-code-remote-ssh" class="anchor-link">#</a></h2>
+<h3 id="when-to-use-this">When to use this<a href="#when-to-use-this" class="anchor-link">#</a></h3>
+<p>You're developing on a remote Linux server (your company's dev server, a VPS, an EC2 instance, etc.) and want to use Claude Code with access to the files on that server.</p>
+<h3 id="setup">Setup<a href="#setup" class="anchor-link">#</a></h3>
+<ol>
+<li><strong>Install the Remote-SSH extension in VS Code (local):</strong>
+  <ul>
+    <li>Open Extensions (<code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>)</li>
+    <li>Search for "Remote - SSH" (published by Microsoft)</li>
+    <li>Install it</li>
+  </ul>
+</li>
+<li><strong>Connect to your remote machine:</strong>
+  <ul>
+    <li><code>Ctrl+Shift+P</code> → <strong>Remote-SSH: Connect to Host...</strong></li>
+    <li>Select or add your SSH host (format: <code>user@hostname</code>)</li>
+  </ul>
+</li>
+<li><strong>VS Code opens a window connected to the remote machine.</strong> The bottom-left status bar shows the remote name.</li>
+<li><strong>Open the integrated terminal</strong> (it opens on the remote machine automatically).</li>
+<li><strong>Install Claude Code CLI on the remote machine:</strong></li>
+</ol>
+<pre data-lang="bash"><code># On the remote machine (in VS Code's integrated terminal)
+npm install -g @anthropic-ai/claude-code
+claude auth login</code></pre>
+<ol start="6">
+<li><strong>Open Claude Code via the panel</strong> (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run <code>claude</code> in the integrated terminal.</li>
+</ol>
+<blockquote><p>What to expect: The bottom-left corner of VS Code shows a green indicator with "SSH: your-server-name". The integrated terminal opens a shell on the remote machine. The Claude Code panel connects automatically once the extension is active on the remote.</p></blockquote>
+<h3 id="why-ssh--claude-code-works-well">Why SSH + Claude Code works well<a href="#why-ssh--claude-code-works-well" class="anchor-link">#</a></h3>
+<ul>
+<li>Claude reads files directly on the remote file system — no syncing or downloading needed</li>
+<li>You edit code locally in VS Code as normal, VS Code syncs changes automatically</li>
+<li>Claude sees your changes instantly</li>
+<li>Large files on the remote machine are read in place (no download to your laptop)</li>
+<li>Claude's API calls go out from the remote machine's network — useful if your local machine has restrictions</li>
+</ul>
+<h3 id="troubleshooting-ssh">Troubleshooting SSH<a href="#troubleshooting-ssh" class="anchor-link">#</a></h3>
+<p><strong>"Cannot connect to host" error:</strong></p>
+<ul>
+<li>Check that SSH works from your terminal: <code>ssh user@hostname</code></li>
+<li>Make sure your SSH key is set up: <code>ssh-keygen -t ed25519</code> and add the public key to <code>~/.ssh/authorized_keys</code> on the remote</li>
+</ul>
+<p><strong>Claude can't find VS Code:</strong></p>
+<ul>
+<li>Make sure you opened VS Code via Remote-SSH (not just a regular window)</li>
+<li>Check the status bar — it should say "SSH: hostname"</li>
+<li>Open Claude via the panel (Spark icon). If using the integrated terminal, run <code>claude --ide</code> to explicitly connect it to the IDE</li>
+</ul>
+<p><strong>API key not set on remote:</strong></p>
+<pre data-lang="bash"><code># On the remote machine, add to ~/.bashrc:
+echo 'export ANTHROPIC_API_KEY="sk-ant-your-key-here"' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<hr>
+<h2 id="dev-containers">Dev Containers<a href="#dev-containers" class="anchor-link">#</a></h2>
+<h3 id="when-to-use-this-1">When to use this<a href="#when-to-use-this-1" class="anchor-link">#</a></h3>
+<p>Your project uses Docker and has a <code>devcontainer.json</code> — development happens inside a container to ensure consistent environments across the team. You want Claude Code to work inside that container.</p>
+<h3 id="setup-1">Setup<a href="#setup-1" class="anchor-link">#</a></h3>
+<ol>
+<li><strong>Install the Dev Containers extension in VS Code (local):</strong>
+  <ul>
+    <li>Open Extensions sidebar</li>
+    <li>Search for "Dev Containers" (published by Microsoft)</li>
+    <li>Install it</li>
+  </ul>
+</li>
+<li><strong>Open a project with a <code>devcontainer.json</code>:</strong>
+  <ul>
+    <li>When prompted, click <strong>Reopen in Container</strong></li>
+    <li>Or: <code>Ctrl+Shift+P</code> → <strong>Dev Containers: Reopen in Container</strong></li>
+    <li>Wait for the container to build (first time takes longer)</li>
+  </ul>
+</li>
+<li><strong>Open the integrated terminal</strong> (it runs inside the container).</li>
+<li><strong>Install Claude Code inside the container if not pre-installed:</strong></li>
+</ol>
+<pre data-lang="bash"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<ol start="5">
+<li><strong>Authenticate:</strong></li>
+</ol>
+<pre data-lang="bash"><code>claude auth login</code></pre>
+<ol start="6">
+<li><strong>Open Claude Code via the panel</strong> (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run <code>claude</code> in the integrated terminal.</li>
+</ol>
+<blockquote><p>What to expect: The bottom-left status bar shows "Dev Container: your-container-name". The terminal prompt may look slightly different (container hostname). Claude Code runs inside the container, accessing the container's file system. The Claude Code panel connects automatically once the extension is active inside the container.</p></blockquote>
+<h3 id="adding-claude-code-to-your-devcontainer-pre-install">Adding Claude Code to your devcontainer (pre-install)<a href="#adding-claude-code-to-your-devcontainer-pre-install" class="anchor-link">#</a></h3>
+<p>To have Claude Code automatically available in your dev container, add it to <code>devcontainer.json</code>:</p>
+<pre data-lang="json"><code>{
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "features": {}
+}</code></pre>
+<p>Or add it to your <code>Dockerfile</code>:</p>
+<pre data-lang="dockerfile"><code>RUN npm install -g @anthropic-ai/claude-code</code></pre>
+<p>With this in place, every developer who opens the dev container gets Claude Code available automatically — no manual install needed.</p>
+<h3 id="setting-the-api-key-in-dev-containers">Setting the API key in dev containers<a href="#setting-the-api-key-in-dev-containers" class="anchor-link">#</a></h3>
+<p>API keys should not be in your <code>devcontainer.json</code> (it may be committed to git). Instead:</p>
+<p><strong>Option A — Environment variable on your local machine:</strong></p>
+<p>On your host machine, set <code>ANTHROPIC_API_KEY</code>. Dev Containers can forward local environment variables:</p>
+<pre data-lang="json"><code>{
+  "containerEnv": {
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}"
+  }
+}</code></pre>
+<p><strong>macOS / Linux (set on host):</strong></p>
+<pre data-lang="bash"><code>export ANTHROPIC_API_KEY="sk-ant-..."
+# Add to ~/.zshrc or ~/.bashrc to make it persistent</code></pre>
+<p><strong>Windows (set in PowerShell before launching VS Code):</strong></p>
+<pre data-lang="powershell"><code>$env:ANTHROPIC_API_KEY = "sk-ant-..."</code></pre>
+<p><strong>Option B — Set inside the container session:</strong></p>
+<pre data-lang="bash"><code>export ANTHROPIC_API_KEY="sk-ant-..."</code></pre>
+<p>(Not persistent across container rebuilds — use Option A for that)</p>
+<h3 id="troubleshooting-dev-containers">Troubleshooting Dev Containers<a href="#troubleshooting-dev-containers" class="anchor-link">#</a></h3>
+<p><strong>Container builds but Claude Code isn't found:</strong></p>
+<ul>
+<li>Run <code>npm install -g @anthropic-ai/claude-code</code> inside the container terminal</li>
+<li>Add to <code>postCreateCommand</code> in <code>devcontainer.json</code> so it installs automatically next time</li>
+</ul>
+<p><strong>Container rebuilds lose the auth:</strong></p>
+<ul>
+<li>Use the <code>containerEnv</code> approach above to forward the API key from your local machine</li>
+</ul>
+<hr>
+<h2 id="wsl-windows-subsystem-for-linux">WSL (Windows Subsystem for Linux)<a href="#wsl-windows-subsystem-for-linux" class="anchor-link">#</a></h2>
+<h3 id="when-to-use-this-2">When to use this<a href="#when-to-use-this-2" class="anchor-link">#</a></h3>
+<p>You're on Windows and want the best Claude Code experience. WSL gives you a real Linux environment inside Windows, which is the recommended setup for Claude Code on Windows.</p>
+<h3 id="why-wsl-is-recommended-for-windows-users">Why WSL is recommended for Windows users<a href="#why-wsl-is-recommended-for-windows-users" class="anchor-link">#</a></h3>
+<p>Running Claude Code natively on Windows (in PowerShell or Command Prompt) works, but WSL provides:</p>
+<ul>
+<li>Better compatibility with Linux-targeted tools and npm packages</li>
+<li>Proper file permissions and symlinks</li>
+<li>Bash and standard Unix utilities that many dev tools expect</li>
+<li>The same experience as macOS/Linux development environments</li>
+</ul>
+<h3 id="full-wsl-setup">Full WSL Setup<a href="#full-wsl-setup" class="anchor-link">#</a></h3>
+<p><strong>Step 1: Install WSL (if not already installed)</strong></p>
+<p>Open PowerShell as Administrator:</p>
+<pre data-lang="powershell"><code>wsl --install</code></pre>
+<p>This installs Ubuntu by default. Restart when prompted.</p>
+<p><strong>Step 2: Open Ubuntu and install Node.js via nvm</strong></p>
+<p>Open the Ubuntu app from the Start menu (or search "Ubuntu"):</p>
+<pre data-lang="bash"><code># Install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+
+# Install Node.js LTS:
+nvm install --lts
+nvm use --lts
+node --version  # should print v20.x.x or higher</code></pre>
+<p><strong>Step 3: Install Claude Code CLI</strong></p>
+<pre data-lang="bash"><code>npm install -g @anthropic-ai/claude-code
+claude auth login</code></pre>
+<p><strong>Step 4: Install the WSL extension in VS Code</strong></p>
+<p>On the Windows side:</p>
+<ul>
+<li>Open VS Code (Windows app)</li>
+<li>Open Extensions (<code>Ctrl+Shift+X</code>)</li>
+<li>Search for "WSL" (published by Microsoft)</li>
+<li>Install it</li>
+</ul>
+<p><strong>Step 5: Connect VS Code to WSL</strong></p>
+<pre><code>Ctrl+Shift+P → WSL: New WSL Window</code></pre>
+<p>Or from your WSL terminal:</p>
+<pre data-lang="bash"><code>code .</code></pre>
+<p>VS Code opens a new window connected to WSL. The status bar shows "WSL: Ubuntu" (or your distro name).</p>
+<p><strong>Step 6: Open Claude Code via the panel</strong></p>
+<p>Open Claude Code via the panel (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run <code>claude</code> in the integrated terminal:</p>
+<pre data-lang="bash"><code>cd ~/projects/my-app
+claude</code></pre>
+<blockquote><p>What to expect: The bottom-left status bar shows "WSL: Ubuntu" or your distribution name. The integrated terminal shows a Linux prompt. File paths use Linux format (<code>~/projects/...</code> not <code>C:\...</code>). The Claude Code panel connects automatically once the WSL extension is active.</p></blockquote>
+<h3 id="wsl-specific-notes">WSL-specific notes<a href="#wsl-specific-notes" class="anchor-link">#</a></h3>
+<p><strong>File system performance:</strong> Keep your projects in the Linux filesystem (<code>~/projects/</code>) rather than the Windows filesystem (<code>/mnt/c/Users/...</code>). Cross-filesystem access is significantly slower.</p>
+<pre data-lang="bash"><code># Good: project in Linux filesystem
+cd ~/projects/my-app
+claude   # then open the panel, or run claude --ide for external terminal
+
+# Slower: project on Windows drive
+cd /mnt/c/Users/YourName/projects/my-app
+claude</code></pre>
+<p><strong>Setting the API key in WSL:</strong></p>
+<p>Add to your WSL shell profile so it persists:</p>
+<pre data-lang="bash"><code>echo 'export ANTHROPIC_API_KEY="sk-ant-your-key-here"' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<p><strong>Accessing Windows files from WSL:</strong></p>
+<p>Your Windows C drive is accessible at <code>/mnt/c/</code>. But for best performance, work from the Linux home directory.</p>
+<p><strong>Running both WSL and Windows Claude Code:</strong></p>
+<p>If you install Claude Code both in WSL and Windows PowerShell, they are completely separate installations. Set the API key in both environments.</p>
+<h3 id="troubleshooting-wsl">Troubleshooting WSL<a href="#troubleshooting-wsl" class="anchor-link">#</a></h3>
+<p><strong><code>code</code> command not found in WSL:</strong></p>
+<p>After installing VS Code on Windows and the WSL extension, run this in WSL:</p>
+<pre data-lang="bash"><code># This should automatically work once the WSL extension is installed
+# If not, manually add VS Code to PATH in ~/.bashrc:
+echo 'export PATH="$PATH:/mnt/c/Users/YourName/AppData/Local/Programs/Microsoft VS Code/bin"' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<p><strong>nvm not found after installing:</strong></p>
+<p>nvm modifies <code>~/.bashrc</code> during installation. If it's not found after install, close and reopen your WSL terminal, or run:</p>
+<pre data-lang="bash"><code>source ~/.bashrc</code></pre>
+<p><strong>Claude Code not connecting to VS Code from WSL:</strong></p>
+<p>Make sure you opened VS Code <em>from WSL</em> (using <code>code .</code> or "WSL: New WSL Window"), not just opened the Windows VS Code and then used an integrated terminal. The WSL extension needs to be active for the panel connection to work. If using the terminal directly, run <code>claude --ide</code> to explicitly connect to the IDE.</p>
+<hr>
+<h2 id="github-codespaces">GitHub Codespaces<a href="#github-codespaces" class="anchor-link">#</a></h2>
+<h3 id="when-to-use-this-3">When to use this<a href="#when-to-use-this-3" class="anchor-link">#</a></h3>
+<p>You want to work on a project from any browser or VS Code without any local setup. Codespaces runs a cloud VM that VS Code connects to.</p>
+<h3 id="setup-2">Setup<a href="#setup-2" class="anchor-link">#</a></h3>
+<ol>
+<li><strong>Open a repository on GitHub</strong></li>
+<li>Click the green <strong>Code</strong> button → <strong>Codespaces</strong> tab → <strong>Create codespace on main</strong></li>
+<li>The Codespace opens in your browser (or VS Code desktop if you choose)</li>
+<li>Open the integrated terminal</li>
+<li>Install Claude Code:</li>
+</ol>
+<pre data-lang="bash"><code>npm install -g @anthropic-ai/claude-code</code></pre>
+<ol start="6">
+<li>Set your API key:</li>
+</ol>
+<pre data-lang="bash"><code>export ANTHROPIC_API_KEY="sk-ant-..."
+# For persistence within this codespace session, add to ~/.bashrc:
+echo 'export ANTHROPIC_API_KEY="sk-ant-..."' &gt;&gt; ~/.bashrc</code></pre>
+<ol start="7">
+<li>Open Claude Code via the panel (Spark icon or status bar). The extension runs on the remote host automatically. For terminal access, run <code>claude</code> in the integrated terminal.</li>
+</ol>
+<blockquote><p>What to expect: The Codespace opens in a VS Code-like interface in your browser (or the VS Code desktop app). The status bar shows "Codespace: your-codespace-name". The Claude Code panel connects automatically once the extension is active inside the Codespace.</p></blockquote>
+<h3 id="making-the-api-key-persistent-in-codespaces">Making the API key persistent in Codespaces<a href="#making-the-api-key-persistent-in-codespaces" class="anchor-link">#</a></h3>
+<p>Secrets set per-session are lost when the Codespace restarts. Use GitHub's Codespace secrets for persistence:</p>
+<ol>
+<li>GitHub → <strong>Settings</strong> → <strong>Codespaces</strong> → <strong>Secrets</strong></li>
+<li>Click <strong>New secret</strong></li>
+<li>Name: <code>ANTHROPIC_API_KEY</code>, Value: your API key</li>
+<li>Grant it access to the relevant repositories</li>
+</ol>
+<p>The secret is injected as an environment variable automatically when a Codespace starts. You don't need to set it manually.</p>
+<h3 id="adding-claude-code-to-your-codespace-config">Adding Claude Code to your Codespace config<a href="#adding-claude-code-to-your-codespace-config" class="anchor-link">#</a></h3>
+<p>In <code>.devcontainer/devcontainer.json</code>:</p>
+<pre data-lang="json"><code>{
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code"
+}</code></pre>
+<p>With this, every new Codespace for your repository has Claude Code pre-installed.</p>
+<h3 id="troubleshooting-codespaces">Troubleshooting Codespaces<a href="#troubleshooting-codespaces" class="anchor-link">#</a></h3>
+<p><strong>API key lost after Codespace restart:</strong></p>
+<ul>
+<li>Use GitHub Codespace secrets (as described above) for persistent API key injection</li>
+</ul>
+<p><strong>Claude Code installs but is slow:</strong></p>
+<ul>
+<li>Codespace VMs vary in performance. The default (2-core) Codespace may feel slower for Claude Code than a local machine. Consider upgrading to a 4-core machine type in the Codespace settings.</li>
+</ul>
+<p><strong>Browser Codespace vs. VS Code desktop:</strong></p>
+<ul>
+<li>Both work. The VS Code desktop app tends to have better support for extensions and terminal features. To switch: in the browser Codespace, press <code>Shift+Ctrl+P</code> → "Open in VS Code Desktop"</li>
+</ul>
+<hr>
+<h2 id="remote--additional-directories">Remote + Additional Directories<a href="#remote--additional-directories" class="anchor-link">#</a></h2>
+<p>When working remotely, you can give Claude access to paths beyond your current project:</p>
+<pre data-lang="bash"><code># Grant access to a shared library on the remote machine
+claude --add-dir /opt/shared-libraries/my-lib
+
+# Grant access to a sibling directory
+claude --add-dir ../shared-utils</code></pre>
+<hr>
+<h2 id="summary-table">Summary Table<a href="#summary-table" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Setup</th><th>Where Claude Runs</th><th>Where Files Live</th><th>Install CLI On</th></tr></thead>
+<tbody>
+<tr><td>Local</td><td>Your machine</td><td>Your machine</td><td>Your machine</td></tr>
+<tr><td>Remote SSH</td><td>Remote server</td><td>Remote server</td><td>The remote server</td></tr>
+<tr><td>Dev Container</td><td>Inside container</td><td>Inside container</td><td>The container (via postCreateCommand)</td></tr>
+<tr><td>WSL</td><td>Linux subsystem</td><td>Linux FS or /mnt/c/</td><td>WSL Linux environment</td></tr>
+<tr><td>Codespaces</td><td>Cloud VM</td><td>Cloud VM</td><td>Cloud VM (via postCreateCommand)</td></tr>
+</tbody>
+</table>
+<p><strong>Rule of thumb:</strong> Claude Code goes wherever your files are. Install it there, run it there.</p>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="connecting-to-ide.html">connecting-to-ide.md</a> — The <code>--ide</code> flag</li>
+<li><a href="installation.html">installation.md</a> — Installing the CLI and extension</li>
+<li><a href="settings-configuration.html">settings-configuration.md</a> — Environment variables including ANTHROPIC_API_KEY</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

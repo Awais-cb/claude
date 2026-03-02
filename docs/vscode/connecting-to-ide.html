@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connecting Claude Code to VS Code — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="connecting-claude-code-to-vs-code">Connecting Claude Code to VS Code<a href="#connecting-claude-code-to-vs-code" class="anchor-link">#</a></h1>
+<p>The Claude Code VS Code extension opens natively inside your editor — no terminal command required. Once the extension is installed, click the <strong>Spark icon</strong> in the Activity Bar (left sidebar) or click <strong>"✱ Claude Code"</strong> in the status bar to open the Claude Code panel directly.</p>
+<p>The <code>--ide</code> flag is a separate, optional workflow for users who launch Claude from an <strong>external terminal</strong> (outside VS Code) and want that terminal session to connect to and communicate with their open VS Code editor. If you're working entirely within VS Code, you don't need <code>--ide</code> at all.</p>
+<hr>
+<h2 id="the---ide-flag-for-external-terminal-sessions">The <code>--ide</code> Flag (For External Terminal Sessions)<a href="#the---ide-flag-for-external-terminal-sessions" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude --ide</code></pre>
+<p>Use this when you launch Claude from a terminal <strong>outside</strong> VS Code and want it to auto-connect to your open editor. Claude Code will:</p>
+<ol>
+<li>Detect your running VS Code instance</li>
+<li>Establish a bidirectional connection over a local socket</li>
+<li>Activate the prompt box inside VS Code</li>
+<li>Sync your editor's file context and selections in real time</li>
+</ol>
+<hr>
+<h2 id="step-by-step-connecting-a-terminal-session-to-vs-code">Step-by-Step: Connecting a Terminal Session to VS Code<a href="#step-by-step-connecting-a-terminal-session-to-vs-code" class="anchor-link">#</a></h2>
+<p>This section covers how to connect an <strong>external terminal session</strong> to VS Code using <code>--ide</code>. If you're using Claude Code purely within VS Code (via the panel), you can skip this section.</p>
+<h3 id="1-open-your-project-in-vs-code">1. Open your project in VS Code<a href="#1-open-your-project-in-vs-code" class="anchor-link">#</a></h3>
+<p><strong>macOS:</strong></p>
+<pre data-lang="bash"><code>code ~/projects/my-app</code></pre>
+<p><strong>Linux:</strong></p>
+<pre data-lang="bash"><code>code ~/projects/my-app</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>code C:\projects\my-app</code></pre>
+<p><strong>Windows (WSL) — open from WSL terminal:</strong></p>
+<pre data-lang="bash"><code>code ~/projects/my-app</code></pre>
+<blockquote><p>WSL note: Running <code>code .</code> inside a WSL terminal automatically opens VS Code with the WSL Remote extension active. This is the recommended way to work on projects stored in the Linux filesystem.</p></blockquote>
+<p>Or open VS Code manually and use <strong>File → Open Folder</strong>.</p>
+<h3 id="2-open-the-integrated-terminal">2. Open the integrated terminal<a href="#2-open-the-integrated-terminal" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>OS</th><th>Shortcut</th><th>Alternative</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td>Ctrl+` (backtick)</td><td>View → Terminal</td></tr>
+<tr><td>Windows</td><td>Ctrl+` (backtick)</td><td>View → Terminal</td></tr>
+<tr><td>Linux</td><td>Ctrl+` (backtick)</td><td>View → Terminal</td></tr>
+</tbody>
+</table>
+<h3 id="3-navigate-to-your-project-root-if-not-already-there">3. Navigate to your project root (if not already there)<a href="#3-navigate-to-your-project-root-if-not-already-there" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>cd ~/projects/my-app</code></pre>
+<h3 id="4-start-claude-code-with-ide-integration">4. Start Claude Code with IDE integration<a href="#4-start-claude-code-with-ide-integration" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide</code></pre>
+<p>The prompt box appears in VS Code. Claude is now connected.</p>
+<hr>
+<h2 id="what-connected-looks-like">What "Connected" Looks Like<a href="#what-connected-looks-like" class="anchor-link">#</a></h2>
+<p>When the connection is successful, you'll notice:</p>
+<ul>
+<li>A <strong>status indicator</strong> appears in the VS Code status bar (bottom-left area) showing Claude Code is active</li>
+<li>The <strong>Claude Code panel</strong> becomes visible — either as a sidebar panel or a prompt box in the terminal</li>
+<li>Claude is now aware of your <strong>currently open file</strong> and any <strong>text you select</strong></li>
+</ul>
+<blockquote><p>What to expect: The bottom status bar of VS Code will show a Claude Code icon or label, indicating the extension is connected to a live session. It may show the current permission mode (Normal, Auto-Accept, or Plan-only).</p></blockquote>
+<hr>
+<h2 id="auto-connect-on-every-terminal-session-optional">Auto-Connect on Every Terminal Session (Optional)<a href="#auto-connect-on-every-terminal-session-optional" class="anchor-link">#</a></h2>
+<p>If you prefer launching Claude from an external terminal and want it to always connect to VS Code, you can avoid typing <code>claude --ide</code> every time by setting up an alias. The approach differs slightly per OS.</p>
+<h3 id="shell-alias-setup">Shell alias setup<a href="#shell-alias-setup" class="anchor-link">#</a></h3>
+<p><strong>macOS (using zsh, the default shell since macOS Catalina):</strong></p>
+<pre data-lang="bash"><code># Open your shell config:
+nano ~/.zshrc
+
+# Add this line:
+alias cc='claude --ide'
+
+# Reload:
+source ~/.zshrc</code></pre>
+<p><strong>Linux / WSL (using bash):</strong></p>
+<pre data-lang="bash"><code># Open your shell config:
+nano ~/.bashrc
+
+# Add this line:
+alias cc='claude --ide'
+
+# Reload:
+source ~/.bashrc</code></pre>
+<p><strong>Windows (PowerShell profile):</strong></p>
+<pre data-lang="powershell"><code># Find your PowerShell profile path:
+$PROFILE
+
+# Open it (create if it doesn't exist):
+notepad $PROFILE
+
+# Add this line:
+Set-Alias cc "claude --ide"
+
+# Reload:
+. $PROFILE</code></pre>
+<p>After this, just type <code>cc</code> to start a Claude session connected to VS Code.</p>
+<h3 id="vs-code-task-automatically-runs-when-you-open-the-project">VS Code Task (automatically runs when you open the project)<a href="#vs-code-task-automatically-runs-when-you-open-the-project" class="anchor-link">#</a></h3>
+<p>Create <code>.vscode/tasks.json</code> in your project:</p>
+<pre data-lang="json"><code>{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Claude Code",
+      "type": "shell",
+      "command": "claude --ide",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}</code></pre>
+<p>Run it manually via <strong>Terminal → Run Task → Start Claude Code</strong>, or with <code>runOn: folderOpen</code> it starts automatically every time you open the project.</p>
+<hr>
+<h2 id="combining-with-other-flags">Combining with Other Flags<a href="#combining-with-other-flags" class="anchor-link">#</a></h2>
+<p><code>--ide</code> works with any other Claude Code flags:</p>
+<pre data-lang="bash"><code># Connect to IDE + allow access to a second directory
+claude --ide --add-dir ../shared-lib
+
+# Connect to IDE + start immediately with a task
+claude --ide "review the changes in the auth module"
+
+# Connect to IDE + resume the last session
+claude --ide -c
+
+# Connect to IDE + open a named session
+claude --ide -r "my-feature"
+
+# Connect to IDE + use a specific model
+claude --ide --model claude-opus-4-6</code></pre>
+<hr>
+<h2 id="multiple-instances">Multiple Instances<a href="#multiple-instances" class="anchor-link">#</a></h2>
+<p>If you have multiple VS Code windows open, Claude Code connects to the <strong>most recently focused</strong> one. Here's how to target a specific window:</p>
+<pre><code>1. Click on the VS Code window you want Claude to connect to
+2. Make sure it's in focus (active)
+3. Run: claude --ide</code></pre>
+<p>You can verify which window Claude is connected to by checking the status bar — it will show the active connection only in the connected window.</p>
+<hr>
+<h2 id="disconnecting-and-reconnecting">Disconnecting and Reconnecting<a href="#disconnecting-and-reconnecting" class="anchor-link">#</a></h2>
+<p>To disconnect cleanly, exit the Claude Code session:</p>
+<pre><code>Ctrl+D</code></pre>
+<p>or type:</p>
+<pre><code>exit</code></pre>
+<p>To reconnect, simply run <code>claude --ide</code> again. The session history is preserved.</p>
+<p>To reconnect AND resume your last conversation:</p>
+<pre data-lang="bash"><code>claude --ide -c</code></pre>
+<p>This is the recommended way to start each day — you pick up right where you left off, with full context intact.</p>
+<hr>
+<h2 id="without---ide-terminal-only-mode">Without <code>--ide</code> (Terminal-Only Mode)<a href="#without---ide-terminal-only-mode" class="anchor-link">#</a></h2>
+<p>If you run <code>claude</code> in a terminal without <code>--ide</code>, Claude Code still works — it just runs without connecting to your VS Code editor. You lose:</p>
+<ul>
+<li>The VS Code prompt box</li>
+<li>Selected code as automatic context</li>
+<li>Clickable file links in responses</li>
+<li>IDE-aware file context (which tab you have open)</li>
+</ul>
+<p>You can always add <code>--ide</code> later — even mid-project. Your session history persists regardless.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting<a href="#troubleshooting" class="anchor-link">#</a></h2>
+<h3 id="could-not-connect-to-vs-code-or-no-prompt-box-appears">"Could not connect to VS Code" or no prompt box appears<a href="#could-not-connect-to-vs-code-or-no-prompt-box-appears" class="anchor-link">#</a></h3>
+<p><strong>Possible causes and fixes:</strong></p>
+<ol>
+<li><strong>VS Code is not running</strong> — open VS Code first, then run <code>claude --ide</code></li>
+<li><strong>The extension is not installed</strong> — install it: <code>code --install-extension anthropic.claude-code</code></li>
+<li><strong>The extension is disabled</strong> — open Extensions sidebar, find Claude Code, click Enable</li>
+<li><strong>Running <code>claude --ide</code> from outside VS Code's terminal</strong> — try running it from VS Code's <em>integrated</em> terminal (Ctrl+`)</li>
+</ol>
+<h3 id="macos-claude-connects-but-the-panel-doesnt-appear">macOS: Claude connects but the panel doesn't appear<a href="#macos-claude-connects-but-the-panel-doesnt-appear" class="anchor-link">#</a></h3>
+<p>Try opening it manually from the Command Palette:</p>
+<pre><code>Cmd+Shift+P → Claude Code: Open Panel</code></pre>
+<h3 id="linux-code-command-not-found-when-setting-up-alias">Linux: <code>code</code> command not found when setting up alias<a href="#linux-code-command-not-found-when-setting-up-alias" class="anchor-link">#</a></h3>
+<p>Verify VS Code is installed and in PATH:</p>
+<pre data-lang="bash"><code>which code</code></pre>
+<p>If not found, ensure VS Code is installed via the official .deb package or Snap, then open a new terminal.</p>
+<h3 id="windows-wsl-vs-code-doesnt-receive-the-connection">Windows (WSL): VS Code doesn't receive the connection<a href="#windows-wsl-vs-code-doesnt-receive-the-connection" class="anchor-link">#</a></h3>
+<p>Make sure you opened VS Code <em>from within WSL</em> (using <code>code .</code> in the WSL terminal). If VS Code is opened from the Windows side and you run <code>claude --ide</code> in WSL, the connection may not bridge correctly. The fix is to use the "WSL: New WSL Window" command in VS Code, then run <code>claude --ide</code> in that window's integrated terminal.</p>
+<hr>
+<h2 id="remote-and-container-development">Remote and Container Development<a href="#remote-and-container-development" class="anchor-link">#</a></h2>
+<p>For remote VS Code sessions (SSH, Dev Containers, Codespaces), run <code>claude --ide</code> on the <strong>remote machine</strong>, not locally. VS Code Remote tunnels the connection back to your local window automatically.</p>
+<p>See <a href="remote-development.html">remote-development.md</a> for full details on each remote scenario.</p>
+<hr>
+<h2 id="next-steps">Next Steps<a href="#next-steps" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="prompt-box.html">prompt-box.md</a> — Using the VS Code prompt panel</li>
+<li><a href="selected-code-context.html">selected-code-context.md</a> — How editor selections become context</li>
+<li><a href="file-references.html">file-references.md</a> — Referencing files with <code>@</code></li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

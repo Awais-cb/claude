@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permissions &amp; Safety — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="permissions-safety">Permissions &amp; Safety<a href="#permissions-safety" class="anchor-link">#</a></h1>
+<h2 id="what-are-permissions">What are Permissions?<a href="#what-are-permissions" class="anchor-link">#</a></h2>
+<p>Think of Claude's permissions like the access badge you give a new employee on their first day. A junior contractor might only get a key to their desk — they can look at things but can't modify production systems. A trusted senior developer gets broader access, but you'd still want to know before they push to main. A fully automated CI bot might have unrestricted access to run scripts — but only in a sandboxed environment where nothing important can break.</p>
+<p>Claude works the same way. By default, it asks for your approval before doing anything that could have consequences — running commands, editing files, making network requests. As you build trust, you can expand its access. And you can always restrict specific actions, no matter what mode you're in.</p>
+<pre><code>New employee (day 1)         Trusted dev (6 months in)    Automated CI bot
+────────────────────         ─────────────────────────    ─────────────────
+"Can I delete this file?"    Just does it, tells you      Runs everything,
+"Should I run npm install?"  after                        no supervision
+"Is this the right DB?"
+     ↓                              ↓                           ↓
+  Normal Mode               Auto-Accept Mode            --dangerously-skip-permissions</code></pre>
+<hr>
+<h2 id="the-three-permission-modes">The Three Permission Modes<a href="#the-three-permission-modes" class="anchor-link">#</a></h2>
+<p>Switch modes with <code>Shift+Tab</code> at any time during a session. The cycle order is: <strong>Normal → Auto-Accept → Plan</strong>.</p>
+<h3 id="1-normal-mode-default">1. Normal Mode (default)<a href="#1-normal-mode-default" class="anchor-link">#</a></h3>
+<p>Claude asks for confirmation before:</p>
+<ul>
+<li>Running bash commands</li>
+<li>Deleting files</li>
+<li>Making network requests</li>
+<li>Any action that could have side effects</li>
+</ul>
+<pre><code>Claude wants to run: rm -rf ./dist
+[Allow] [Deny] [Always allow]</code></pre>
+<p><strong>Best for:</strong> Day-to-day work where you want to stay in the loop.</p>
+<h3 id="2-plan-mode-read-only">2. Plan Mode (read-only)<a href="#2-plan-mode-read-only" class="anchor-link">#</a></h3>
+<p>Claude can <strong>only read</strong> — no file edits, no commands, no changes of any kind. Use this to safely explore and plan before committing.</p>
+<pre data-lang="bash"><code># Start in plan mode
+claude --permission-mode plan
+
+# Or toggle inside a session:
+Shift+Tab</code></pre>
+<p><strong>Best for:</strong> Understanding a codebase, reviewing architecture, planning a big refactor.</p>
+<h3 id="3-auto-accept-mode">3. Auto-Accept Mode<a href="#3-auto-accept-mode" class="anchor-link">#</a></h3>
+<p>Claude automatically approves all actions without prompting.</p>
+<pre data-lang="bash"><code># Toggle with:
+Shift+Tab  (cycle to Auto-Accept)</code></pre>
+<p><strong>Best for:</strong> Trusted, fast iteration when you're confident about what Claude is doing.</p>
+<blockquote><p>Use Auto-Accept carefully — Claude will make changes without asking first.</p></blockquote>
+<hr>
+<h2 id="the-three-modes-at-a-glance">The Three Modes at a Glance<a href="#the-three-modes-at-a-glance" class="anchor-link">#</a></h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    Permission Mode Comparison                   │
+├──────────────────┬──────────────────┬───────────────────────────┤
+│   Normal Mode    │   Plan Mode      │   Auto-Accept Mode        │
+│   (default)      │   (read-only)    │                           │
+├──────────────────┼──────────────────┼───────────────────────────┤
+│ Reads files: YES │ Reads files: YES │ Reads files: YES          │
+│ Edits files: ASK │ Edits files: NO  │ Edits files: YES          │
+│ Runs commands: ASK│ Runs commands: NO│ Runs commands: YES       │
+│ Network: ASK     │ Network: YES     │ Network: YES              │
+├──────────────────┼──────────────────┼───────────────────────────┤
+│ Use when:        │ Use when:        │ Use when:                 │
+│ Daily coding     │ Exploring code   │ You trust the task        │
+│ New codebase     │ Planning refactor│ Rapid prototyping         │
+│ Risky tasks      │ Reviewing design │ Known-safe scripts        │
+└──────────────────┴──────────────────┴───────────────────────────┘
+         Switch between modes with: Shift+Tab</code></pre>
+<hr>
+<h2 id="the-permission-prompt">The Permission Prompt<a href="#the-permission-prompt" class="anchor-link">#</a></h2>
+<p>When Claude wants to run an action that needs approval, you see:</p>
+<pre><code>Claude wants to: run `npm install lodash`
+
+[y] Allow once
+[a] Always allow this command
+[n] Deny
+[d] Deny and tell Claude why</code></pre>
+<ul>
+<li><strong>Allow once</strong> — approve just this time</li>
+<li><strong>Always allow</strong> — add to your permanent allow list</li>
+<li><strong>Deny</strong> — block this specific action</li>
+<li><strong>Deny and explain</strong> — block and give Claude feedback on why</li>
+</ul>
+<hr>
+<h2 id="what-happens-when-you-deny">What Happens When You Deny<a href="#what-happens-when-you-deny" class="anchor-link">#</a></h2>
+<p>Denying an action doesn't end the conversation. Claude is told the action was denied and immediately looks for another way to help.</p>
+<p><strong>Example 1: Denying a destructive command</strong></p>
+<pre><code>&gt; Delete all log files
+
+Claude wants to: rm -rf logs/
+[Deny]
+
+Claude: I couldn't delete the logs directory. Would you like me to:
+1. Delete only .log files individually (rm logs/*.log)
+2. Clear the contents without deleting the folder
+3. Show you the files first so you can confirm?</code></pre>
+<p><strong>Example 2: Denying a file write</strong></p>
+<pre><code>&gt; Update the database config
+
+Claude wants to: Write to config/database.php
+[Deny]
+
+Claude: I can't write to that file. I can show you the exact changes
+you'd need to make manually — want me to do that instead?</code></pre>
+<p><strong>Example 3: Denying and explaining</strong></p>
+<pre><code>&gt; Install the lodash package
+
+Claude wants to: run npm install lodash
+[Deny and explain: we don't add dependencies without discussing it first]
+
+Claude: Understood — I'll always discuss dependency choices before
+installing anything. For this task I can use native JS array methods
+instead of lodash. Here's how...</code></pre>
+<hr>
+<h2 id="configuring-specific-tools">Configuring Specific Tools<a href="#configuring-specific-tools" class="anchor-link">#</a></h2>
+<p>You can allow or deny specific tools regardless of mode.</p>
+<h3 id="allow-specific-tools-without-prompting">Allow specific tools without prompting<a href="#allow-specific-tools-without-prompting" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --allowedTools "Read,Glob,Grep,Bash(git *)"</code></pre>
+<h3 id="deny-specific-tools-entirely">Deny specific tools entirely<a href="#deny-specific-tools-entirely" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --disallowedTools "Bash,Write"</code></pre>
+<h3 id="restrict-claude-to-only-certain-tools">Restrict Claude to only certain tools<a href="#restrict-claude-to-only-certain-tools" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Claude can only read files and search — nothing else
+claude --tools "Read,Glob,Grep"</code></pre>
+<h3 id="tool-permission-patterns">Tool permission patterns<a href="#tool-permission-patterns" class="anchor-link">#</a></h3>
+<p>Use wildcards for fine-grained control:</p>
+<pre data-lang="bash"><code># Allow all git commands
+Bash(git *)
+
+# Allow only git status and git log
+Bash(git status),Bash(git log)
+
+# Allow reading any file
+Read(*)
+
+# Allow reading only in src/
+Read(src/*)</code></pre>
+<hr>
+<h2 id="settings-file-permissions">Settings File Permissions<a href="#settings-file-permissions" class="anchor-link">#</a></h2>
+<p>You can set permanent permissions in <code>.claude/settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm test)",
+      "Bash(npm run *)",
+      "Read(*)",
+      "Write(src/*)"
+    ],
+    "deny": [
+      "Bash(rm *)",
+      "Bash(sudo *)"
+    ],
+    "defaultMode": "normal"
+  }
+}</code></pre>
+<h3 id="project-level-permissions-claudesettingsjson">Project-level permissions (<code>.claude/settings.json</code>)<a href="#project-level-permissions-claudesettingsjson" class="anchor-link">#</a></h3>
+<p>Committed to the repo — shared with the team.</p>
+<h3 id="local-level-permissions-claudesettingslocaljson">Local-level permissions (<code>.claude/settings.local.json</code>)<a href="#local-level-permissions-claudesettingslocaljson" class="anchor-link">#</a></h3>
+<p>Not committed — your personal overrides.</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": [
+      "Bash(docker *)"
+    ]
+  }
+}</code></pre>
+<hr>
+<h2 id="os-specific-notes">OS-Specific Notes<a href="#os-specific-notes" class="anchor-link">#</a></h2>
+<h3 id="macos-linux">macOS / Linux<a href="#macos-linux" class="anchor-link">#</a></h3>
+<p>File paths use forward slashes. Wildcard patterns in settings work directly:</p>
+<pre data-lang="json"><code>"deny": ["Write(.env*)", "Write(config/secrets*)"]</code></pre>
+<h3 id="windows-wsl">Windows (WSL)<a href="#windows-wsl" class="anchor-link">#</a></h3>
+<p>When running Claude Code inside WSL, paths follow Linux conventions (forward slashes), even though your files are on a Windows filesystem. Use Linux-style paths in your settings files:</p>
+<pre data-lang="json"><code>"deny": ["Write(.env*)", "Write(config/secrets*)"]</code></pre>
+<p>If you're running Claude Code in native PowerShell (less common), paths use backslashes in the filesystem but still use forward slashes in Claude's tool patterns.</p>
+<h3 id="windows-powershell">Windows (PowerShell)<a href="#windows-powershell" class="anchor-link">#</a></h3>
+<p>To create the settings directory and file:</p>
+<pre data-lang="powershell"><code>New-Item -ItemType Directory -Force .claude
+New-Item -ItemType File .claude\settings.json</code></pre>
+<hr>
+<h2 id="skip-all-permissions-dangerous">Skip All Permissions (Dangerous)<a href="#skip-all-permissions-dangerous" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude --dangerously-skip-permissions</code></pre>
+<p>This disables ALL permission prompts. Every action is automatically approved.</p>
+<blockquote><p><strong>Only use this in:</strong> throwaway containers, CI/CD pipelines, sandboxed environments. Never on a machine with important data.</p></blockquote>
+<hr>
+<h2 id="practical-permission-examples">Practical Permission Examples<a href="#practical-permission-examples" class="anchor-link">#</a></h2>
+<h3 id="safe-exploration-setup">Safe exploration setup<a href="#safe-exploration-setup" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Read-only — Claude can look but not touch
+claude --tools "Read,Glob,Grep,WebSearch"</code></pre>
+<h3 id="developer-workflow-common">Developer workflow (common)<a href="#developer-workflow-common" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Allow git and test commands automatically
+claude --allowedTools "Bash(git *),Bash(npm test),Bash(npm run *)"</code></pre>
+<h3 id="cicd-automation">CI/CD automation<a href="#cicd-automation" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># Non-interactive, no prompts, limited to code operations
+claude -p "review the PR and add comments" \
+  --dangerously-skip-permissions \
+  --tools "Read,Bash(gh *),WebFetch"</code></pre>
+<h3 id="protect-sensitive-files">Protect sensitive files<a href="#protect-sensitive-files" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>// .claude/settings.json
+{
+  "permissions": {
+    "deny": [
+      "Write(.env*)",
+      "Write(config/secrets*)",
+      "Bash(rm *)"
+    ]
+  }
+}</code></pre>
+<hr>
+<h2 id="how-claude-handles-denied-actions">How Claude Handles Denied Actions<a href="#how-claude-handles-denied-actions" class="anchor-link">#</a></h2>
+<p>If Claude tries to do something and you deny it:</p>
+<ol>
+<li>Claude is told the action was denied</li>
+<li>Claude finds an alternative approach</li>
+<li>Or Claude asks you for clarification</li>
+</ol>
+<p>Example:</p>
+<pre><code>&gt; Delete all log files
+
+Claude wants to: rm -rf logs/
+[Deny]
+
+Claude: I couldn't delete the logs directory. Would you like me to:
+1. Delete only .log files individually (rm logs/*.log)
+2. Clear the contents without deleting the folder
+3. Show you the files first so you can confirm?</code></pre>
+<hr>
+<h2 id="sandboxing-enterprise">Sandboxing (Enterprise)<a href="#sandboxing-enterprise" class="anchor-link">#</a></h2>
+<p>For organizations requiring strict isolation, Claude Code supports OS-level sandboxing:</p>
+<ul>
+<li><strong>Filesystem isolation</strong> — restricted access to specific directories</li>
+<li><strong>Network isolation</strong> — controlled external connections</li>
+<li><strong>Kernel-level enforcement</strong> — not just software restrictions</li>
+</ul>
+<pre data-lang="bash"><code># Enable sandbox mode
+/sandbox</code></pre>
+<p>Contact your admin to configure organization-wide sandbox policies.</p>
+<hr>
+<h2 id="permission-mode-vs-trust-level">Permission Mode vs Trust Level<a href="#permission-mode-vs-trust-level" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Scenario</th><th>Recommended Mode</th></tr></thead>
+<tbody>
+<tr><td>First time in a new codebase</td><td>Plan Mode</td></tr>
+<tr><td>Regular daily coding</td><td>Normal Mode</td></tr>
+<tr><td>Running known-safe scripts</td><td>Auto-Accept</td></tr>
+<tr><td>CI/CD pipeline</td><td><code>--dangerously-skip-permissions</code></td></tr>
+<tr><td>Sensitive production systems</td><td>Normal + explicit deny rules</td></tr>
+</tbody>
+</table>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

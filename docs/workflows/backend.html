@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Developer Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="backend-developer-workflow">Backend Developer Workflow<a href="#backend-developer-workflow" class="anchor-link">#</a></h1>
+<p>Claude as your backend pair programmer — for building APIs, managing databases, writing tests, and debugging server-side issues.</p>
+<hr>
+<h2 id="daily-session-setup">Daily Session Setup<a href="#daily-session-setup" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>cd your-project/
+claude --ide          # connects to VS Code
+# or just:
+claude -c             # resume yesterday's session</code></pre>
+<p>Start each feature with a named session:</p>
+<pre><code>&gt; /rename feat/TICKET-123-user-auth</code></pre>
+<hr>
+<h2 id="1-building-a-new-api-endpoint">1. Building a New API Endpoint<a href="#1-building-a-new-api-endpoint" class="anchor-link">#</a></h2>
+<h3 id="the-workflow">The workflow<a href="#the-workflow" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need a POST /api/orders endpoint that:
+  - accepts { productId, quantity, shippingAddress }
+  - validates input (quantity must be 1-100, address must have street/city/zip)
+  - creates an order in the database
+  - sends a confirmation email via our EmailService
+  - returns the created order with 201 status
+  Check how similar endpoints are built in src/routes/ first, then implement.</code></pre>
+<p>Claude will:</p>
+<ol>
+<li>Read your existing endpoint patterns</li>
+<li>Create the route, controller, service, and repository layers</li>
+<li>Add Zod validation schema</li>
+<li>Write the handler following your conventions</li>
+</ol>
+<h3 id="after-implementation">After implementation<a href="#after-implementation" class="anchor-link">#</a></h3>
+<pre><code>&gt; run the tests for the orders module and fix any failures
+&gt; /team-review           # run your team's code review skill</code></pre>
+<h3 id="adding-to-an-existing-endpoint">Adding to an existing endpoint<a href="#adding-to-an-existing-endpoint" class="anchor-link">#</a></h3>
+<pre><code>&gt; the GET /api/users endpoint needs pagination.
+  add ?page and ?per_page query params (default 20, max 100).
+  @src/routes/users.ts is the current implementation.
+  Match the pagination pattern used in @src/routes/products.ts</code></pre>
+<hr>
+<h2 id="2-database-migrations">2. Database Migrations<a href="#2-database-migrations" class="anchor-link">#</a></h2>
+<h3 id="create-a-new-migration">Create a new migration<a href="#create-a-new-migration" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need to add a `last_login_at` timestamp column (nullable) to the users table.
+  Create a Prisma migration for this. Don't run it yet — show me the schema change first.</code></pre>
+<p>Review it, then:</p>
+<pre><code>&gt; looks good, run the migration</code></pre>
+<p>Claude runs <code>npx prisma migrate dev --name add-last-login-at</code>.</p>
+<h3 id="complex-schema-changes">Complex schema changes<a href="#complex-schema-changes" class="anchor-link">#</a></h3>
+<pre><code>&gt; I need to refactor the orders table:
+  1. Split `address` (single string) into address_line1, address_line2, city, zip, country
+  2. The existing data needs to be migrated
+  Create the migration with a data migration step. Show the plan before running anything.</code></pre>
+<p>Use plan mode for risky migrations:</p>
+<pre data-lang="bash"><code>claude --permission-mode plan
+&gt; what would happen if we changed the User.email field from String to String?
+  how many places in the codebase reference it?</code></pre>
+<h3 id="seeding-data">Seeding data<a href="#seeding-data" class="anchor-link">#</a></h3>
+<pre><code>&gt; create a seed script that populates test data:
+  - 5 users (1 admin, 4 regular)
+  - 20 products across 3 categories
+  - 10 orders in various states
+  Use our factory pattern from src/tests/factories/</code></pre>
+<hr>
+<h2 id="3-debugging">3. Debugging<a href="#3-debugging" class="anchor-link">#</a></h2>
+<h3 id="fixing-a-reported-bug">Fixing a reported bug<a href="#fixing-a-reported-bug" class="anchor-link">#</a></h3>
+<pre><code>&gt; Users are getting a 500 error when they try to update their profile
+  with a phone number that contains spaces. The error is:
+  &quot;invalid input syntax for type integer&quot;
+
+  The relevant code is in @src/routes/users.ts and @src/services/UserService.ts.
+  Find the bug and fix it.</code></pre>
+<h3 id="debugging-a-slow-query">Debugging a slow query<a href="#debugging-a-slow-query" class="anchor-link">#</a></h3>
+<pre><code>&gt; this query is taking 3+ seconds on production:
+  [paste the query or the Prisma call]
+
+  Analyze why it's slow and suggest fixes.
+  Check if we have indexes on the relevant columns.</code></pre>
+<h3 id="tracing-a-request">Tracing a request<a href="#tracing-a-request" class="anchor-link">#</a></h3>
+<pre><code>&gt; trace the full lifecycle of a POST /api/orders request through our codebase —
+  from the route definition to the database write and the response.
+  I want to understand all the middleware and services it passes through.</code></pre>
+<h3 id="reading-error-logs">Reading error logs<a href="#reading-error-logs" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>cat logs/error.log | claude -p &quot;summarize the last 20 errors, group by type, identify the most frequent&quot;</code></pre>
+<hr>
+<h2 id="4-authentication-security">4. Authentication &amp; Security<a href="#4-authentication-security" class="anchor-link">#</a></h2>
+<h3 id="add-auth-to-an-endpoint">Add auth to an endpoint<a href="#add-auth-to-an-endpoint" class="anchor-link">#</a></h3>
+<pre><code>&gt; add JWT authentication to the POST /api/orders route.
+  Check how auth is applied to other protected routes in @src/middleware/
+  and apply the same pattern.</code></pre>
+<h3 id="security-audit">Security audit<a href="#security-audit" class="anchor-link">#</a></h3>
+<pre><code>&gt; /security-review</code></pre>
+<p>Then for a deeper audit:</p>
+<pre><code>&gt; audit the authentication flow for security issues:
+  - JWT validation in @src/middleware/auth.ts
+  - Token refresh in @src/routes/auth.ts
+  - Password hashing in @src/services/UserService.ts
+
+  Look for: timing attacks, token leakage, missing expiry checks,
+  brute force vulnerabilities.</code></pre>
+<h3 id="add-rate-limiting">Add rate limiting<a href="#add-rate-limiting" class="anchor-link">#</a></h3>
+<pre><code>&gt; add rate limiting to the auth endpoints (/api/auth/login, /api/auth/register):
+  - 10 requests per minute per IP for login
+  - 5 requests per minute per IP for register
+  Use the express-rate-limit library (check if it's already installed).</code></pre>
+<hr>
+<h2 id="5-writing-tests">5. Writing Tests<a href="#5-writing-tests" class="anchor-link">#</a></h2>
+<h3 id="unit-test-for-a-service">Unit test for a service<a href="#unit-test-for-a-service" class="anchor-link">#</a></h3>
+<pre><code>&gt; write unit tests for @src/services/OrderService.ts.
+  Mock the OrderRepository and EmailService.
+  Cover: happy path, invalid product ID, out-of-stock, email failure.
+  Follow the test patterns in @src/tests/services/UserService.test.ts</code></pre>
+<h3 id="integration-test-for-an-endpoint">Integration test for an endpoint<a href="#integration-test-for-an-endpoint" class="anchor-link">#</a></h3>
+<pre><code>&gt; write an integration test for POST /api/orders.
+  Use our test database setup in @src/tests/setup.ts.
+  Test: successful order, validation errors, unauthorized access, duplicate order.</code></pre>
+<h3 id="running-tests">Running tests<a href="#running-tests" class="anchor-link">#</a></h3>
+<pre><code>&gt; run npm test -- --reporter=verbose and fix any failing tests</code></pre>
+<h3 id="coverage-report">Coverage report<a href="#coverage-report" class="anchor-link">#</a></h3>
+<pre><code>&gt; run tests with coverage and tell me which files have less than 80% coverage.
+  Prioritize which ones to address first based on business criticality.</code></pre>
+<hr>
+<h2 id="6-refactoring">6. Refactoring<a href="#6-refactoring" class="anchor-link">#</a></h2>
+<h3 id="extract-a-service">Extract a service<a href="#extract-a-service" class="anchor-link">#</a></h3>
+<pre><code>&gt; the UserController is doing too much — it's handling both profile updates
+  and authentication directly. Extract authentication logic into AuthService.
+  @src/controllers/UserController.ts is the current file.
+  Show me your plan before making any changes.</code></pre>
+<h3 id="add-error-handling">Add error handling<a href="#add-error-handling" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/routes/products.ts is missing error handling on several endpoints.
+  Add proper try/catch blocks that use our AppError class from @src/lib/errors.ts
+  and return consistent error responses.</code></pre>
+<h3 id="optimize-n1-queries">Optimize N+1 queries<a href="#optimize-n1-queries" class="anchor-link">#</a></h3>
+<pre><code>&gt; the GET /api/users endpoint is making N+1 database queries.
+  @src/services/UserService.ts is the service.
+  Find the N+1 and fix it using Prisma's include/select.</code></pre>
+<hr>
+<h2 id="7-documentation">7. Documentation<a href="#7-documentation" class="anchor-link">#</a></h2>
+<h3 id="document-an-api">Document an API<a href="#document-an-api" class="anchor-link">#</a></h3>
+<pre><code>&gt; document the orders API endpoints in OpenAPI 3.0 format.
+  Read @src/routes/orders.ts and generate the YAML spec.
+  Include request/response schemas, error responses, and examples.</code></pre>
+<h3 id="generate-jsdoc">Generate JSDoc<a href="#generate-jsdoc" class="anchor-link">#</a></h3>
+<pre><code>&gt; add JSDoc comments to all exported functions in @src/services/OrderService.ts.
+  Include: description, @param with types, @returns, @throws.</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Task</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>New endpoint</td><td><code>create a [METHOD] /api/[path] endpoint that [requirements]. check existing patterns first.</code></td></tr>
+<tr><td>Fix 500 error</td><td><code>users get a 500 when [action]. error: [message]. relevant files: @[files]. find and fix.</code></td></tr>
+<tr><td>Add validation</td><td><code>add Zod validation to @[file]. rules: [requirements]. match the pattern in @[example].</code></td></tr>
+<tr><td>Add auth</td><td><code>protect [endpoint] with JWT auth. use the pattern from @src/middleware/auth.ts</code></td></tr>
+<tr><td>Migration</td><td><code>create a Prisma migration to [change]. show the schema change before running.</code></td></tr>
+<tr><td>Unit tests</td><td><code>write unit tests for @[file]. mock [dependencies]. cover: happy path, [edge cases].</code></td></tr>
+<tr><td>Slow query</td><td><code>this query is slow: [query]. analyze and suggest optimizations. check indexes.</code></td></tr>
+<tr><td>Refactor</td><td><code>@[file] is too large. extract [logic] into [new file]. show plan first.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>Always name your sessions</strong> — <code>&gt; /rename fix/TICKET-456</code> makes it easy to resume the next day</li>
+<li><strong>Use plan mode for migrations</strong> — <code>claude --permission-mode plan</code> before touching the schema</li>
+<li><strong>Pipe logs to Claude</strong> — <code>cat error.log | claude -p "what's happening?"</code> is faster than reading logs yourself</li>
+<li><strong>Run <code>/check</code> before every commit</strong> — catches lint/type/test failures before code review</li>
+<li><strong>Reference specific files with <code>@</code></strong> — <code>@src/services/OrderService.ts</code> gets better results than "the order service"</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

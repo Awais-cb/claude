@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hooks — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="hooks-automate-actions-on-events">Hooks — Automate Actions on Events<a href="#hooks-automate-actions-on-events" class="anchor-link">#</a></h1>
+<p>Think of hooks like IFTTT or Zapier, but for your coding assistant. "When Claude edits a file, automatically run the formatter." "When Claude finishes responding, send me a desktop notification." "When Claude tries to run a dangerous command, block it." You define the trigger (the Claude Code event) and the action (a shell command), and it happens automatically every time.</p>
+<p>Without hooks, you have to manually run your linter after Claude makes changes, manually check if files were formatted, manually remember to test after edits. With hooks, these things just happen — you stay in the flow.</p>
+<pre><code>Hook Lifecycle:
+
+  Claude does something
+         |
+         v
+   [Event fires]
+   (e.g., PostToolUse)
+         |
+         v
+   [Matcher checks]  &lt;-- Does "Edit|Write" match the tool used?
+         |
+    YES  |  NO
+         |   \
+         v    \--&gt; Skip hook, continue
+   [Command runs]
+   (your shell script)
+         |
+    +----+----+
+    |         |
+   PreToolUse  PostToolUse
+   can BLOCK   result is
+   the action  informational</code></pre>
+<hr>
+<h2 id="prerequisites">Prerequisites<a href="#prerequisites" class="anchor-link">#</a></h2>
+<p>Before writing complex hooks, make sure you have the relevant tools installed:</p>
+<p><strong>For code formatting hooks:</strong></p>
+<p>macOS (using Homebrew):</p>
+<pre data-lang="bash"><code>brew install prettier          # JavaScript/TypeScript formatter
+brew install black             # Python formatter</code></pre>
+<p>Linux (Ubuntu):</p>
+<pre data-lang="bash"><code>npm install -g prettier
+pip install black</code></pre>
+<p>Windows (WSL):</p>
+<pre data-lang="bash"><code>npm install -g prettier
+pip install black</code></pre>
+<p><strong>For desktop notification hooks:</strong></p>
+<p>macOS: <code>osascript</code> is built in — no install needed.</p>
+<p>Linux (Ubuntu):</p>
+<pre data-lang="bash"><code>sudo apt install libnotify-bin   # Provides notify-send</code></pre>
+<p>Windows (WSL): For notifications that appear on the Windows desktop from WSL:</p>
+<pre data-lang="bash"><code># Option 1: Use PowerShell from WSL
+powershell.exe -Command "..."
+
+# Option 2: Install a notification tool
+# wsl-notify-send works well for WSL -&gt; Windows notifications</code></pre>
+<p><strong>For HTTP hooks:</strong> <code>curl</code> is usually pre-installed on macOS and Linux. On Windows, it's included in modern PowerShell.</p>
+<hr>
+<h2 id="what-are-hooks">What Are Hooks?<a href="#what-are-hooks" class="anchor-link">#</a></h2>
+<p>Hooks are event listeners for Claude Code. Common uses:</p>
+<ul>
+<li><strong>Auto-format code</strong> after Claude edits a file</li>
+<li><strong>Send a notification</strong> when Claude needs your attention</li>
+<li><strong>Block dangerous operations</strong> before they happen</li>
+<li><strong>Log everything</strong> Claude does for auditing</li>
+<li><strong>Re-inject context</strong> after conversation is compacted</li>
+</ul>
+<hr>
+<h2 id="hook-events">Hook Events<a href="#hook-events" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Event</th><th>When it fires</th></tr></thead>
+<tbody>
+<tr><td><code>SessionStart</code></td><td>When a session starts or resumes</td></tr>
+<tr><td><code>UserPromptSubmit</code></td><td>Before Claude processes your message</td></tr>
+<tr><td><code>PreToolUse</code></td><td>Before any tool runs (can block the action)</td></tr>
+<tr><td><code>PermissionRequest</code></td><td>When a permission dialog appears</td></tr>
+<tr><td><code>PostToolUse</code></td><td>After a tool successfully completes</td></tr>
+<tr><td><code>PostToolUseFailure</code></td><td>After a tool fails</td></tr>
+<tr><td><code>Notification</code></td><td>When Claude needs your attention</td></tr>
+<tr><td><code>SubagentStart</code></td><td>When a subagent is spawned</td></tr>
+<tr><td><code>SubagentStop</code></td><td>When a subagent finishes</td></tr>
+<tr><td><code>Stop</code></td><td>When Claude finishes responding</td></tr>
+<tr><td><code>TeammateIdle</code></td><td>When an agent team teammate is about to go idle</td></tr>
+<tr><td><code>TaskCompleted</code></td><td>When a task is marked complete</td></tr>
+<tr><td><code>ConfigChange</code></td><td>When a config file changes</td></tr>
+<tr><td><code>WorktreeCreate</code></td><td>When a worktree is created</td></tr>
+<tr><td><code>WorktreeRemove</code></td><td>When a worktree is removed</td></tr>
+<tr><td><code>PreCompact</code></td><td>Before context compaction happens</td></tr>
+<tr><td><code>SessionEnd</code></td><td>When a session terminates</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="hook-configuration">Hook Configuration<a href="#hook-configuration" class="anchor-link">#</a></h2>
+<p>Hooks are configured in <code>settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "prettier --write {{file}}"
+      }
+    ]
+  }
+}</code></pre>
+<h3 id="where-to-put-hooks">Where to put hooks<a href="#where-to-put-hooks" class="anchor-link">#</a></h3>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre><code>~/.claude/settings.json          # User-wide (all projects)
+.claude/settings.json            # Project-wide
+.claude/settings.local.json      # Local only (not committed to git)</code></pre>
+<p><strong>Windows (native path):</strong></p>
+<pre><code>%USERPROFILE%\.claude\settings.json     # User-wide
+.claude\settings.json                   # Project-wide
+.claude\settings.local.json             # Local only</code></pre>
+<p><strong>Recommendation for beginners:</strong></p>
+<ul>
+<li>Start with <code>.claude/settings.local.json</code> in your project — it won't affect other projects and won't be accidentally committed.</li>
+<li>Once you're happy with a hook, move it to <code>.claude/settings.json</code> if the whole team should use it, or <code>~/.claude/settings.json</code> if it's a personal preference for all your projects.</li>
+</ul>
+<hr>
+<h2 id="environment-variables-in-hooks">Environment Variables in Hooks<a href="#environment-variables-in-hooks" class="anchor-link">#</a></h2>
+<p>Claude Code passes these variables to hook commands. Here's what each one actually contains:</p>
+<table>
+<thead><tr><th>Variable</th><th>What it contains</th><th>Example value</th></tr></thead>
+<tbody>
+<tr><td><code>$CLAUDE_PROJECT_DIR</code></td><td>Absolute path to the current working directory</td><td><code>/home/alice/myproject</code></td></tr>
+<tr><td><code>$CLAUDE_TOOL_NAME</code></td><td>The name of the tool Claude just used</td><td><code>Edit</code>, <code>Bash</code>, <code>Write</code>, <code>Read</code></td></tr>
+<tr><td><code>$CLAUDE_TOOL_INPUT_FILE_PATH</code></td><td>The full path of the file being edited or written</td><td><code>/home/alice/myproject/src/utils.js</code></td></tr>
+<tr><td><code>$CLAUDE_TOOL_INPUT_COMMAND</code></td><td>The exact shell command Claude is about to run</td><td><code>npm test -- --coverage</code></td></tr>
+<tr><td><code>$CLAUDE_SESSION_ID</code></td><td>A unique identifier for the current Claude session</td><td><code>sess_abc123def456</code></td></tr>
+<tr><td><code>$CLAUDE_NOTIFICATION_TYPE</code></td><td>The category of notification being sent</td><td><code>waiting_for_input</code>, <code>task_complete</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="practical-hook-examples">Practical Hook Examples<a href="#practical-hook-examples" class="anchor-link">#</a></h2>
+<h3 id="1-auto-format-code-after-edits">1. Auto-format code after edits<a href="#1-auto-format-code-after-edits" class="anchor-link">#</a></h3>
+<p>Run Prettier automatically after Claude edits any JS/TS file:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+      }
+    ]
+  }
+}</code></pre>
+<p><strong>What this does:</strong> Every time Claude saves a change to a file, Prettier reformats it automatically. You never have to manually run the formatter.</p>
+<h3 id="2-desktop-notification-when-claude-needs-you">2. Desktop notification when Claude needs you<a href="#2-desktop-notification-when-claude-needs-you" class="anchor-link">#</a></h3>
+<p><strong>macOS (built-in, no install required):</strong></p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "Notification": [
+      {
+        "command": "osascript -e 'display notification \"Claude needs your input\" with title \"Claude Code\"'"
+      }
+    ]
+  }
+}</code></pre>
+<p><strong>Linux (Ubuntu) — requires <code>libnotify-bin</code>:</strong></p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "Notification": [
+      {
+        "command": "notify-send 'Claude Code' 'Claude needs your input' --icon=dialog-information"
+      }
+    ]
+  }
+}</code></pre>
+<p><strong>Windows (WSL) — sends a Windows toast notification from WSL:</strong></p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "Notification": [
+      {
+        "command": "powershell.exe -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Claude needs your input', 'Claude Code')\""
+      }
+    ]
+  }
+}</code></pre>
+<blockquote><p><strong>Tip for macOS:</strong> The <code>osascript</code> notification only appears if your terminal app has notification permissions. Go to System Settings &gt; Notifications &gt; your terminal app and enable notifications if they don't appear.</p></blockquote>
+<blockquote><p><strong>Tip for Linux:</strong> If <code>notify-send</code> shows an error, check that a notification daemon is running. On GNOME, this is usually automatic. On minimal setups, try <code>dunst</code> as a lightweight notification daemon.</p></blockquote>
+<h3 id="3-run-linter-after-edits">3. Run linter after edits<a href="#3-run-linter-after-edits" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "cd $CLAUDE_PROJECT_DIR &amp;&amp; npm run lint --fix"
+      }
+    ]
+  }
+}</code></pre>
+<h3 id="4-block-edits-to-sensitive-files">4. Block edits to sensitive files<a href="#4-block-edits-to-sensitive-files" class="anchor-link">#</a></h3>
+<p>Prevent Claude from ever editing <code>.env</code> or credentials files. Save this as a script (e.g., <code>~/.claude/hooks/block-sensitive.sh</code>):</p>
+<pre data-lang="bash"><code>#!/bin/bash
+FILE_PATH=$(jq -r '.tool_input.file_path // .tool_input.path // ""')
+
+if echo "$FILE_PATH" | grep -qE '\.(env|key|pem|cert)$'; then
+  jq -n '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "Cannot edit sensitive files"
+    }
+  }'
+else
+  exit 0
+fi</code></pre>
+<p>Then reference it in your hook:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "~/.claude/hooks/block-sensitive.sh"
+      }
+    ]
+  }
+}</code></pre>
+<h3 id="5-log-all-commands-claude-runs">5. Log all commands Claude runs<a href="#5-log-all-commands-claude-runs" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "echo \"[$(date)] Claude running: $CLAUDE_TOOL_INPUT_COMMAND\" &gt;&gt; ~/.claude/command-log.txt"
+      }
+    ]
+  }
+}</code></pre>
+<p><strong>macOS / Linux path:</strong> <code>~/.claude/command-log.txt</code></p>
+<p><strong>Windows path (in WSL):</strong> <code>~/.claude/command-log.txt</code> (inside WSL home)</p>
+<h3 id="6-run-tests-after-file-changes">6. Run tests after file changes<a href="#6-run-tests-after-file-changes" class="anchor-link">#</a></h3>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "cd $CLAUDE_PROJECT_DIR &amp;&amp; npm test -- --passWithNoTests 2&gt;/dev/null || true"
+      }
+    ]
+  }
+}</code></pre>
+<h3 id="7-re-inject-important-context-after-compaction">7. Re-inject important context after compaction<a href="#7-re-inject-important-context-after-compaction" class="anchor-link">#</a></h3>
+<p>When Claude compacts the conversation, important notes might be lost. Re-inject them:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PreCompact": [
+      {
+        "command": "cat $CLAUDE_PROJECT_DIR/.claude/important-context.md"
+      }
+    ]
+  }
+}</code></pre>
+<hr>
+<h2 id="hook-decision-control-pretooluse">Hook Decision Control (PreToolUse)<a href="#hook-decision-control-pretooluse" class="anchor-link">#</a></h2>
+<p><code>PreToolUse</code> hooks can <strong>allow</strong> or <strong>block</strong> an action. To block, output a JSON object with <code>hookSpecificOutput</code>. To allow, simply exit with code 0:</p>
+<pre data-lang="bash"><code>#!/bin/bash
+# Block rm -rf commands
+
+COMMAND=$(jq -r '.tool_input.command')
+
+if echo "$COMMAND" | grep -q "rm -rf"; then
+  jq -n '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "Refusing to run rm -rf. Use rm with specific paths instead."
+    }
+  }'
+else
+  exit 0  # Allow the command
+fi</code></pre>
+<p>Save this as a script file, then reference it in your hook:</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>chmod +x ~/.claude/hooks/check-dangerous-commands.sh</code></pre>
+<p>Configure it:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "~/.claude/hooks/check-dangerous-commands.sh"
+      }
+    ]
+  }
+}</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>chmod +x ~/.claude/hooks/check-dangerous-commands.sh</code></pre>
+<p>The hook path in <code>settings.json</code> should use the WSL path format (<code>~/.claude/hooks/...</code>) when Claude Code is running in WSL.</p>
+<hr>
+<h2 id="matchers-filtering-which-tools-trigger">Matchers — Filtering Which Tools Trigger<a href="#matchers-filtering-which-tools-trigger" class="anchor-link">#</a></h2>
+<p>Use the <code>matcher</code> field to only fire on specific tools:</p>
+<pre data-lang="json"><code>{
+  "matcher": "Edit"            // Only on Edit tool
+  "matcher": "Edit|Write"      // Edit or Write
+  "matcher": "Bash(git *)"     // Only git commands
+  "matcher": "Bash(npm *)"     // Only npm commands
+  "matcher": "Edit(src/*.ts)"  // Only TypeScript files in src/
+}</code></pre>
+<hr>
+<h2 id="http-hooks">HTTP Hooks<a href="#http-hooks" class="anchor-link">#</a></h2>
+<p>Instead of shell commands, call an HTTP endpoint:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "http": {
+          "url": "https://your-server.com/claude-hook",
+          "method": "POST"
+        }
+      }
+    ]
+  }
+}</code></pre>
+<hr>
+<h2 id="async-hooks">Async Hooks<a href="#async-hooks" class="anchor-link">#</a></h2>
+<p>Run hooks in the background without blocking Claude:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "command": "run-slow-linter.sh",
+        "async": true
+      }
+    ]
+  }
+}</code></pre>
+<hr>
+<h2 id="managing-hooks">Managing Hooks<a href="#managing-hooks" class="anchor-link">#</a></h2>
+<pre><code>&gt; /hooks</code></pre>
+<p>Opens an interactive interface to:</p>
+<ul>
+<li>View all configured hooks</li>
+<li>Create new hooks</li>
+<li>Edit existing hooks</li>
+<li>Enable/disable hooks</li>
+<li>Test hooks</li>
+</ul>
+<hr>
+<h2 id="disable-all-hooks">Disable All Hooks<a href="#disable-all-hooks" class="anchor-link">#</a></h2>
+<p>For debugging or one-off sessions:</p>
+<pre data-lang="json"><code>{
+  "disableAllHooks": true
+}</code></pre>
+<hr>
+<h2 id="troubleshooting-common-hook-failures">Troubleshooting Common Hook Failures<a href="#troubleshooting-common-hook-failures" class="anchor-link">#</a></h2>
+<p><strong>Problem: Hook command not found</strong></p>
+<p>Symptoms: The hook silently fails or you see "command not found" in logs.</p>
+<p>Cause: Hooks run in a non-interactive shell that may not have your PATH set up the same way your terminal does.</p>
+<p>Fix: Use absolute paths to commands in your hook:</p>
+<pre data-lang="json"><code>{
+  "command": "/usr/local/bin/prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+}</code></pre>
+<p>Find the absolute path with <code>which prettier</code> (macOS/Linux) or <code>Get-Command prettier</code> (PowerShell).</p>
+<hr>
+<p><strong>Problem: Hook fires but does nothing visible</strong></p>
+<p>Symptoms: The hook runs (no error) but the expected effect doesn't happen.</p>
+<p>Cause: The command is running but in the wrong directory, or the file path variable isn't expanding correctly.</p>
+<p>Fix: Test your hook command manually in your terminal, substituting real values for the environment variables:</p>
+<pre data-lang="bash"><code># Manually simulate what the hook will do:
+CLAUDE_TOOL_INPUT_FILE_PATH="/path/to/your/file.js"
+prettier --write "$CLAUDE_TOOL_INPUT_FILE_PATH"</code></pre>
+<hr>
+<p><strong>Problem: PreToolUse hook not blocking actions</strong></p>
+<p>Symptoms: You expect the hook to block an action but Claude proceeds anyway.</p>
+<p>Cause: The JSON output from your hook is malformed, or the script exits with an error before printing the JSON.</p>
+<p>Fix: Test your blocking script directly. The output must be valid JSON with the <code>hookSpecificOutput</code> structure:</p>
+<pre data-lang="bash"><code># Good - this will block:
+jq -n '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "Not allowed"}}'
+
+# Allow by simply exiting 0 (no JSON output needed):
+exit 0
+
+# Bad - old format no longer works:
+echo "{ decision: block }"</code></pre>
+<hr>
+<p><strong>Problem: macOS notifications don't appear</strong></p>
+<p>Symptoms: The <code>osascript</code> command runs without error but no notification appears.</p>
+<p>Cause: Your terminal app doesn't have notification permissions.</p>
+<p>Fix: Go to System Settings &gt; Notifications &gt; find your terminal app (Terminal, iTerm2, etc.) &gt; enable "Allow Notifications".</p>
+<hr>
+<p><strong>Problem: Linux <code>notify-send</code> fails</strong></p>
+<p>Symptoms: <code>notify-send: No notification servers are available</code> error.</p>
+<p>Cause: No notification daemon is running.</p>
+<p>Fix:</p>
+<pre data-lang="bash"><code># Check if dunst is installed:
+which dunst
+
+# Install and start dunst if not present:
+sudo apt install dunst
+dunst &amp;
+
+# Or for GNOME: ensure gnome-shell is running (it includes a notification daemon)</code></pre>
+<hr>
+<p><strong>Problem: Hooks slow down every Claude response</strong></p>
+<p>Symptoms: There's noticeable lag after every file edit.</p>
+<p>Cause: A <code>PostToolUse</code> hook is running a slow command synchronously.</p>
+<p>Fix: Add <code>"async": true</code> to the hook so it runs in the background:</p>
+<pre data-lang="json"><code>{
+  "matcher": "Edit|Write",
+  "command": "npm run lint",
+  "async": true
+}</code></pre>
+<hr>
+<h2 id="complete-real-world-setup">Complete Real-World Setup<a href="#complete-real-world-setup" class="anchor-link">#</a></h2>
+<p>Here's a complete <code>.claude/settings.json</code> for a Node.js project:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "if [[ $CLAUDE_TOOL_INPUT_FILE_PATH == *.ts || $CLAUDE_TOOL_INPUT_FILE_PATH == *.js ]]; then npx prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2&gt;/dev/null; fi"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash(rm *)",
+        "command": "jq -n '{hookSpecificOutput:{hookEventName:\"PreToolUse\",permissionDecision:\"deny\",permissionDecisionReason:\"Use trash-cli instead of rm\"}}'"
+      }
+    ],
+    "Notification": [
+      {
+        "command": "terminal-notifier -title 'Claude Code' -message 'Waiting for input' 2&gt;/dev/null || true"
+      }
+    ],
+    "SessionStart": [
+      {
+        "command": "echo \"Session started at $(date)\" &gt;&gt; ~/.claude/session-log.txt"
+      }
+    ]
+  }
+}</code></pre>
+<blockquote><p><strong>Note on <code>terminal-notifier</code>:</strong> This is a macOS-specific tool installable via <code>brew install terminal-notifier</code>. The <code>2&gt;/dev/null || true</code> at the end means it fails silently on Linux/Windows where the tool isn't available — safe to leave in a shared <code>settings.json</code> if the team uses mixed OS.</p></blockquote>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

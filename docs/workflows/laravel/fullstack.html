@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="2">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laravel Fullstack Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="laravel-fullstack-developer-workflow">Laravel Fullstack Developer Workflow<a href="#laravel-fullstack-developer-workflow" class="anchor-link">#</a></h1>
+<p>End-to-end feature development with Claude in a Laravel project — from database migration to Blade/Livewire/Inertia UI, as a single developer owning the whole stack.</p>
+<hr>
+<h2 id="the-laravel-fullstack-advantage">The Laravel Fullstack Advantage<a href="#the-laravel-fullstack-advantage" class="anchor-link">#</a></h2>
+<p>Laravel's tight integration between layers (Eloquent, controllers, Blade, Livewire) makes it ideal for Claude-assisted full-vertical development. Claude can hold the entire feature context — schema, service logic, and view — simultaneously in one session.</p>
+<p><strong>Principle</strong>: one named session per feature, top-down: migration → model → service → controller → routes → frontend → tests.</p>
+<hr>
+<h2 id="starting-a-feature">Starting a Feature<a href="#starting-a-feature" class="anchor-link">#</a></h2>
+<h3 id="1-name-and-orient-the-session">1. Name and orient the session<a href="#1-name-and-orient-the-session" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide</code></pre>
+<pre><code>&gt; /rename feat/TICKET-42-patient-notifications</code></pre>
+<h3 id="2-give-claude-the-full-spec-upfront">2. Give Claude the full spec upfront<a href="#2-give-claude-the-full-spec-upfront" class="anchor-link">#</a></h3>
+<pre><code>&gt; I'm building a notification system end-to-end in Laravel. Here's the spec:
+
+  BACKEND:
+  - DB: notifications table (id, user_id, type, title, body, read_at, created_at)
+  - Service: NotificationService with getUnread(), markRead(), deleteNotification()
+  - Controller: NotificationController with RESTful endpoints
+  - Events/Jobs: dispatch a NotificationCreated event when a notification is inserted
+
+  FRONTEND:
+  - Bell icon in the navbar with an unread count badge
+  - Livewire component for the dropdown panel showing recent notifications
+  - Click notification → mark as read + redirect to the relevant page
+  - Real-time badge update via Livewire polling or Laravel Echo
+
+  STACK: Laravel 11, Livewire 3, Alpine.js, Tailwind CSS, MySQL
+
+  Start by reviewing the existing codebase conventions. Read:
+  - app/Models/ for model patterns
+  - app/Services/ for service layer patterns
+  - app/Http/Controllers/ for controller patterns
+  - resources/views/ for Blade/Livewire component structure
+  Then let's go top-down: migration first.</code></pre>
+<hr>
+<h2 id="phase-1-database-migration">Phase 1: Database Migration<a href="#phase-1-database-migration" class="anchor-link">#</a></h2>
+<pre><code>&gt; look at the recent migrations in database/migrations/ to understand our naming
+  and column conventions. Then create a migration for the notifications table:
+  - id (bigIncrements)
+  - user_id (foreign key → users)
+  - type (string, e.g. 'appointment_reminder', 'message_received')
+  - title (string)
+  - body (text)
+  - data (json, nullable — for context-specific payload like appointment_id)
+  - read_at (timestamp, nullable)
+  - timestamps()
+
+  Show me the migration file before running anything.</code></pre>
+<p>Review and adjust, then:</p>
+<pre><code>&gt; looks good. run the migration.</code></pre>
+<hr>
+<h2 id="phase-2-eloquent-model">Phase 2: Eloquent Model<a href="#phase-2-eloquent-model" class="anchor-link">#</a></h2>
+<pre><code>&gt; create the Notification model. Check app/Models/BaseModel.php for the base class
+  and app/Components/Traits/DatabaseOperation.php for the cc* query methods.
+  The model should:
+  - extend BaseModel (or Authenticatable if applicable)
+  - use DatabaseOperation trait
+  - define $fillable for mass assignment
+  - define the user() BelongsTo relationship
+  - use IsActive and NotDeleted scope traits if they apply
+  - include a fetchModel() static helper
+  - add a scopeUnread() query scope</code></pre>
+<hr>
+<h2 id="phase-3-service-layer">Phase 3: Service Layer<a href="#phase-3-service-layer" class="anchor-link">#</a></h2>
+<pre><code>&gt; create NotificationService in app/Services/. Check other service classes
+  (e.g. app/Services/BookingService.php) for the static method + GenericResponse pattern.
+
+  Implement:
+  - getUnread(int $userId): GenericResponse — returns unread notifications for user
+  - markRead(int $notificationId, int $userId): GenericResponse — sets read_at, verifies ownership
+  - deleteNotification(int $notificationId, int $userId): GenericResponse — verifies ownership before delete
+  - createNotification(array $data): GenericResponse — inserts and dispatches NotificationCreated event
+
+  Rules:
+  - Never throw exceptions; return GenericResponse::fail() on error
+  - Wrap DB writes in DB::beginTransaction() / DB::commit() / DB::rollBack()
+  - Log system messages via the GenericResponse constructor</code></pre>
+<hr>
+<h2 id="phase-4-form-requests-controller">Phase 4: Form Requests &amp; Controller<a href="#phase-4-form-requests-controller" class="anchor-link">#</a></h2>
+<pre><code>&gt; create the Form Request and Controller for notifications.
+
+  Form Requests (in app/Http/Requests/):
+  - CreateNotificationRequest: validate type (required, string), title, body, user_id, data (nullable array)
+
+  Controller (app/Http/Controllers/NotificationController.php):
+  - index(): list unread notifications for the authenticated user
+  - markRead(int $id): mark a single notification as read
+  - destroy(int $id): delete a notification
+
+  Use the JsonResponse class (app/Components/Classes/JsonResponse.php) for all responses.
+  Check other controllers for the exact pattern.</code></pre>
+<hr>
+<h2 id="phase-5-routes">Phase 5: Routes<a href="#phase-5-routes" class="anchor-link">#</a></h2>
+<pre><code>&gt; add the notification routes to routes/web/ (or the appropriate route file).
+  Check routes/web.php and routes/web/ to find where authenticated user routes live.
+  Apply the correct middleware (auth, role:patient, etc.) matching the pattern for similar routes.
+  Use resource-style routes where they fit.</code></pre>
+<hr>
+<h2 id="phase-6-livewire-component-frontend">Phase 6: Livewire Component (Frontend)<a href="#phase-6-livewire-component-frontend" class="anchor-link">#</a></h2>
+<pre><code>&gt; now build the frontend. First read resources/views/ to understand our Blade
+  component and Livewire structure.
+
+  Create a Livewire component: NotificationBell
+  - Shows bell icon with unread count badge (using data from NotificationService::getUnread())
+  - Opens a dropdown panel listing recent notifications
+  - &quot;Mark all read&quot; button
+  - Each notification row: icon, title, body, time-ago, read indicator
+  - Clicking a notification marks it read and redirects based on type
+  - Poll every 30 seconds to update the badge count (Livewire wire:poll)
+
+  Use Tailwind CSS for styling. Check existing Livewire components in
+  app/Livewire/ and resources/views/livewire/ for conventions.</code></pre>
+<p>Integrate into the layout:</p>
+<pre><code>&gt; add the NotificationBell component to the main navbar.
+  Read resources/views/layouts/ to find the correct layout file.
+  Place it on the right side of the nav, before the user avatar.</code></pre>
+<hr>
+<h2 id="phase-7-events-broadcasting-optional-real-time">Phase 7: Events &amp; Broadcasting (Optional Real-Time)<a href="#phase-7-events-broadcasting-optional-real-time" class="anchor-link">#</a></h2>
+<pre><code>&gt; add real-time notification delivery using Laravel Echo + Pusher (or Reverb).
+  Check config/broadcasting.php and .env for the current broadcast driver.
+
+  Create a NotificationCreated event that:
+  - implements ShouldBroadcast
+  - broadcasts on a private channel: &quot;notifications.{userId}&quot;
+  - sends the notification payload
+
+  In the Livewire component, listen for this event and refresh the list
+  without a page reload.</code></pre>
+<hr>
+<h2 id="phase-8-testing">Phase 8: Testing<a href="#phase-8-testing" class="anchor-link">#</a></h2>
+<pre><code>&gt; write tests for the notification feature.
+
+  Feature Tests (tests/Feature/):
+  - NotificationTest.php: GET /notifications returns 200 and only the user's notifications
+  - NotificationTest.php: PATCH /notifications/{id}/read marks as read and returns 200
+  - NotificationTest.php: DELETE /notifications/{id} deletes and returns 200
+  - NotificationTest.php: unauthenticated requests return 401/redirect
+
+  Unit Tests (tests/Unit/):
+  - NotificationServiceTest.php: getUnread returns only unread notifications
+  - NotificationServiceTest.php: markRead fails if userId doesn't own the notification
+  - NotificationServiceTest.php: createNotification dispatches NotificationCreated event
+
+  Use database factories (Database\Factories\NotificationFactory) and
+  Laravel's Mail::fake(), Event::fake(), Queue::fake() where needed.
+  Check tests/ for existing test patterns.</code></pre>
+<hr>
+<h2 id="phase-9-review-ship">Phase 9: Review &amp; Ship<a href="#phase-9-review-ship" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code># Review all changes before committing
+git diff
+
+# Run the test suite
+php artisan test
+
+# Format with Pint
+php artisan pint</code></pre>
+<p>Then use Claude:</p>
+<pre><code>&gt; review all my changes in this branch vs main. focus on:
+  - any missing ownership checks (user can only access their own notifications)
+  - N+1 queries in the controller or Livewire component
+  - missing validation or edge cases
+  - anything that doesn't follow the existing service/controller/model conventions
+  be specific with file names and line numbers.</code></pre>
+<hr>
+<h2 id="cross-layer-debugging">Cross-Layer Debugging<a href="#cross-layer-debugging" class="anchor-link">#</a></h2>
+<p>When a bug spans multiple layers:</p>
+<pre><code>&gt; the unread count badge isn't updating after marking a notification as read.
+  The markRead API call succeeds (I can see it in the network tab).
+
+  Check:
+  1. NotificationController@markRead — is it returning the right response?
+  2. The Livewire component — is it re-fetching after the action?
+  3. Is the Livewire wire:model or wire:click wired correctly?
+  4. Is the NotificationService actually setting read_at?
+
+  Trace the full flow and find where the state isn't refreshing.</code></pre>
+<hr>
+<h2 id="managing-long-feature-sessions">Managing Long Feature Sessions<a href="#managing-long-feature-sessions" class="anchor-link">#</a></h2>
+<p>When context gets large:</p>
+<pre><code>&gt; /compact keep: the notifications table schema, the GenericResponse pattern,
+  the service method signatures, and the Livewire component structure we agreed on.</code></pre>
+<p>Resume across days:</p>
+<pre data-lang="bash"><code>claude -c    # resume yesterday's session
+&gt; what did we finish and what's left to build?</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Phase</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>Orient</td><td><code>I'm building [feature]. spec: [backend], [frontend]. stack: Laravel 11, [frontend stack]. read conventions first.</code></td></tr>
+<tr><td>Migration</td><td><code>create a migration for [table] with [columns]. show the file before running.</code></td></tr>
+<tr><td>Model</td><td><code>create the [Model]. extend BaseModel, use DatabaseOperation, define $fillable, add [relationships].</code></td></tr>
+<tr><td>Service</td><td><code>create [Name]Service using GenericResponse. implement: [methods]. never throw; return GenericResponse::fail().</code></td></tr>
+<tr><td>Controller</td><td><code>create [Name]Controller. use JsonResponse class. form request for validation. follow @[existing controller].</code></td></tr>
+<tr><td>Livewire</td><td><code>create Livewire component [Name]. data from [Service]. actions: [list]. Tailwind CSS. follow @[existing component].</code></td></tr>
+<tr><td>Debug</td><td><code>[symptom]. check [file1], [file2], [file3]. trace the full flow.</code></td></tr>
+<tr><td>Ship</td><td><code>review my branch changes. focus on: ownership checks, N+1s, missing validation, convention violations.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>One session per feature</strong> — Claude accumulates context across all layers; starting fresh mid-feature loses that</li>
+<li><strong>Read before writing</strong> — always ask Claude to read existing service/controller/model conventions before creating new ones</li>
+<li><strong>Top-down is cleaner</strong> — migration → model → service → controller → view avoids changing types multiple times</li>
+<li><strong>Use plan mode for schema changes</strong> — <code>claude --permission-mode plan</code> before touching migrations that affect many models</li>
+<li><strong>Compact before switching layers</strong> — <code>&gt; /compact keep the [layer] decisions</code> before moving to the next layer</li>
+<li><strong>Reference the GenericResponse pattern explicitly</strong> — mention it in every service prompt so Claude uses it consistently</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../../assets/main.js"></script>
+</body>
+</html>

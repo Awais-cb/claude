@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fullstack Developer Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="fullstack-developer-workflow">Fullstack Developer Workflow<a href="#fullstack-developer-workflow" class="anchor-link">#</a></h1>
+<p>End-to-end feature development with Claude — from database schema to UI, as a single developer owning the whole stack.</p>
+<hr>
+<h2 id="your-superpower-as-a-fullstack-dev">Your Superpower as a Fullstack Dev<a href="#your-superpower-as-a-fullstack-dev" class="anchor-link">#</a></h2>
+<p>As a fullstack developer, you own a feature from end to end. Claude is best used to accelerate the full vertical slice: schema → API → frontend → tests, in one coherent session.</p>
+<p>The key is keeping Claude oriented across all layers simultaneously. Use a single named session per feature so Claude builds up context across all layers as you work.</p>
+<hr>
+<h2 id="starting-a-feature">Starting a Feature<a href="#starting-a-feature" class="anchor-link">#</a></h2>
+<h3 id="1-name-your-session">1. Name your session<a href="#1-name-your-session" class="anchor-link">#</a></h3>
+<pre><code>claude --ide
+&gt; /rename feat/TICKET-42-user-notifications</code></pre>
+<h3 id="2-orient-claude-on-the-whole-feature">2. Orient Claude on the whole feature<a href="#2-orient-claude-on-the-whole-feature" class="anchor-link">#</a></h3>
+<pre><code>&gt; I'm building a notification system end-to-end. Here's the full spec:
+
+  BACKEND:
+  - DB: notifications table (id, user_id, type, title, body, read_at, created_at)
+  - API: GET /api/notifications, PATCH /api/notifications/:id/read, DELETE /api/notifications/:id
+  - Real-time: emit a WebSocket event when a new notification is created
+
+  FRONTEND:
+  - Bell icon in the navbar with unread count badge
+  - Dropdown panel showing recent notifications
+  - Click notification → mark as read + navigate to the relevant page
+  - Real-time updates when new notifications arrive
+
+  TECH STACK:
+  - Backend: Express + Prisma (PostgreSQL)
+  - Frontend: React + React Query + Socket.io-client
+  - Testing: Vitest
+
+  Let's work top-down: schema first, then API, then frontend.
+  Start by reviewing the existing codebase to understand conventions.</code></pre>
+<hr>
+<h2 id="phase-1-database-schema">Phase 1: Database Schema<a href="#phase-1-database-schema" class="anchor-link">#</a></h2>
+<pre><code>&gt; first, analyze the existing Prisma schema at @prisma/schema.prisma
+  and the existing models, then create the Notification model.
+  Show me the schema addition before running any migration.</code></pre>
+<p>Review and iterate:</p>
+<pre><code>&gt; add a `metadata` JSON field for storing context-specific data
+  (e.g., orderId for order notifications, commentId for comment notifications).
+  Also add an index on user_id + read_at for the &quot;get unread&quot; query.</code></pre>
+<p>Run when ready:</p>
+<pre><code>&gt; looks good. run the migration with the name &quot;add-notifications&quot;</code></pre>
+<hr>
+<h2 id="phase-2-backend-api">Phase 2: Backend API<a href="#phase-2-backend-api" class="anchor-link">#</a></h2>
+<pre><code>&gt; now build the notifications API layer. check how similar resources
+  are structured in @src/routes/ and @src/services/ first.
+
+  Create:
+  1. NotificationRepository — DB queries (getByUser, markRead, delete)
+  2. NotificationService — business logic
+  3. NotificationController — HTTP handlers
+  4. Route file — GET, PATCH, DELETE endpoints with auth middleware
+  5. Zod validation schemas</code></pre>
+<p>Validate the API:</p>
+<pre><code>&gt; run the existing test suite to make sure nothing is broken.
+  Then write unit tests for NotificationService covering:
+  - getUnread returns only unread notifications for the requesting user
+  - markRead only works for notifications belonging to the user (auth check)
+  - delete only works for notifications belonging to the user</code></pre>
+<hr>
+<h2 id="phase-3-real-time-layer">Phase 3: Real-Time Layer<a href="#phase-3-real-time-layer" class="anchor-link">#</a></h2>
+<pre><code>&gt; add WebSocket support for real-time notifications.
+  Check how WebSocket/Socket.io is set up in @src/server.ts.
+  When a notification is created (anywhere in the app), emit a 'notification:new'
+  event to the relevant user's socket room.
+
+  The notification service should emit the event after insert.
+  Don't change the HTTP API — WebSocket is additive.</code></pre>
+<hr>
+<h2 id="phase-4-frontend-api-integration">Phase 4: Frontend — API Integration<a href="#phase-4-frontend-api-integration" class="anchor-link">#</a></h2>
+<pre><code>&gt; now the frontend. Read @src/hooks/ to understand our data-fetching patterns.
+  Create a useNotifications hook using React Query that:
+  - fetches GET /api/notifications
+  - provides markAsRead(id) and deleteNotification(id) mutations
+  - connects to Socket.io for real-time updates (invalidate query on 'notification:new')
+  - tracks unread count
+  The socket client is in @src/lib/socket.ts</code></pre>
+<hr>
+<h2 id="phase-5-frontend-components">Phase 5: Frontend — Components<a href="#phase-5-frontend-components" class="anchor-link">#</a></h2>
+<pre><code>&gt; build the notification UI. reference @src/components/ui/ for existing components.
+
+  1. NotificationBell — icon button with unread count badge (in the navbar)
+  2. NotificationItem — single notification row (icon, title, body, time ago, read indicator)
+  3. NotificationPanel — dropdown panel with list of NotificationItems, &quot;Mark all read&quot; button,
+     empty state, loading skeleton
+
+  Wire to the useNotifications hook.
+  Use Framer Motion for the panel open/close animation (check if it's in package.json).</code></pre>
+<p>Integrate into the app:</p>
+<pre><code>&gt; add the NotificationBell to the navbar at @src/components/layout/Navbar.tsx.
+  It should appear on the right side, before the user avatar.</code></pre>
+<hr>
+<h2 id="phase-6-testing">Phase 6: Testing<a href="#phase-6-testing" class="anchor-link">#</a></h2>
+<pre><code>&gt; write tests for the notification feature:
+
+  Backend (Vitest):
+  - NotificationService: getUnread, markRead with wrong user (should fail), delete
+  - NotificationController: GET returns 401 if no auth, GET returns filtered by user
+
+  Frontend (Vitest + Testing Library):
+  - NotificationBell: shows correct unread count, opens panel on click
+  - NotificationPanel: shows notifications, mark as read updates the UI, empty state
+
+  Use our test factories in @src/tests/factories/ for test data.</code></pre>
+<hr>
+<h2 id="phase-7-review-and-ship">Phase 7: Review and Ship<a href="#phase-7-review-and-ship" class="anchor-link">#</a></h2>
+<pre><code>&gt; /diff          # review all changes before committing
+&gt; /team-review   # run team code review skill
+&gt; /check         # lint + types + tests
+&gt; /pr            # commit + push + open PR</code></pre>
+<hr>
+<h2 id="cross-layer-debugging">Cross-Layer Debugging<a href="#cross-layer-debugging" class="anchor-link">#</a></h2>
+<p>When bugs span multiple layers:</p>
+<pre><code>&gt; notifications are showing up in the database but the frontend count badge
+  isn't updating in real time. The socket event is being emitted (I can see it in the server logs).
+
+  Check:
+  1. @src/lib/socket.ts — is the client subscribing to 'notification:new'?
+  2. @src/hooks/useNotifications.ts — is the React Query cache being invalidated?
+  3. Are there any CORS issues with the WebSocket connection?
+
+  Trace the full event flow and find where it breaks.</code></pre>
+<hr>
+<h2 id="managing-context-across-a-long-feature">Managing Context Across a Long Feature<a href="#managing-context-across-a-long-feature" class="anchor-link">#</a></h2>
+<p>Long features = long sessions = context window fills up. Manage it:</p>
+<pre><code>&gt; /compact keep the database schema we finalized, the API endpoint signatures,
+  and the component structure we agreed on</code></pre>
+<p>Or create a checkpoint:</p>
+<pre><code>&gt; /checkpoint   # save state before moving to the next phase</code></pre>
+<p>If you split across days:</p>
+<pre data-lang="bash"><code>claude -c              # resume yesterday's session
+&gt; what did we finish yesterday and what's left to do?</code></pre>
+<hr>
+<h2 id="parallel-work-with-subagents">Parallel Work with Subagents<a href="#parallel-work-with-subagents" class="anchor-link">#</a></h2>
+<p>For large features, delegate to subagents:</p>
+<pre><code>&gt; I need to work on 3 things in parallel:
+  1. Use the test-writer agent to write backend tests for NotificationService
+  2. Use the explorer agent to find all places in the app that create notifications
+     (so I know where to add the emit call)
+  3. Meanwhile, I'll work with you on the frontend components
+
+  Spawn agents 1 and 2 in the background, I'll check back on them.</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Phase</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>Orient</td><td><code>I'm building [feature] end to end. spec: [backend], [frontend]. stack: [tech]. review conventions first.</code></td></tr>
+<tr><td>Schema</td><td><code>add a [Model] to @prisma/schema.prisma. show the change before running the migration.</code></td></tr>
+<tr><td>API layer</td><td><code>build [resource] API: repository, service, controller, routes. check existing patterns in @src/</code></td></tr>
+<tr><td>Hook</td><td><code>create a use[Resource] hook using React Query. provide mutations for [actions]. follow @src/hooks/</code></td></tr>
+<tr><td>Component</td><td><code>build [Name] component. wire to use[Resource] hook. reuse @src/components/ui/ for primitives.</code></td></tr>
+<tr><td>Debug</td><td><code>[symptom] — check [file1], [file2], and [file3]. trace the full flow and find where it breaks.</code></td></tr>
+<tr><td>Ship</td><td><code>/diff → /team-review → /check → /pr</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips">Tips<a href="#tips" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>One session per feature</strong> — Claude builds context across all layers as you work; don't start a new session mid-feature</li>
+<li><strong>Always read before writing</strong> — ask Claude to analyze existing conventions before building anything new</li>
+<li><strong>Top-down is cleaner</strong> — schema → API → frontend avoids having to change types multiple times</li>
+<li><strong>Compact before switching layers</strong> — <code>&gt; /compact keep the [layer] decisions</code> before moving to the next layer</li>
+<li><strong>Use plan mode for cross-cutting concerns</strong> — before adding a field that touches 10+ files, plan mode first</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

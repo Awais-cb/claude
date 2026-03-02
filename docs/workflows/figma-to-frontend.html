@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figma to Frontend Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="figma-to-frontend-workflow">Figma to Frontend Workflow<a href="#figma-to-frontend-workflow" class="anchor-link">#</a></h1>
+<p>How to use Claude's vision capabilities to convert Figma designs into production-ready components — accurately and fast.</p>
+<hr>
+<h2 id="how-it-works">How It Works<a href="#how-it-works" class="anchor-link">#</a></h2>
+<p>Claude can see images. You screenshot a Figma frame, paste it into Claude, and ask it to build the component. Claude analyzes the layout, spacing, colors, typography, and interactions, then generates matching code.</p>
+<blockquote><p><strong>This is not magic</strong> — the output quality depends on the screenshot quality, how specific your instructions are, and how well Claude knows your component library. The workflow below makes all three as good as possible.</p></blockquote>
+<hr>
+<h2 id="setup-what-claude-needs-to-know-first">Setup: What Claude Needs to Know First<a href="#setup-what-claude-needs-to-know-first" class="anchor-link">#</a></h2>
+<p>Before any Figma-to-code work, make sure Claude has context about your design system. Add this to your <code>CLAUDE.md</code> or say it at the start of the session:</p>
+<pre><code>&gt; Before we start building from Figma, here's our design system:
+  - UI library: Tailwind CSS + our custom components in @src/components/ui/
+  - Color palette: defined in tailwind.config.ts (primary, secondary, neutral, danger, success)
+  - Typography: Inter font, size scale: text-xs, text-sm, text-base, text-lg, text-xl, text-2xl, text-3xl
+  - Spacing: Tailwind's default scale (4px base unit)
+  - Border radius: rounded (4px), rounded-md (6px), rounded-lg (8px), rounded-full
+  - Shadows: shadow-sm, shadow, shadow-md, shadow-lg
+  - Components to reuse: Button, Input, Card, Badge, Avatar in @src/components/ui/
+  - Icons: Heroicons (import from @heroicons/react)</code></pre>
+<hr>
+<h2 id="step-1-get-a-clean-screenshot">Step 1: Get a Clean Screenshot<a href="#step-1-get-a-clean-screenshot" class="anchor-link">#</a></h2>
+<h3 id="from-figma-best-quality">From Figma (best quality)<a href="#from-figma-best-quality" class="anchor-link">#</a></h3>
+<ol>
+<li>Select the frame or component in Figma</li>
+<li>Make sure you're viewing at <strong>100%</strong> zoom for accurate dimensions</li>
+<li>Export as PNG (or use the Figma desktop app's right-click → Copy as PNG)</li>
+<li>For multi-state components (hover, active, error) — screenshot each state separately</li>
+</ol>
+<h3 id="screenshot-shortcuts-by-os">Screenshot shortcuts by OS<a href="#screenshot-shortcuts-by-os" class="anchor-link">#</a></h3>
+<table>
+<thead><tr><th>OS</th><th>Shortcut</th><th>What it captures</th></tr></thead>
+<tbody>
+<tr><td><strong>macOS</strong></td><td><code>Cmd+Shift+4</code> then drag</td><td>Selection</td></tr>
+<tr><td><strong>macOS</strong></td><td><code>Cmd+Shift+4</code> then <code>Space</code> → click window</td><td>Window</td></tr>
+<tr><td><strong>Windows</strong></td><td><code>Win+Shift+S</code></td><td>Selection (copies to clipboard)</td></tr>
+<tr><td><strong>Windows</strong></td><td>Snipping Tool (<code>Win+S</code> → search "snip")</td><td>Selection</td></tr>
+<tr><td><strong>Linux</strong></td><td><code>gnome-screenshot -a</code> or Flameshot</td><td>Selection</td></tr>
+</tbody>
+</table>
+<blockquote><p><strong>Tip:</strong> For complex designs, annotate the screenshot in Figma with notes about interactions, hover states, and non-obvious behavior before screenshotting.</p></blockquote>
+<hr>
+<h2 id="step-2-paste-and-describe">Step 2: Paste and Describe<a href="#step-2-paste-and-describe" class="anchor-link">#</a></h2>
+<pre><code>[Paste screenshot with Ctrl+V / Cmd+V in Claude's prompt box]
+
+&gt; Build this component as a React + TypeScript component using Tailwind CSS.
+
+  Component name: ProductCard
+  Location: src/components/features/products/ProductCard.tsx
+
+  From the design I can see:
+  - Card with white background, subtle shadow, 16px padding, 8px border radius
+  - Product image (16:9 ratio) at the top
+  - Badge in the top-right corner of the image (color depends on category)
+  - Product name in text-lg font-semibold
+  - Star rating (1-5) with filled/empty stars
+  - Price in text-xl font-bold text-primary-600
+  - &quot;Add to Cart&quot; button full width at the bottom
+
+  Props needed:
+  - id: string
+  - name: string
+  - price: number (display as formatted currency)
+  - imageUrl: string
+  - imageAlt: string
+  - rating: number (0-5, support decimals)
+  - reviewCount: number
+  - category: 'new' | 'sale' | 'bestseller' | null
+  - onAddToCart: (id: string) =&gt; void
+
+  Reuse: Button from @src/components/ui/Button.tsx, Badge from @src/components/ui/Badge.tsx
+  Icons: use Heroicons for the star icons</code></pre>
+<hr>
+<h2 id="step-3-iterate">Step 3: Iterate<a href="#step-3-iterate" class="anchor-link">#</a></h2>
+<p>After Claude generates the component, check it visually:</p>
+<h3 id="if-the-layout-is-wrong">If the layout is wrong<a href="#if-the-layout-is-wrong" class="anchor-link">#</a></h3>
+<pre><code>[Select the generated component in VS Code]
+&gt; the layout isn't matching the design. specifically:
+  - the image is square but should be 16:9 aspect ratio
+  - the badge is positioned inside the card padding, should be absolute top-right of the image
+  - the rating and review count should be on the same line
+  here's the original design again: [paste screenshot]</code></pre>
+<h3 id="if-spacing-is-off">If spacing is off<a href="#if-spacing-is-off" class="anchor-link">#</a></h3>
+<pre><code>&gt; the spacing doesn't match the design:
+  - gap between image and content should be 16px (gap-4), currently looks like 8px
+  - padding inside the card should be 16px on all sides
+  - margin between name and rating should be 8px</code></pre>
+<h3 id="if-colors-are-wrong">If colors are wrong<a href="#if-colors-are-wrong" class="anchor-link">#</a></h3>
+<pre><code>&gt; update the colors to match our design system:
+  - the &quot;sale&quot; badge should use our danger-500 color (bg-danger-500 text-white)
+  - the price text should be primary-700, not primary-600
+  - the star icons: filled = text-yellow-400, empty = text-gray-200</code></pre>
+<h3 id="if-behavior-is-missing">If behavior is missing<a href="#if-behavior-is-missing" class="anchor-link">#</a></h3>
+<pre><code>&gt; add the hover/interactive states I can see in the design:
+  - card: slight scale up on hover (scale-[1.02]) with transition
+  - button: bg-primary-700 on hover
+  - entire card is clickable (links to /products/{id}) but the button click is separate</code></pre>
+<hr>
+<h2 id="step-4-multi-state-components">Step 4: Multi-State Components<a href="#step-4-multi-state-components" class="anchor-link">#</a></h2>
+<p>For components with multiple states, screenshot each one:</p>
+<pre><code>I have 4 states for the OrderStatus badge:
+[paste screenshot 1] — pending state
+[paste screenshot 2] — processing state
+[paste screenshot 3] — shipped state
+[paste screenshot 4] — delivered state
+
+Build a StatusBadge component with a `status` prop that handles all 4 states.
+Each has different background color, text color, and icon.</code></pre>
+<hr>
+<h2 id="step-5-full-page-layouts">Step 5: Full Page Layouts<a href="#step-5-full-page-layouts" class="anchor-link">#</a></h2>
+<p>For full pages, break them into sections:</p>
+<pre><code>[paste screenshot of the full page]
+
+&gt; This is the product listing page. Break it down into these components:
+  1. PageHeader — with breadcrumbs and page title
+  2. FilterSidebar — with category filters, price range, and rating filter
+  3. ProductGrid — responsive grid of ProductCard components
+  4. Pagination — at the bottom
+
+  Let's build them in order. Start with the PageHeader.</code></pre>
+<p>Then tackle each component:</p>
+<pre><code>&gt; now let's do the FilterSidebar.
+  [paste screenshot of just the sidebar]</code></pre>
+<hr>
+<h2 id="step-6-responsive-designs">Step 6: Responsive Designs<a href="#step-6-responsive-designs" class="anchor-link">#</a></h2>
+<p>If Figma has mobile and desktop frames:</p>
+<pre><code>[paste mobile screenshot]
+[paste desktop screenshot]
+
+&gt; this component needs to be responsive. I've pasted both the mobile (375px)
+  and desktop (1280px) designs.
+
+  Mobile: single column, image full width, all text visible
+  Desktop: image on left (40%), content on right (60%), side by side
+
+  Build it mobile-first using Tailwind responsive prefixes.</code></pre>
+<hr>
+<h2 id="step-7-animation-transitions">Step 7: Animation &amp; Transitions<a href="#step-7-animation-transitions" class="anchor-link">#</a></h2>
+<p>For animated designs (Figma prototypes):</p>
+<pre><code>&gt; the design has these animations (I can't screenshot these directly):
+  - modal: fades in + scales from 95% to 100% (150ms ease-out)
+  - dropdown: slides down from the trigger point (200ms ease-out)
+  - toast notification: slides in from right, auto-dismisses after 3s with fade out
+  - button loading state: text changes to spinner icon
+
+  Add these transitions to the [component name] component.
+  Use Tailwind's transition utilities where possible, CSS keyframes for the rest.</code></pre>
+<hr>
+<h2 id="step-8-design-tokens">Step 8: Design Tokens<a href="#step-8-design-tokens" class="anchor-link">#</a></h2>
+<p>If your design system uses tokens that should stay in sync with Figma:</p>
+<pre><code>&gt; looking at this design [paste screenshot], identify all the color values used.
+  Check if they match our design tokens in @tailwind.config.ts.
+  Flag any colors in the design that don't exist in our token system,
+  and suggest the closest existing token or whether we need to add a new one.</code></pre>
+<hr>
+<h2 id="figma-variables-to-code">Figma Variables to Code<a href="#figma-variables-to-code" class="anchor-link">#</a></h2>
+<p>If you use Figma variables:</p>
+<pre><code>&gt; our Figma design uses these variable values for this component:
+  background: {colors/surface/primary} = #FFFFFF
+  border: {colors/border/default} = #E5E7EB
+  text-primary: {colors/text/primary} = #111827
+  text-secondary: {colors/text/secondary} = #6B7280
+  spacing-md: {spacing/md} = 16px
+
+  Map these to our Tailwind tokens when building the component.</code></pre>
+<hr>
+<h2 id="common-figma-to-code-prompt-patterns">Common Figma-to-Code Prompt Patterns<a href="#common-figma-to-code-prompt-patterns" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Situation</th><th>Prompt pattern</th></tr></thead>
+<tbody>
+<tr><td>Basic component</td><td><code>[screenshot] build this as a React + TS component using Tailwind. name: [Name], props: [list]</code></td></tr>
+<tr><td>Fix wrong layout</td><td><code>[screenshot] the layout is wrong: [specific issues]. original design: [re-paste]</code></td></tr>
+<tr><td>Multiple states</td><td><code>[screenshots of each state] build [Name] with a status prop handling all states</code></td></tr>
+<tr><td>Full page</td><td><code>[screenshot] break this page into components and build them one at a time, starting with [name]</code></td></tr>
+<tr><td>Responsive</td><td><code>[mobile screenshot] [desktop screenshot] build mobile-first with breakpoints at [sizes]</code></td></tr>
+<tr><td>Animations</td><td><code>add these transitions: [describe each animation with timing]</code></td></tr>
+<tr><td>Token audit</td><td><code>[screenshot] identify colors used and check against @tailwind.config.ts</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="tips-for-better-results">Tips for Better Results<a href="#tips-for-better-results" class="anchor-link">#</a></h2>
+<ul>
+<li><strong>One component at a time</strong> — don't paste a full page and ask for everything at once</li>
+<li><strong>Name your props</strong> — telling Claude what the props should be gives better TypeScript output</li>
+<li><strong>Reference your existing components</strong> — <code>reuse Button from @src/components/ui/Button.tsx</code> prevents Claude from inventing a new one</li>
+<li><strong>Screenshot at 1x or 2x</strong> — 3x Retina screenshots are large and don't add accuracy</li>
+<li><strong>Annotate in Figma first</strong> — add sticky notes to the design for interactions Claude can't see in a static screenshot</li>
+<li><strong>Keep Figma and VS Code side by side</strong> — compare Claude's output visually against the design as you iterate</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

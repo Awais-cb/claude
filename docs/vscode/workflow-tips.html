@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Tips — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="workflow-tips-and-best-practices">Workflow Tips and Best Practices<a href="#workflow-tips-and-best-practices" class="anchor-link">#</a></h1>
+<p>Getting the most out of Claude Code in VS Code is about building habits, not just knowing the features. These tips come from real development workflows and cover layout, context management, and how to phrase prompts effectively.</p>
+<p>Think of your setup like a physical workspace. A cluttered desk makes you inefficient even with good tools. The same applies here — the right layout, the right habits, and knowing when to use which feature turns Claude Code from "useful sometimes" into "can't imagine coding without it."</p>
+<hr>
+<h2 id="recommended-vs-code-layout">Recommended VS Code Layout<a href="#recommended-vs-code-layout" class="anchor-link">#</a></h2>
+<p>The most productive setup is a <strong>split view</strong> with code on one side and Claude on the other.</p>
+<h3 id="option-a-side-by-side-best-for-wide-monitors">Option A: Side-by-side (best for wide monitors)<a href="#option-a-side-by-side-best-for-wide-monitors" class="anchor-link">#</a></h3>
+<pre><code>┌───────────────────────┬────────────────────────┐
+│                       │                        │
+│   Your Code           │  Claude Code           │
+│   (editor)            │  (terminal or panel)   │
+│                       │                        │
+│   function login() {  │  &gt; Why is this slow?   │
+│     ...               │                        │
+│   }                   │  Claude: The N+1 query │
+│                       │  in line 34 is the     │
+│                       │  culprit. Here's why:  │
+│                       │                        │
+└───────────────────────┴────────────────────────┘</code></pre>
+<p><strong>How to set this up on macOS:</strong></p>
+<ol>
+<li>Open the integrated terminal: Ctrl+`</li>
+<li>Drag the terminal tab to the right side of the editor area</li>
+<li>Or use the menu: <strong>View → Editor Layout → Two Columns</strong></li>
+</ol>
+<p><strong>How to set this up on Windows / Linux:</strong></p>
+<ol>
+<li>Same approach: Ctrl+` to open terminal</li>
+<li>Right-click the terminal tab → "Move Terminal to Editor Area"</li>
+<li>Or drag it to the right panel</li>
+</ol>
+<p><strong>How to set this up in WSL:</strong>
+Same as Linux above — the layout controls are in VS Code regardless of whether you're in WSL.</p>
+<h3 id="option-b-code-on-top-claude-below-best-for-laptops">Option B: Code on top, Claude below (best for laptops)<a href="#option-b-code-on-top-claude-below-best-for-laptops" class="anchor-link">#</a></h3>
+<pre><code>┌──────────────────────────────────────────┐
+│           Your Code (editor)             │
+│                                          │
+│   function login() { ... }               │
+│                                          │
+├──────────────────────────────────────────┤
+│        Claude Code (terminal panel)      │
+│                                          │
+│  &gt; explain the login function            │
+│  Claude: This function handles...        │
+└──────────────────────────────────────────┘</code></pre>
+<p>The default VS Code layout — terminal appears at the bottom. No setup needed.</p>
+<p>Resize the split by dragging the horizontal divider between editor and terminal.</p>
+<h3 id="option-c-claude-code-panel-in-the-sidebar">Option C: Claude Code panel in the sidebar<a href="#option-c-claude-code-panel-in-the-sidebar" class="anchor-link">#</a></h3>
+<p>Pin the Claude Code panel to the Activity Bar on the left or right. This keeps it visible without taking up editor or terminal space.</p>
+<pre><code>┌───┬──────────────────────────────────────┐
+│ C │        Your Code (full editor)       │
+│ l │                                      │
+│ a │   function login() { ... }           │
+│ u │                                      │
+│ d │   &gt; ask a question here              │
+│ e │                                      │
+└───┴──────────────────────────────────────┘</code></pre>
+<p>Right-click the Claude Code icon in the Activity Bar → "Move to" → pick your preferred position.</p>
+<hr>
+<h2 id="setting-up-the-layout-on-each-os">Setting Up the Layout on Each OS<a href="#setting-up-the-layout-on-each-os" class="anchor-link">#</a></h2>
+<h3 id="macos-keyboard-driven-split">macOS — keyboard-driven split<a href="#macos-keyboard-driven-split" class="anchor-link">#</a></h3>
+<pre><code>1. Cmd+` to open terminal
+2. Cmd+Shift+5 → View: Split Editor Right
+3. Drag the terminal tab into the right editor group
+4. Now the left pane shows your code files, right pane shows the terminal/Claude</code></pre>
+<h3 id="windows-using-keyboard-shortcuts">Windows — using keyboard shortcuts<a href="#windows-using-keyboard-shortcuts" class="anchor-link">#</a></h3>
+<pre><code>1. Ctrl+` to open terminal
+2. Right-click the terminal tab
+3. Select "Move Terminal into Editor Area"
+4. Drag to the right side</code></pre>
+<h3 id="linux-ubuntu-same-as-windows">Linux (Ubuntu) — same as Windows<a href="#linux-ubuntu-same-as-windows" class="anchor-link">#</a></h3>
+<p>VS Code's layout controls work identically on Linux.</p>
+<h3 id="wsl-same-as-linux-once-vs-code-is-open">WSL — same as Linux once VS Code is open<a href="#wsl-same-as-linux-once-vs-code-is-open" class="anchor-link">#</a></h3>
+<p>Once VS Code is connected to WSL, the layout experience is identical to native Linux.</p>
+<hr>
+<h2 id="context-tips">Context Tips<a href="#context-tips" class="anchor-link">#</a></h2>
+<h3 id="select-precisely-not-broadly">Select precisely, not broadly<a href="#select-precisely-not-broadly" class="anchor-link">#</a></h3>
+<p>Instead of selecting an entire file, select the specific function or block you're asking about. Claude gives more focused answers with tighter context.</p>
+<pre><code>[Select 10 lines — a specific function]
+&gt; Why is this slow?</code></pre>
+<p>Better than:</p>
+<pre><code>[Select 300 lines — the whole file]
+&gt; Why is something slow in here?</code></pre>
+<h3 id="use--for-files-youre-not-currently-editing">Use <code>@</code> for files you're not currently editing<a href="#use--for-files-youre-not-currently-editing" class="anchor-link">#</a></h3>
+<p>If you need Claude to reference a config file, a model, or a utility while you're in a different file:</p>
+<pre><code>&gt; @config/database.php — what's the connection pool size set to?</code></pre>
+<h3 id="tell-claude-the-full-picture-for-complex-tasks">Tell Claude the full picture for complex tasks<a href="#tell-claude-the-full-picture-for-complex-tasks" class="anchor-link">#</a></h3>
+<p>Prompts with context produce better results:</p>
+<pre><code>&gt; The registration flow breaks when a user signs up with a Google account
+  that's already linked to an existing email. @app/Services/AuthService.php
+  is where the merge logic lives. The error is "Duplicate entry for key email".
+  Fix it.</code></pre>
+<p>Versus:</p>
+<pre><code>&gt; fix the registration bug</code></pre>
+<p>The first prompt gives Claude the symptom, the location, and the error message. The second requires Claude to go hunting — which works, but is slower.</p>
+<hr>
+<h2 id="session-habits">Session Habits<a href="#session-habits" class="anchor-link">#</a></h2>
+<h3 id="name-sessions-immediately">Name sessions immediately<a href="#name-sessions-immediately" class="anchor-link">#</a></h3>
+<pre><code>&gt; /rename payment-refactor</code></pre>
+<p>Do this as soon as you start a session so you can find it later. You'll thank yourself next week when you need to resume exactly where you left off.</p>
+<h3 id="compact-when-responses-feel-off-topic">Compact when responses feel off-topic<a href="#compact-when-responses-feel-off-topic" class="anchor-link">#</a></h3>
+<p>If Claude starts giving less relevant answers in a long session, it may be losing earlier context:</p>
+<pre><code>&gt; /compact</code></pre>
+<p>This summarizes old history and frees up the context window. Think of it like reorganizing your notes — you keep the important stuff but discard the drafts.</p>
+<h3 id="use-one-session-per-feature">Use one session per feature<a href="#use-one-session-per-feature" class="anchor-link">#</a></h3>
+<p>Don't mix concerns in one session. One session for the auth refactor, another for the UI bug. Focused sessions produce better results because Claude's working memory stays relevant to what you're doing.</p>
+<h3 id="resume-instead-of-restarting">Resume instead of restarting<a href="#resume-instead-of-restarting" class="anchor-link">#</a></h3>
+<p>In the VS Code extension, resume sessions via the <strong>Past Conversations dropdown</strong> in the Claude Code panel — no command needed. Select the session by name (another reason to use <code>/rename</code> immediately when starting one).</p>
+<p>For terminal sessions, <code>claude -c</code> resumes the most recent session, or <code>claude -r &lt;name&gt;</code> resumes a named session.</p>
+<p>Always try to resume the last session rather than starting fresh. You'll have all the context from where you left off. Starting a new session every day is like throwing away your notes every morning.</p>
+<hr>
+<h2 id="prompt-patterns-that-work-well">Prompt Patterns That Work Well<a href="#prompt-patterns-that-work-well" class="anchor-link">#</a></h2>
+<h3 id="diagnosis--fix">Diagnosis + fix<a href="#diagnosis--fix" class="anchor-link">#</a></h3>
+<pre><code>&gt; The checkout form is returning a 500 error when the postal code contains a space.
+  @app/Http/Controllers/CheckoutController.php — find the validation and fix it.</code></pre>
+<h3 id="explain-before-modifying">Explain before modifying<a href="#explain-before-modifying" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/middleware/rateLimit.ts — explain what this does, then suggest how to
+  make the limit configurable per route.</code></pre>
+<p>Getting an explanation first ensures you understand what Claude is about to change. This is especially valuable when you're working in an unfamiliar part of the codebase.</p>
+<h3 id="incremental-refinement">Incremental refinement<a href="#incremental-refinement" class="anchor-link">#</a></h3>
+<pre><code>[First prompt]
+&gt; Add pagination to the users list endpoint
+
+[After seeing the result]
+&gt; Good. Now add a 'sort by' parameter that accepts 'name', 'email', or 'created_at'
+
+[After seeing that result]
+&gt; Add a test for the sort parameter</code></pre>
+<p>Breaking tasks into steps beats trying to do everything in one giant prompt. Each step builds on the last and you can course-correct at each stage.</p>
+<h3 id="ask-for-the-plan-before-execution">Ask for the plan before execution<a href="#ask-for-the-plan-before-execution" class="anchor-link">#</a></h3>
+<pre><code>&gt; Before making any changes — walk me through what you'd do to add soft deletes
+  to the products table. I want to understand the approach first.</code></pre>
+<p>This is essentially Plan mode in natural language — Claude explains without touching files. Good for complex refactors where you want to review the plan before committing.</p>
+<h3 id="beginner-friendly-ask-claude-what-it-needs">Beginner-friendly: ask Claude what it needs<a href="#beginner-friendly-ask-claude-what-it-needs" class="anchor-link">#</a></h3>
+<p>If you're not sure how to frame a request:</p>
+<pre><code>&gt; I want to add rate limiting to our API. What information do you need from me
+  to do this well? Which files should I point you at?</code></pre>
+<p>Claude will tell you exactly what context it needs, and you can then provide it with <code>@</code> references or selections.</p>
+<hr>
+<h2 id="file-management-tips">File Management Tips<a href="#file-management-tips" class="anchor-link">#</a></h2>
+<h3 id="let-claude-open-files">Let Claude open files<a href="#let-claude-open-files" class="anchor-link">#</a></h3>
+<p>Instead of manually finding and opening a file:</p>
+<pre><code>&gt; open the authentication service and add password strength validation</code></pre>
+<p>Claude reads it, makes the changes, and VS Code auto-reloads.</p>
+<h3 id="watch-for-auto-reloads">Watch for auto-reloads<a href="#watch-for-auto-reloads" class="anchor-link">#</a></h3>
+<p>VS Code reloads edited files automatically. When Claude edits a file:</p>
+<ul>
+<li>Your cursor position is preserved (usually)</li>
+<li>The file reflects Claude's changes immediately</li>
+<li>You can undo Claude's edit with <code>Ctrl+Z</code> in the editor (or <code>Esc Esc</code> in Claude)</li>
+</ul>
+<h3 id="undo-claudes-changes">Undo Claude's changes<a href="#undo-claudes-changes" class="anchor-link">#</a></h3>
+<p>Two ways to revert:</p>
+<ol>
+<li><strong>In VS Code</strong>: <code>Ctrl+Z</code> (<code>Cmd+Z</code> on macOS) in the affected file (standard undo)</li>
+<li><strong>In Claude</strong>: <code>Esc Esc</code> — opens a rewind menu with three options:
+  <ul>
+    <li><strong>Fork conversation</strong> — branch the conversation from this point without changing files</li>
+    <li><strong>Rewind code</strong> — restore files to their previous state without altering the conversation</li>
+    <li><strong>Fork + Rewind</strong> — branch the conversation and restore files simultaneously</li>
+  </ul>
+</li>
+</ol>
+<p><code>Esc Esc</code> is better when Claude changed multiple files — it can restore them all at once. <code>Ctrl+Z</code> works file-by-file.</p>
+<hr>
+<h2 id="speed-tips">Speed Tips<a href="#speed-tips" class="anchor-link">#</a></h2>
+<h3 id="use-fast-mode-for-quick-questions">Use Fast Mode for quick questions<a href="#use-fast-mode-for-quick-questions" class="anchor-link">#</a></h3>
+<pre><code>&gt; /fast</code></pre>
+<p>Toggle on when asking simple questions or doing rapid iteration. Toggle off for complex multi-step tasks where thoroughness matters more than speed.</p>
+<h3 id="use-haiku-for-exploration">Use Haiku for exploration<a href="#use-haiku-for-exploration" class="anchor-link">#</a></h3>
+<pre><code>&gt; /model haiku</code></pre>
+<p>Haiku is faster and cheaper. Switch to it when browsing the codebase or asking questions. Switch back to Opus for complex tasks:</p>
+<pre><code>&gt; /model opus</code></pre>
+<p>A practical pattern: use Haiku to explore and understand, then switch to Opus when it's time to write or refactor code.</p>
+<h3 id="pre-approve-commands-you-trust">Pre-approve commands you trust<a href="#pre-approve-commands-you-trust" class="anchor-link">#</a></h3>
+<p>In <code>.claude/settings.json</code>:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": ["Bash(npm *)", "Bash(git *)"],
+    "defaultMode": "acceptEdits"
+  }
+}</code></pre>
+<p>This removes the confirmation prompt for common commands. Only do this on projects you trust.</p>
+<hr>
+<h2 id="team-workflow-tips">Team Workflow Tips<a href="#team-workflow-tips" class="anchor-link">#</a></h2>
+<h3 id="commit-claudesettingsjson">Commit <code>.claude/settings.json</code><a href="#commit-claudesettingsjson" class="anchor-link">#</a></h3>
+<p>Share Claude's permissions and behavior across the team. This prevents "Claude did something unexpected" surprises for teammates.</p>
+<h3 id="keep-claudemd-updated">Keep <code>CLAUDE.md</code> updated<a href="#keep-claudemd-updated" class="anchor-link">#</a></h3>
+<p>Treat <code>CLAUDE.md</code> like living documentation. When something about the project changes (new patterns, new conventions, architectural decisions), update it so Claude stays aligned. Add it to your onboarding checklist.</p>
+<h3 id="use-claude-for-pr-reviews">Use Claude for PR reviews<a href="#use-claude-for-pr-reviews" class="anchor-link">#</a></h3>
+<pre><code>&gt; /review 47</code></pre>
+<p>Get a second opinion on any PR before approving it. Click the file links in the response to jump to specific issues. This catches things human reviewers miss.</p>
+<h3 id="use-claude-for-onboarding">Use Claude for onboarding<a href="#use-claude-for-onboarding" class="anchor-link">#</a></h3>
+<p>When a new developer joins, have Claude explain the codebase:</p>
+<pre><code>&gt; @src/ — give a new developer a walkthrough of this codebase:
+  architecture, key patterns, where to find things, and gotchas to watch out for</code></pre>
+<p>This generates a more up-to-date onboarding guide than any README you've written by hand.</p>
+<h3 id="use-claude-for-documentation">Use Claude for documentation<a href="#use-claude-for-documentation" class="anchor-link">#</a></h3>
+<pre><code>&gt; @src/services/PaymentService.ts — generate comprehensive JSDoc comments for
+  every public method. Include param descriptions, return types, and example usage.</code></pre>
+<p>Claude reads the actual implementation and writes accurate documentation — no guessing.</p>
+<hr>
+<h2 id="avoiding-common-mistakes">Avoiding Common Mistakes<a href="#avoiding-common-mistakes" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Mistake</th><th>Better Approach</th></tr></thead>
+<tbody>
+<tr><td>Asking too vaguely</td><td>Include the file, the error, and the expected behavior</td></tr>
+<tr><td>Starting fresh sessions every time</td><td>Use the Past Conversations dropdown in the panel (or <code>claude -c</code> in the terminal) to resume</td></tr>
+<tr><td>Letting sessions get too long</td><td>Run <code>/compact</code> when responses drift</td></tr>
+<tr><td>Ignoring the permission mode</td><td>Use Auto-Accept on trusted projects, Plan-only for exploration</td></tr>
+<tr><td>Not naming sessions</td><td><code>/rename</code> immediately after starting</td></tr>
+<tr><td>Only using Claude for coding</td><td>Use it for code review, PR descriptions, and documentation too</td></tr>
+<tr><td>Selecting too much code</td><td>Select the specific function/block, not the whole file</td></tr>
+<tr><td>Forgetting to update CLAUDE.md</td><td>Treat it like a living team wiki</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="workflow-for-common-scenarios">Workflow for Common Scenarios<a href="#workflow-for-common-scenarios" class="anchor-link">#</a></h2>
+<h3 id="starting-your-day">Starting your day<a href="#starting-your-day" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code># 1. Open your project
+code ~/projects/my-app</code></pre>
+<ol start="2">
+<li><p>Resume your session from yesterday via the <strong>Past Conversations dropdown</strong> in the Claude Code panel. Select the session by name.</p>
+<p>For terminal users: <code>claude -c</code> resumes the last session, or <code>claude -r &lt;name&gt;</code> resumes by name.</p>
+</li>
+</ol>
+<pre><code># 3. Check where you left off
+&gt; /history
+
+# 4. Continue from where you stopped</code></pre>
+<h3 id="bug-fix-workflow">Bug fix workflow<a href="#bug-fix-workflow" class="anchor-link">#</a></h3>
+<pre><code>1. Reproduce the bug
+2. Select the relevant code
+3. &gt; Describe the bug with symptom + error message
+4. Claude diagnoses it
+5. Click any file links to navigate to the issue
+6. &gt; fix it
+7. &gt; /diff  (review what changed)
+8. Test
+9. &gt; commit with a message explaining the fix</code></pre>
+<h3 id="new-feature-workflow">New feature workflow<a href="#new-feature-workflow" class="anchor-link">#</a></h3>
+<pre><code>1. &gt; Before writing any code, outline an approach for [feature].
+   What files will need to change?
+
+2. Review the plan
+
+3. &gt; Good. Let's start with [first part]. @relevant/file.ts
+
+4. Iterate with follow-up prompts
+
+5. &gt; /security-review  (before committing)
+
+6. &gt; /commit-push-pr</code></pre>
+<h3 id="code-review-workflow">Code review workflow<a href="#code-review-workflow" class="anchor-link">#</a></h3>
+<pre><code>1. &gt; /review 123   (PR number)
+2. Read Claude's feedback
+3. Click links to navigate to each issue
+4. Select the problematic code
+5. &gt; fix this issue (for each one)
+6. &gt; /diff  (confirm all changes are correct)
+7. Approve or request changes</code></pre>
+<hr>
+<h2 id="related">Related<a href="#related" class="anchor-link">#</a></h2>
+<ul>
+<li><a href="connecting-to-ide.html">connecting-to-ide.md</a> — Starting and connecting sessions</li>
+<li><a href="selected-code-context.html">selected-code-context.md</a> — Using selections effectively</li>
+<li><a href="session-management.html">session-management.md</a> — Naming, resuming, and managing sessions</li>
+<li><a href="settings-configuration.html">settings-configuration.md</a> — Configuring permissions and defaults</li>
+<li><a href="slash-commands-in-vscode.html">slash-commands-in-vscode.md</a> — Commands for managing the session</li>
+</ul>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

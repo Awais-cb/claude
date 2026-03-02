@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLI Commands &amp; Flags — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="cli-commands-flags">CLI Commands &amp; Flags<a href="#cli-commands-flags" class="anchor-link">#</a></h1>
+<p>CLI flags are options you add when starting Claude Code from your terminal. They let you control what session to open, which AI model to use, what Claude is allowed to do, and more.</p>
+<blockquote><p><strong>Analogy:</strong> Think of flags like options when ordering coffee. <code>claude</code> is "I'd like a coffee." <code>claude --model opus "fix the auth bug"</code> is "I'd like a large, strong coffee in a to-go cup, and here's the exact order." The flags customize what you get before you even start.</p></blockquote>
+<p>Flags always come after <code>claude</code> and before or after your prompt:</p>
+<pre data-lang="bash"><code>claude                              # basic — just start
+claude "fix the login bug"          # start with a task
+claude --model opus "fix the login bug"   # with a flag
+claude -c                           # short flag (dash + single letter)
+claude --continue                   # long flag (double dash + word)</code></pre>
+<hr>
+<h2 id="basic-usage">Basic Usage<a href="#basic-usage" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude                          # Interactive session
+claude "your prompt here"       # Start with an initial prompt
+claude -p "your prompt"         # Print mode (non-interactive, exits after response)</code></pre>
+<h3 id="interactive-vs-print-mode">Interactive vs. print mode<a href="#interactive-vs-print-mode" class="anchor-link">#</a></h3>
+<p><strong>Interactive</strong> (<code>claude</code> or <code>claude "task"</code>) — Opens a conversation. Claude works, you respond, back and forth. Best for most development tasks.</p>
+<p><strong>Print mode</strong> (<code>claude -p "task"</code>) — Claude answers once and exits. Best for scripts, automation, or quick one-off questions.</p>
+<pre data-lang="bash"><code># Interactive: have a conversation
+claude "help me debug this function"
+
+# Print: get a quick answer and move on
+claude -p "what does the -v flag do in curl?"</code></pre>
+<hr>
+<h2 id="session-management">Session Management<a href="#session-management" class="anchor-link">#</a></h2>
+<p>These flags decide which conversation you're opening — a new one, or an existing one you want to continue.</p>
+<table>
+<thead><tr><th>Flag</th><th>Short</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--continue</code></td><td><code>-c</code></td><td>Resume the most recent conversation</td></tr>
+<tr><td><code>--resume &lt;name&gt;</code></td><td><code>-r</code></td><td>Resume a session by name or ID (or show picker)</td></tr>
+<tr><td><code>--worktree &lt;name&gt;</code></td><td><code>-w</code></td><td>Start session in an isolated git worktree</td></tr>
+<tr><td><code>--fork-session</code></td><td></td><td>Create new session instead of resuming original (use with <code>--resume</code> or <code>--continue</code>)</td></tr>
+<tr><td><code>--session-id &lt;uuid&gt;</code></td><td></td><td>Use a specific session ID</td></tr>
+<tr><td><code>--from-pr &lt;number&gt;</code></td><td></td><td>Resume session linked to a GitHub PR</td></tr>
+</tbody>
+</table>
+<h3 id="-c---continue-pick-up-where-you-left-off"><code>-c</code> / <code>--continue</code> — Pick up where you left off<a href="#-c---continue-pick-up-where-you-left-off" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like reopening a document you closed yesterday. Everything is exactly as you left it.</p></blockquote>
+<pre data-lang="bash"><code>claude -c</code></pre>
+<p>The most-used flag. Resumes your last session so Claude remembers everything it already knows about your task.</p>
+<p><strong>Without <code>-c</code>:</strong> Claude starts fresh with no memory of previous conversations.<br><strong>With <code>-c</code>:</strong> Claude has full context of your last session — what files it read, what decisions were made, what still needs doing.</p>
+<hr>
+<h3 id="-r---resume-open-a-specific-session-by-name"><code>-r</code> / <code>--resume</code> — Open a specific session by name<a href="#-r---resume-open-a-specific-session-by-name" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like opening a specific saved file instead of the most recent one.</p></blockquote>
+<pre data-lang="bash"><code>claude -r "payment-refactor"
+claude -r "JIRA-1234"</code></pre>
+<p>First, name your sessions so you can find them:</p>
+<pre><code>&gt; /rename payment-refactor    ← inside a session</code></pre>
+<p>Then resume by name later:</p>
+<pre data-lang="bash"><code>claude -r "payment-refactor"</code></pre>
+<hr>
+<h3 id="-w---worktree-work-in-isolation"><code>-w</code> / <code>--worktree</code> — Work in isolation<a href="#-w---worktree-work-in-isolation" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like making a copy of your project in a separate folder to experiment without risk. When you're done, you either merge the changes back or throw the copy away.</p></blockquote>
+<pre data-lang="bash"><code>claude -w "try-new-approach"</code></pre>
+<p>Creates an isolated copy of your git repository in <code>.claude/worktrees/try-new-approach/</code>. Claude works in that copy. Your main branch is untouched.</p>
+<p><strong>When to use it:</strong></p>
+<ul>
+<li>Trying a risky refactor without breaking your main work</li>
+<li>Running a parallel experiment ("what if we used Redis instead of Postgres?")</li>
+<li>Fixing a hotfix bug while mid-feature on the main branch</li>
+</ul>
+<hr>
+<h2 id="model-selection">Model Selection<a href="#model-selection" class="anchor-link">#</a></h2>
+<p>Choose which AI model Claude uses for the session.</p>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--model &lt;model&gt;</code></td><td>Choose model: <code>opus</code>, <code>sonnet</code>, <code>haiku</code>, or full model ID</td></tr>
+<tr><td><code>--fallback-model &lt;model&gt;</code></td><td>Fallback model if primary is rate-limited (print mode only)</td></tr>
+</tbody>
+</table>
+<h3 id="choosing-the-right-model">Choosing the right model<a href="#choosing-the-right-model" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like choosing a tool for a job. A screwdriver works for most screws. A power drill is overkill for one screw but essential for 50.</p></blockquote>
+<pre data-lang="bash"><code>claude --model opus             # Most capable — complex problems, architecture
+claude --model sonnet           # Balanced — everyday coding (default)
+claude --model haiku            # Fastest and cheapest — simple questions, scripts</code></pre>
+<table>
+<thead><tr><th>Model</th><th>Use when...</th><th>Avoid when...</th></tr></thead>
+<tbody>
+<tr><td><strong>opus</strong></td><td>You have a hard problem, need deep reasoning, or are making important architecture decisions</td><td>You're doing something simple — you'll waste money and time</td></tr>
+<tr><td><strong>sonnet</strong></td><td>Writing features, fixing bugs, reviewing code</td><td>(Good default — rarely a wrong choice)</td></tr>
+<tr><td><strong>haiku</strong></td><td>Answering quick questions, generating boilerplate, summarizing</td><td>The problem is genuinely complex — haiku will miss things</td></tr>
+</tbody>
+</table>
+<p>You can also switch mid-session without restarting:</p>
+<pre><code>&gt; /model      ← switch interactively inside a session</code></pre>
+<hr>
+<h2 id="permission-safety">Permission &amp; Safety<a href="#permission-safety" class="anchor-link">#</a></h2>
+<p>These control what Claude is allowed to do. By default, Claude asks before doing anything potentially risky. These flags let you tighten or loosen that.</p>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--permission-mode plan</code></td><td>Start in Plan Mode (read-only, no edits)</td></tr>
+<tr><td><code>--dangerously-skip-permissions</code></td><td>Skip all permission prompts</td></tr>
+<tr><td><code>--allow-dangerously-skip-permissions</code></td><td>Enable permission bypassing as an option (without activating it — composable with <code>--permission-mode</code>)</td></tr>
+<tr><td><code>--allowedTools &lt;tools&gt;</code></td><td>Tools that execute without prompting for permission</td></tr>
+<tr><td><code>--disallowedTools &lt;tools&gt;</code></td><td>Tools to explicitly deny (removed from Claude's context)</td></tr>
+<tr><td><code>--tools &lt;tools&gt;</code></td><td>Restrict Claude to only these built-in tools (use <code>""</code> for none, <code>"default"</code> for all)</td></tr>
+</tbody>
+</table>
+<h3 id="--permission-mode-plan-explore-safely"><code>--permission-mode plan</code> — Explore safely<a href="#--permission-mode-plan-explore-safely" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like sending someone to look around your house and take notes, but not letting them move or touch anything.</p></blockquote>
+<pre data-lang="bash"><code>claude --permission-mode plan</code></pre>
+<p>Claude can read files, search code, and tell you what it would do — but it <strong>cannot</strong> edit anything or run commands. Great for:</p>
+<ul>
+<li>Exploring an unfamiliar codebase before making changes</li>
+<li>Getting a plan from Claude that you review before approving</li>
+<li>Letting Claude audit a project without touching it</li>
+</ul>
+<hr>
+<h3 id="--allowedtools-pre-approve-specific-actions"><code>--allowedTools</code> — Pre-approve specific actions<a href="#--allowedtools-pre-approve-specific-actions" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like giving someone a pre-approved shopping list. They can buy anything on the list without asking you first, but need approval for anything else.</p></blockquote>
+<pre data-lang="bash"><code># Let Claude read files without asking, but ask for everything else
+claude --allowedTools "Read,Glob,Grep"
+
+# Auto-approve all git commands
+claude --allowedTools "Bash(git *)"
+
+# Auto-approve npm and git but nothing else
+claude --allowedTools "Bash(npm *),Bash(git *)"</code></pre>
+<p>This is much more comfortable than <code>--dangerously-skip-permissions</code> — you keep control over risky actions while removing friction for safe ones.</p>
+<hr>
+<h3 id="--disallowedtools-block-specific-capabilities"><code>--disallowedTools</code> — Block specific capabilities<a href="#--disallowedtools-block-specific-capabilities" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like telling a contractor "you can do anything in the house except go into the basement."</p></blockquote>
+<pre data-lang="bash"><code># Prevent Claude from running any bash commands at all
+claude --disallowedTools "Bash"
+
+# Prevent Claude from making web requests
+claude --disallowedTools "WebFetch,WebSearch"</code></pre>
+<hr>
+<h3 id="--dangerously-skip-permissions-full-auto-approve-use-carefully"><code>--dangerously-skip-permissions</code> — Full auto-approve (use carefully)<a href="#--dangerously-skip-permissions-full-auto-approve-use-carefully" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like giving someone your house key, your car key, and your credit card and saying "handle everything while I'm away." Total trust, no checks.</p></blockquote>
+<pre data-lang="bash"><code>claude --dangerously-skip-permissions</code></pre>
+<p>Claude does everything without asking. Useful in automated pipelines and CI/CD where there's no human to approve things. Not recommended for interactive sessions where you want oversight.</p>
+<hr>
+<h2 id="system-prompt-customization">System Prompt Customization<a href="#system-prompt-customization" class="anchor-link">#</a></h2>
+<p>A system prompt is a background instruction that tells Claude how to behave — like a briefing before it starts work.</p>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--system-prompt &lt;text&gt;</code></td><td>Replace the entire default system prompt</td></tr>
+<tr><td><code>--system-prompt-file &lt;path&gt;</code></td><td>Load system prompt from a file</td></tr>
+<tr><td><code>--append-system-prompt &lt;text&gt;</code></td><td>Add text to the end of the default prompt</td></tr>
+<tr><td><code>--append-system-prompt-file &lt;path&gt;</code></td><td>Append file contents to default prompt</td></tr>
+</tbody>
+</table>
+<h3 id="when-to-use-this">When to use this<a href="#when-to-use-this" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like writing a job brief before hiring a contractor. Instead of explaining the rules every session, you write them once and attach them to every session automatically.</p></blockquote>
+<pre data-lang="bash"><code># Always use TypeScript
+claude --append-system-prompt "Always write TypeScript, never plain JavaScript."
+
+# Set a persona/coding style
+claude --append-system-prompt "Follow the Google style guide. Prefer functional patterns over OOP."
+
+# Load from a file (for longer instructions)
+claude --system-prompt-file ./my-instructions.txt</code></pre>
+<hr>
+<h2 id="print-non-interactive-mode">Print / Non-Interactive Mode<a href="#print-non-interactive-mode" class="anchor-link">#</a></h2>
+<p>Use <code>-p</code> to run Claude like a command-line tool — it answers once and exits. Essential for scripting and automation.</p>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>-p</code> / <code>--print</code></td><td>Print response and exit</td></tr>
+<tr><td><code>--output-format &lt;format&gt;</code></td><td><code>text</code> (default), <code>json</code>, or <code>stream-json</code></td></tr>
+<tr><td><code>--input-format &lt;format&gt;</code></td><td><code>text</code> (default) or <code>stream-json</code></td></tr>
+<tr><td><code>--max-turns &lt;number&gt;</code></td><td>Limit how many agentic turns Claude takes</td></tr>
+<tr><td><code>--max-budget-usd &lt;amount&gt;</code></td><td>Stop if estimated cost exceeds this</td></tr>
+<tr><td><code>--no-session-persistence</code></td><td>Don't save the session to disk</td></tr>
+<tr><td><code>--json-schema &lt;schema&gt;</code></td><td>Return validated JSON matching the schema</td></tr>
+</tbody>
+</table>
+<h3 id="common-print-mode-patterns">Common print mode patterns<a href="#common-print-mode-patterns" class="anchor-link">#</a></h3>
+<blockquote><p><strong>Analogy:</strong> Like using a calculator. You type in the question, it gives you the answer, done. No conversation, no back-and-forth.</p></blockquote>
+<pre data-lang="bash"><code># Simple question
+claude -p "what is 2+2"
+
+# Pipe a file in and ask about it
+cat error.log | claude -p "what caused this error?"
+
+# Save Claude's output to a file
+claude -p "write a README for this project" &gt; README.md
+
+# Get structured JSON output for scripting
+claude -p "list the 3 biggest files" --output-format json
+
+# Limit cost — stop if it would cost more than $0.10
+claude -p "refactor all the components" --max-budget-usd 0.10
+
+# Pipe between commands
+git diff | claude -p "write a commit message for these changes"</code></pre>
+<h3 id="--output-format-json-machine-readable-output"><code>--output-format json</code> — Machine-readable output<a href="#--output-format-json-machine-readable-output" class="anchor-link">#</a></h3>
+<p>When you're using Claude in a script and need to parse the output programmatically:</p>
+<pre data-lang="bash"><code>result=$(claude -p "is the code valid?" --output-format json)
+echo $result | jq '.answer'</code></pre>
+<hr>
+<h2 id="workspace-directories">Workspace &amp; Directories<a href="#workspace-directories" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--add-dir &lt;path&gt;</code></td><td>Add an additional directory Claude can access</td></tr>
+</tbody>
+</table>
+<p>By default, Claude only accesses files in the directory you started it from. Use <code>--add-dir</code> to grant access to other directories.</p>
+<pre data-lang="bash"><code># Frontend project + shared component library
+claude --add-dir ../shared-components
+
+# Monorepo: give access to both packages
+claude --add-dir ../packages/api</code></pre>
+<blockquote><p><strong>Note:</strong> Claude still won't access directories outside what you've explicitly allowed. This is a security feature.</p></blockquote>
+<hr>
+<h2 id="ide-integrations">IDE &amp; Integrations<a href="#ide-integrations" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--ide</code></td><td>Auto-connect to your open IDE on startup</td></tr>
+<tr><td><code>--chrome</code></td><td>Enable Chrome browser automation</td></tr>
+<tr><td><code>--no-chrome</code></td><td>Disable Chrome for this session</td></tr>
+</tbody>
+</table>
+<h3 id="--ide-connect-to-vs-code-or-jetbrains"><code>--ide</code> — Connect to VS Code or JetBrains<a href="#--ide-connect-to-vs-code-or-jetbrains" class="anchor-link">#</a></h3>
+<pre data-lang="bash"><code>claude --ide</code></pre>
+<p>Opens Claude Code and connects it to your running editor. You get a prompt box inside VS Code, selected code as automatic context, and clickable file links in responses. See the <a href="../vscode/index.html">VS Code extension docs</a> for full details.</p>
+<hr>
+<h2 id="mcp-model-context-protocol">MCP (Model Context Protocol)<a href="#mcp-model-context-protocol" class="anchor-link">#</a></h2>
+<p>MCP servers give Claude new abilities — database access, Jira integration, Figma access, etc.</p>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--mcp-config &lt;path&gt;</code></td><td>Load MCP server config from a JSON file</td></tr>
+<tr><td><code>--strict-mcp-config</code></td><td>Only use MCP servers from <code>--mcp-config</code> (ignore others)</td></tr>
+<tr><td><code>--permission-prompt-tool &lt;tool&gt;</code></td><td>Use an MCP tool to handle permission prompts</td></tr>
+</tbody>
+</table>
+<pre data-lang="bash"><code># Load a specific MCP config for this session
+claude --mcp-config ./my-mcp-servers.json</code></pre>
+<p>See <a href="mcp-servers.html">mcp-servers.md</a> for what MCP servers are and how to set them up.</p>
+<hr>
+<h2 id="subagents-plugins">Subagents &amp; Plugins<a href="#subagents-plugins" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--agents &lt;JSON&gt;</code></td><td>Define subagents dynamically via JSON</td></tr>
+<tr><td><code>--agent &lt;name&gt;</code></td><td>Use a specific named subagent for this session</td></tr>
+<tr><td><code>--plugin-dir &lt;path&gt;</code></td><td>Load plugins from a directory (can be repeated)</td></tr>
+<tr><td><code>--betas &lt;list&gt;</code></td><td>Enable beta API features</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="remote-web">Remote &amp; Web<a href="#remote-web" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--remote "description"</code></td><td>Create a web session on claude.ai</td></tr>
+<tr><td><code>--teleport</code></td><td>Resume a web session in your local terminal</td></tr>
+<tr><td><code>--remote-control</code> / <code>--rc</code></td><td>Enable remote control from claude.ai</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="debugging-logging">Debugging &amp; Logging<a href="#debugging-logging" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--debug [category]</code></td><td>Enable debug logging</td></tr>
+<tr><td><code>--verbose</code></td><td>Full turn-by-turn output</td></tr>
+<tr><td><code>--version</code> / <code>-v</code></td><td>Show version number</td></tr>
+</tbody>
+</table>
+<pre data-lang="bash"><code># Check your installed version
+claude --version
+
+# See exactly what Claude is doing (very detailed)
+claude --verbose</code></pre>
+<hr>
+<h2 id="settings-configuration">Settings &amp; Configuration<a href="#settings-configuration" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--settings &lt;path or JSON&gt;</code></td><td>Load additional settings</td></tr>
+<tr><td><code>--setting-sources &lt;sources&gt;</code></td><td>Specify which setting sources to load (<code>user</code>, <code>project</code>, <code>local</code>)</td></tr>
+<tr><td><code>--init</code></td><td>Run initialization hooks then start</td></tr>
+<tr><td><code>--init-only</code></td><td>Run initialization hooks then exit</td></tr>
+<tr><td><code>--maintenance</code></td><td>Run maintenance hooks then exit</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="session-behavior">Session Behavior<a href="#session-behavior" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Flag</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>--teammate-mode &lt;mode&gt;</code></td><td>Set how agent team teammates display: <code>auto</code> (default), <code>in-process</code>, or <code>tmux</code></td></tr>
+<tr><td><code>--disable-slash-commands</code></td><td>Disable all skills and commands for this session</td></tr>
+<tr><td><code>--include-partial-messages</code></td><td>Include partial streaming events in output (requires <code>--print</code> and <code>--output-format=stream-json</code>)</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="authentication">Authentication<a href="#authentication" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude auth login               # Sign in to your Anthropic account
+claude auth logout              # Sign out
+claude auth status              # Check whether you're logged in</code></pre>
+<p>Run <code>claude auth login</code> once when setting up. It opens a browser window to authenticate. After that, you don't need to log in again unless you explicitly sign out.</p>
+<hr>
+<h2 id="update-maintenance">Update &amp; Maintenance<a href="#update-maintenance" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude update                   # Update Claude Code to the latest version</code></pre>
+<hr>
+<h2 id="subagents-mcp">Subagents &amp; MCP<a href="#subagents-mcp" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude agents                   # List all configured subagents
+claude mcp                      # Configure MCP servers</code></pre>
+<hr>
+<h2 id="remote-control">Remote Control<a href="#remote-control" class="anchor-link">#</a></h2>
+<pre data-lang="bash"><code>claude remote-control           # Start a remote control session (control from claude.ai)</code></pre>
+<hr>
+<h2 id="quick-reference-card">Quick Reference Card<a href="#quick-reference-card" class="anchor-link">#</a></h2>
+<p>The patterns you'll use 90% of the time:</p>
+<pre data-lang="bash"><code># ── Starting sessions ──────────────────────────────────
+claude                                  # New interactive session
+claude -c                               # Resume last session
+claude -r "session-name"               # Resume named session
+claude "fix the bug in app.js"          # Start with a task
+
+# ── Choosing models ───────────────────────────────────
+claude --model haiku                    # Fast, cheap (simple tasks)
+claude --model opus                     # Powerful (hard problems)
+
+# ── Controlling permissions ───────────────────────────
+claude --permission-mode plan           # Read-only exploration
+claude --allowedTools "Bash(git *)"     # Pre-approve git commands
+
+# ── Scripting &amp; automation ────────────────────────────
+claude -p "summarize README.md"         # Non-interactive, print result
+cat file.txt | claude -p "explain this" # Pipe input to Claude
+claude -p "task" --output-format json   # Get JSON output
+
+# ── IDE &amp; remote ──────────────────────────────────────
+claude --ide                            # Connect to VS Code
+claude remote-control                   # Control from claude.ai
+
+# ── Updates &amp; info ────────────────────────────────────
+claude update                           # Update to latest version
+claude agents                           # List configured subagents
+claude mcp                              # Configure MCP servers</code></pre>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

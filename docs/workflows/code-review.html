@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Review Workflow — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="code-review-workflow">Code Review Workflow<a href="#code-review-workflow" class="anchor-link">#</a></h1>
+<p>How to use Claude to review code before a human ever sees it — catching bugs, security issues, and style violations automatically.</p>
+<hr>
+<h2 id="why-review-with-claude-first">Why Review with Claude First?<a href="#why-review-with-claude-first" class="anchor-link">#</a></h2>
+<p>Human code review is valuable but expensive — it takes focus, time, and another person's attention. Claude can catch 80% of common issues in seconds, so that human review can focus on architecture decisions and business logic.</p>
+<p>The goal: <strong>zero review comments about things Claude could have caught.</strong></p>
+<hr>
+<h2 id="1-pre-commit-review-every-developer-every-commit">1. Pre-Commit Review (Every Developer, Every Commit)<a href="#1-pre-commit-review-every-developer-every-commit" class="anchor-link">#</a></h2>
+<p>Run this before every <code>git add</code>:</p>
+<h3 id="quick-check">Quick check<a href="#quick-check" class="anchor-link">#</a></h3>
+<pre><code>&gt; /diff</code></pre>
+<p>See all changes. Then:</p>
+<pre><code>&gt; /team-review</code></pre>
+<p>Runs your team's code review skill (see <a href="team-lead-setup.html">team-lead-setup.md</a> for how to set this up).</p>
+<h3 id="full-pre-commit-sequence">Full pre-commit sequence<a href="#full-pre-commit-sequence" class="anchor-link">#</a></h3>
+<pre><code>&gt; /check          # lint + typecheck + tests
+&gt; /team-review    # team code review checklist
+&gt; /diff           # final visual review
+&gt; /pr             # commit + push + open PR</code></pre>
+<hr>
+<h2 id="2-self-review-before-opening-a-pr">2. Self-Review Before Opening a PR<a href="#2-self-review-before-opening-a-pr" class="anchor-link">#</a></h2>
+<h3 id="general-code-quality">General code quality<a href="#general-code-quality" class="anchor-link">#</a></h3>
+<pre><code>&gt; review everything I've changed in this branch (compare to main).
+  focus on:
+  - logic errors and edge cases I might have missed
+  - error handling gaps
+  - performance concerns
+  - anything that looks fragile or easy to break
+  be specific with file names and line numbers.</code></pre>
+<h3 id="security-focused-review">Security-focused review<a href="#security-focused-review" class="anchor-link">#</a></h3>
+<pre><code>&gt; /security-review</code></pre>
+<p>Or a more targeted review:</p>
+<pre><code>&gt; review the auth-related changes in this branch for security issues:
+  - are JWT tokens validated correctly?
+  - could any endpoint be accessed without proper authorization?
+  - is user input validated before it reaches the database?
+  - are there any SQL injection or XSS risks?
+  check @src/middleware/auth.ts and all new route files.</code></pre>
+<h3 id="architecture-review">Architecture review<a href="#architecture-review" class="anchor-link">#</a></h3>
+<pre><code>&gt; review the architectural decisions in my changes:
+  - am I putting business logic in the right layers? (controllers vs services vs repositories)
+  - are there any circular dependencies?
+  - is anything too tightly coupled?
+  - does my approach align with the patterns in the rest of the codebase?
+  compare against the conventions described in CLAUDE.md.</code></pre>
+<hr>
+<h2 id="3-reviewing-a-pull-request-as-the-reviewer">3. Reviewing a Pull Request (As the Reviewer)<a href="#3-reviewing-a-pull-request-as-the-reviewer" class="anchor-link">#</a></h2>
+<h3 id="review-another-developers-pr">Review another developer's PR<a href="#review-another-developers-pr" class="anchor-link">#</a></h3>
+<pre><code>&gt; /review 247</code></pre>
+<p>Or with more context:</p>
+<pre><code>&gt; review PR #247. context: this PR adds the coupon code feature to checkout.
+  focus on:
+  - the coupon validation logic in OrderService (is it airtight?)
+  - race conditions (two users using the same coupon simultaneously)
+  - security (can coupons be applied multiple times?)
+  - test coverage (are edge cases tested?)</code></pre>
+<h3 id="review-pr-comments-and-address-them">Review PR comments and address them<a href="#review-pr-comments-and-address-them" class="anchor-link">#</a></h3>
+<pre><code>&gt; /pr-comments 247</code></pre>
+<p>Then:</p>
+<pre><code>&gt; the reviewer left 4 comments on PR #247. read them and fix each one.
+  explain what you're changing for each.</code></pre>
+<h3 id="batch-review-multiple-small-prs">Batch review (multiple small PRs)<a href="#batch-review-multiple-small-prs" class="anchor-link">#</a></h3>
+<pre><code>&gt; review these 3 PRs in parallel using subagents:
+  - PR #241: bugfix for date formatting
+  - PR #243: add caching to the products endpoint
+  - PR #245: update user profile form validation
+  give me a summary of each with any issues found.</code></pre>
+<hr>
+<h2 id="4-security-review">4. Security Review<a href="#4-security-review" class="anchor-link">#</a></h2>
+<h3 id="full-security-audit-of-a-feature">Full security audit of a feature<a href="#full-security-audit-of-a-feature" class="anchor-link">#</a></h3>
+<pre><code>&gt; do a thorough security audit of the user authentication system:
+  @src/routes/auth.ts — login, register, refresh, logout endpoints
+  @src/middleware/auth.ts — JWT verification middleware
+  @src/services/UserService.ts — password hashing and validation
+
+  Check for:
+  - brute force protection (rate limiting)
+  - password hashing (algorithm, salt rounds)
+  - JWT: algorithm, expiry, secret strength, token revocation
+  - session fixation after login
+  - timing attacks on password/token comparison
+  - information leakage in error messages
+  - missing auth on any endpoint that should be protected</code></pre>
+<h3 id="api-security-audit">API security audit<a href="#api-security-audit" class="anchor-link">#</a></h3>
+<pre><code>&gt; audit all API endpoints for authorization issues.
+  read @src/routes/ and for each endpoint check:
+  - does it require authentication?
+  - does it verify the user can only access their own data?
+  - are there any admin-only endpoints accessible to regular users?
+  - is input validated before it reaches the DB?
+
+  create a table: Endpoint | Auth Required | User Scoped | Input Validated | Issues</code></pre>
+<h3 id="dependency-security-check">Dependency security check<a href="#dependency-security-check" class="anchor-link">#</a></h3>
+<pre><code>&gt; run npm audit and analyze the results.
+  for each vulnerability:
+  - is it exploitable in our codebase? (does our code use the vulnerable function?)
+  - what's the fix?
+  - how critical is it to fix immediately vs next sprint?
+  provide a prioritized remediation plan.</code></pre>
+<hr>
+<h2 id="5-performance-review">5. Performance Review<a href="#5-performance-review" class="anchor-link">#</a></h2>
+<h3 id="find-performance-issues-in-a-file">Find performance issues in a file<a href="#find-performance-issues-in-a-file" class="anchor-link">#</a></h3>
+<pre><code>&gt; analyze @src/services/ReportService.ts for performance issues:
+  - N+1 database queries
+  - missing database indexes (suggest what to add)
+  - expensive computations that could be cached
+  - synchronous operations that should be async
+  - large data sets loaded entirely into memory</code></pre>
+<h3 id="analyze-a-slow-endpoint">Analyze a slow endpoint<a href="#analyze-a-slow-endpoint" class="anchor-link">#</a></h3>
+<pre><code>&gt; the GET /api/dashboard endpoint takes 2-3 seconds.
+  read @src/routes/dashboard.ts, @src/services/DashboardService.ts,
+  and @src/repositories/DashboardRepository.ts.
+
+  profile the code path mentally:
+  - how many DB queries happen?
+  - are there any N+1s?
+  - what data is being loaded that might not be needed?
+  - what could be cached?
+  propose optimizations in order of expected impact.</code></pre>
+<h3 id="frontend-performance-audit">Frontend performance audit<a href="#frontend-performance-audit" class="anchor-link">#</a></h3>
+<pre><code>&gt; audit @src/pages/DashboardPage.tsx for render performance:
+  - components that re-render unnecessarily
+  - expensive operations in render (should be memoized)
+  - large lists without virtualization
+  - images without lazy loading
+  - missing React.memo, useMemo, or useCallback where appropriate
+  show the issue, explain why it matters, and provide the fix.</code></pre>
+<hr>
+<h2 id="6-code-quality-review">6. Code Quality Review<a href="#6-code-quality-review" class="anchor-link">#</a></h2>
+<h3 id="complexity-review">Complexity review<a href="#complexity-review" class="anchor-link">#</a></h3>
+<pre><code>&gt; read @src/services/OrderService.ts and identify:
+  - functions over 30 lines that should be split
+  - nested if statements over 3 levels deep
+  - functions doing more than one thing
+  - duplicated logic that should be extracted
+  suggest specific refactors for each.</code></pre>
+<h3 id="typescript-quality">TypeScript quality<a href="#typescript-quality" class="anchor-link">#</a></h3>
+<pre><code>&gt; audit @src/ for TypeScript quality issues:
+  - uses of 'any' that could be typed properly
+  - missing return types on exported functions
+  - type assertions (as Type) that could be avoided with proper typing
+  - overly broad types (string instead of union literals, object instead of interface)
+  propose fixes in order of impact.</code></pre>
+<h3 id="code-consistency">Code consistency<a href="#code-consistency" class="anchor-link">#</a></h3>
+<pre><code>&gt; compare how error handling is done across our route files in @src/routes/.
+  are there inconsistencies? some routes catch errors differently than others?
+  propose a consistent pattern and identify what needs updating.</code></pre>
+<hr>
+<h2 id="7-review-checklist-as-a-skill">7. Review Checklist as a Skill<a href="#7-review-checklist-as-a-skill" class="anchor-link">#</a></h2>
+<p>Create <code>.claude/skills/team-review.md</code> for your team's specific standards (see <a href="team-lead-setup.html">team-lead-setup.md</a>). Then every developer can run:</p>
+<pre><code>&gt; /team-review</code></pre>
+<p>And get a structured pass/fail report against your team's exact standards.</p>
+<hr>
+<h2 id="8-post-merge-review-retrospective">8. Post-Merge Review (Retrospective)<a href="#8-post-merge-review-retrospective" class="anchor-link">#</a></h2>
+<p>After a sprint, review what went into production:</p>
+<pre><code>&gt; compare the main branch now vs 2 weeks ago (run git log --oneline --since=&quot;2 weeks ago&quot;).
+  summarize what changed and identify:
+  - any patterns of issues that came up repeatedly in these changes
+  - areas of the codebase that changed most often (churn)
+  - any technical debt that accumulated
+  this is for our retrospective discussion.</code></pre>
+<hr>
+<h2 id="review-severity-levels">Review Severity Levels<a href="#review-severity-levels" class="anchor-link">#</a></h2>
+<p>When Claude reviews code, ask it to categorize findings:</p>
+<pre><code>&gt; review @src/routes/payments.ts.
+  categorize each finding as:
+  - CRITICAL: must fix before merge (security issues, data loss risk, broken functionality)
+  - WARNING: should fix before merge (performance, error handling gaps, unclear code)
+  - SUGGESTION: nice to fix but can be a follow-up (style, minor improvements)</code></pre>
+<hr>
+<h2 id="prompt-library">Prompt Library<a href="#prompt-library" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th>Review type</th><th>Prompt</th></tr></thead>
+<tbody>
+<tr><td>Pre-commit</td><td><code>/diff</code> then <code>/team-review</code> then <code>/check</code></td></tr>
+<tr><td>Full self-review</td><td><code>review my branch changes vs main. focus on: logic errors, error handling, performance, fragility.</code></td></tr>
+<tr><td>Security</td><td><code>/security-review</code> or <code>audit [files] for: [specific security concerns]</code></td></tr>
+<tr><td>PR as reviewer</td><td><code>/review [PR#]</code> or <code>review PR #[n]. context: [feature]. focus: [areas]</code></td></tr>
+<tr><td>Address comments</td><td><code>/pr-comments [PR#]</code> then <code>read and fix each comment</code></td></tr>
+<tr><td>Performance</td><td><code>analyze @[file] for: N+1 queries, missing indexes, unnecessary computation, caching opportunities</code></td></tr>
+<tr><td>TypeScript</td><td><code>audit @src/ for: any types, missing return types, type assertions, overly broad types</code></td></tr>
+<tr><td>Architecture</td><td><code>review my changes for: layer violations, coupling, consistency with CLAUDE.md conventions</code></td></tr>
+<tr><td>Post-sprint</td><td><code>summarize what changed in the last 2 weeks. identify patterns, churn, and accumulated debt.</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="making-review-part-of-the-culture">Making Review Part of the Culture<a href="#making-review-part-of-the-culture" class="anchor-link">#</a></h2>
+<p>As a team lead, make Claude review part of the PR process:</p>
+<ol>
+<li><strong>Every PR must pass <code>/check</code></strong> — add it to your PR template as a checklist item</li>
+<li><strong>Every PR should run <code>/team-review</code></strong> — commit the skill to <code>.claude/skills/</code> so everyone has it</li>
+<li><strong>Security changes must pass <code>/security-review</code></strong> — auth, payments, user data changes always</li>
+<li><strong>PR description is Claude-generated</strong> — <code>&gt; /pr</code> writes a better PR description than most developers would manually</li>
+</ol>
+<pre data-lang="markdown"><code>&lt;!-- PR template: .github/pull_request_template.md --&gt;
+## Pre-Review Checklist
+- [ ] Ran `/check` — lint, types, and tests all pass
+- [ ] Ran `/team-review` — no CRITICAL or WARNING findings unaddressed
+- [ ] Ran `/security-review` (if auth/payments/user data was changed)
+- [ ] PR description generated with `/pr` or manually matches the same standard</code></pre>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

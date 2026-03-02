@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory System — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="memory-system">Memory System<a href="#memory-system" class="anchor-link">#</a></h1>
+<h2 id="what-is-the-memory-system">What is the Memory System?<a href="#what-is-the-memory-system" class="anchor-link">#</a></h2>
+<p>Imagine you have a notepad on your desk that you keep between meetings with a colleague. After each conversation, you jot down the decisions you made, the preferences they expressed, the problems you solved together. Next time they come back, you glance at your notes first — so you never start from scratch.</p>
+<p>Claude's memory system works exactly like that notepad. At the end of a session (or during one), Claude saves important notes to a file on your machine. The next time you open Claude in the same project, it reads those notes automatically. You don't have to re-explain anything it already learned.</p>
+<pre><code>Session 1:                           Session 2 (days later):
+&gt; We're using Redis for sessions,    &gt; add a logout endpoint
+  not the database
+                                     Claude: [already knows about Redis,
+Claude: Got it, I'll remember that.   adds the right implementation]</code></pre>
+<p>No re-explaining. No starting over. Claude picks up where it left off.</p>
+<hr>
+<h2 id="how-it-works">How It Works<a href="#how-it-works" class="anchor-link">#</a></h2>
+<p>At the end of a session (or while working), Claude saves notes to a <code>MEMORY.md</code> file on your machine. The next time you start Claude in the same project, those notes are loaded automatically.</p>
+<p><strong>Storage location:</strong></p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre><code>~/.claude/projects/&lt;project-path&gt;/memory/MEMORY.md</code></pre>
+<p>For example, if your project is at <code>/home/alex/projects/my-api</code>:</p>
+<pre><code>~/.claude/projects/home-alex-projects-my-api/memory/MEMORY.md</code></pre>
+<p><strong>Windows:</strong></p>
+<pre><code>C:\Users\YourName\.claude\projects\&lt;project-path&gt;\memory\MEMORY.md</code></pre>
+<p>This is <strong>local to your machine</strong> — it's not synced to the cloud or shared with teammates.</p>
+<hr>
+<h2 id="what-gets-saved">What Gets Saved<a href="#what-gets-saved" class="anchor-link">#</a></h2>
+<p>Claude saves things like:</p>
+<ul>
+<li>Architectural decisions made during a session
+  <ul>
+<li><em>"We decided to use JWT tokens instead of sessions"</em></li>
+</ul>
+</li>
+<li>Your preferences
+  <ul>
+<li><em>"User prefers verbose error messages"</em></li>
+</ul>
+</li>
+<li>Recurring problems and their solutions
+  <ul>
+<li><em>"The test suite requires the DB to be seeded first"</em></li>
+</ul>
+</li>
+<li>Important file locations
+  <ul>
+<li><em>"Main config is in config/app.ts, not .env"</em></li>
+</ul>
+</li>
+<li>Project conventions discovered during work</li>
+</ul>
+<h3 id="what-gets-saved-automatically-realistic-examples">What gets saved automatically — realistic examples<a href="#what-gets-saved-automatically-realistic-examples" class="anchor-link">#</a></h3>
+<p>Here are the kinds of things Claude will note down without being asked:</p>
+<table>
+<thead><tr><th>What happened in session</th><th>What gets saved</th></tr></thead>
+<tbody>
+<tr><td>You corrected Claude's approach to error handling</td><td>"User prefers returning error objects, not throwing exceptions"</td></tr>
+<tr><td>You explained that tests need a seeded database</td><td>"Run <code>npm run db:seed</code> before <code>npm test</code>"</td></tr>
+<tr><td>Claude discovered a non-obvious pattern in the codebase</td><td>"Auth middleware is in <code>middleware/</code> not <code>src/auth/</code>"</td></tr>
+<tr><td>You decided on a naming convention mid-session</td><td>"New API routes follow REST convention: <code>/api/v1/resources/:id</code>"</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="enabling-disabling">Enabling / Disabling<a href="#enabling-disabling" class="anchor-link">#</a></h2>
+<p>Auto-memory is <strong>enabled by default</strong>.</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code># Disable for all projects
+echo '{"autoMemoryEnabled": false}' &gt; ~/.claude/settings.json
+
+# Or toggle inside a session:
+&gt; /memory</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code># Disable for all projects
+'{"autoMemoryEnabled": false}' | Out-File -FilePath "$env:USERPROFILE\.claude\settings.json"</code></pre>
+<p>You can also disable via environment variable:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre data-lang="bash"><code>CLAUDE_CODE_DISABLE_AUTO_MEMORY=true claude</code></pre>
+<p><strong>Windows (PowerShell):</strong></p>
+<pre data-lang="powershell"><code>$env:CLAUDE_CODE_DISABLE_AUTO_MEMORY="true"; claude</code></pre>
+<hr>
+<h2 id="viewing-your-memory">Viewing Your Memory<a href="#viewing-your-memory" class="anchor-link">#</a></h2>
+<pre><code>&gt; /memory</code></pre>
+<p>This opens an interactive view showing:</p>
+<ul>
+<li>Your project's <code>MEMORY.md</code></li>
+<li>Any topic files</li>
+<li>Your global <code>~/.claude/CLAUDE.md</code></li>
+</ul>
+<p>You can edit these directly from this interface.</p>
+<hr>
+<h2 id="the-memorymd-file">The MEMORY.md File<a href="#the-memorymd-file" class="anchor-link">#</a></h2>
+<p>The main memory file is <code>MEMORY.md</code>. It has a <strong>200-line limit</strong> on what Claude loads — lines after 200 are truncated. Keep it concise and use topic files for details.</p>
+<h3 id="example-memorymd">Example MEMORY.md<a href="#example-memorymd" class="anchor-link">#</a></h3>
+<pre data-lang="markdown"><code># Project Memory
+
+## Architecture Decisions
+- Using PostgreSQL (not MySQL) — decided 2024-01-15
+- Auth uses JWT stored in httpOnly cookies
+- All API responses follow { data, error, meta } shape
+
+## User Preferences
+- Prefers TypeScript strict mode
+- Always asks before deleting files
+- Likes verbose commit messages with "why"
+
+## Recurring Issues
+- See debugging.md for DB connection fixes
+- Test suite: always run `npm run db:reset` before `npm test`
+
+## Key Files
+- `src/lib/api.ts` — API client (not axios, custom)
+- `src/config/constants.ts` — all app-wide constants
+- See patterns.md for service layer pattern details</code></pre>
+<hr>
+<h2 id="topic-files">Topic Files<a href="#topic-files" class="anchor-link">#</a></h2>
+<p>For details that don't fit in the 200-line MEMORY.md, create separate topic files and link to them:</p>
+<pre><code>~/.claude/projects/my-project/memory/
+├── MEMORY.md           ← Index (loaded automatically, 200-line limit)
+├── debugging.md        ← Detailed debugging notes
+├── patterns.md         ← Code patterns and conventions
+├── api-conventions.md  ← API design decisions
+└── decisions.md        ← Architecture decision log</code></pre>
+<p><strong>MEMORY.md links to topic files:</strong></p>
+<pre data-lang="markdown"><code>## Patterns
+See [patterns.md](patterns.md) for service layer and repository patterns.
+
+## Debugging
+See [debugging.md](debugging.md) for known issues and fixes.</code></pre>
+<hr>
+<h2 id="how-memory-claudemd-and-session-context-relate">How Memory, CLAUDE.md, and Session Context Relate<a href="#how-memory-claudemd-and-session-context-relate" class="anchor-link">#</a></h2>
+<p>These three things all give Claude information — but they serve different purposes:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                    Claude's Knowledge                   │
+├─────────────────┬──────────────────┬────────────────────┤
+│   CLAUDE.md     │    MEMORY.md     │  Session Context   │
+│                 │                  │                    │
+│ Written by YOU  │ Written by CLAUDE│ Built up as you    │
+│                 │                  │ chat               │
+│ Project rules   │ Discoveries &amp;    │ Everything said    │
+│ &amp; standards     │ decisions from   │ this session       │
+│                 │ past sessions    │                    │
+│ Committed to    │ Local only —     │ Gone when session  │
+│ git (shared)    │ not shared       │ ends               │
+│                 │                  │                    │
+│ Example:        │ Example:         │ Example:           │
+│ "use TypeScript"│ "JWT decided     │ The last 20 things │
+│ "tests: npm t"  │  Jan 15"         │ you said           │
+└─────────────────┴──────────────────┴────────────────────┘
+         ↓                  ↓                  ↓
+         All three are loaded together at the start of a session</code></pre>
+<p><strong>Best practice:</strong> Use CLAUDE.md for project standards and conventions. Let MEMORY.md handle session-specific discoveries and personal preferences.</p>
+<hr>
+<h2 id="manually-saving-a-memory">Manually Saving a Memory<a href="#manually-saving-a-memory" class="anchor-link">#</a></h2>
+<p>You can ask Claude to save something explicitly:</p>
+<pre><code>&gt; Remember that we decided to use Redis for session storage, not the database</code></pre>
+<p>Or:</p>
+<pre><code>&gt; Save this to memory: the staging server is at https://staging.acme.com and needs VPN</code></pre>
+<hr>
+<h2 id="updating-removing-memories">Updating &amp; Removing Memories<a href="#updating-removing-memories" class="anchor-link">#</a></h2>
+<pre><code>&gt; Update the memory to say we switched from Stripe to Paddle for payments
+
+&gt; Remove the note about using Redux — we migrated to Zustand
+
+&gt; Forget everything about the old authentication system</code></pre>
+<p>Claude will edit the memory files accordingly.</p>
+<hr>
+<h2 id="memory-vs-claudemd">Memory vs CLAUDE.md<a href="#memory-vs-claudemd" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th></th><th>MEMORY.md</th><th>CLAUDE.md</th></tr></thead>
+<tbody>
+<tr><td><strong>Written by</strong></td><td>Claude automatically</td><td>You (manually)</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Remember discoveries &amp; decisions</td><td>Explain project upfront</td></tr>
+<tr><td><strong>Updated</strong></td><td>Automatically during sessions</td><td>Manually as project evolves</td></tr>
+<tr><td><strong>Committed to git?</strong></td><td>No (stays local)</td><td>Yes (share with team)</td></tr>
+<tr><td><strong>Per-machine?</strong></td><td>Yes</td><td>No (in repo)</td></tr>
+</tbody>
+</table>
+<p><strong>Best practice:</strong> Use CLAUDE.md for project standards and conventions. Let MEMORY.md handle session-specific discoveries and personal preferences.</p>
+<hr>
+<h2 id="subagent-memory">Subagent Memory<a href="#subagent-memory" class="anchor-link">#</a></h2>
+<p>Subagents (specialized workers Claude can spawn) can also have persistent memory:</p>
+<pre data-lang="yaml"><code># .claude/agents/code-reviewer.md
+---
+name: code-reviewer
+memory: project
+---
+# Code Review Agent
+Always review for security vulnerabilities first...</code></pre>
+<p>With <code>memory: project</code>, the subagent builds its own memory across sessions, separate from your main Claude memory.</p>
+<p>Options:</p>
+<ul>
+<li><code>memory: user</code> — stored in <code>~/.claude/</code> (all projects)</li>
+<li><code>memory: project</code> — stored in project's <code>.claude/</code> folder</li>
+<li><code>memory: local</code> — stored locally, not committed</li>
+</ul>
+<hr>
+<h2 id="practical-example">Practical Example<a href="#practical-example" class="anchor-link">#</a></h2>
+<p><strong>Session 1:</strong></p>
+<pre><code>&gt; We've decided that all database queries should go through the Repository pattern.
+  Never query the DB directly in controllers.
+
+Claude: Understood. I'll remember that pattern.</code></pre>
+<p><strong>Session 2 (days later):</strong></p>
+<pre><code>&gt; Add a new endpoint to fetch user orders
+
+Claude: I'll add that endpoint. Based on my notes, we use the Repository pattern
+here — I'll create an OrderRepository and use it from the controller.</code></pre>
+<p>Claude remembered — no need to re-explain.</p>
+<hr>
+<h2 id="a-more-complete-real-world-scenario">A More Complete Real-World Scenario<a href="#a-more-complete-real-world-scenario" class="anchor-link">#</a></h2>
+<p>Here's how memory builds up over a week of work on a project:</p>
+<p><strong>Monday — Session 1:</strong></p>
+<pre><code>&gt; the API returns dates as Unix timestamps but the frontend expects ISO 8601
+
+Claude: Got it. I'll note that down and convert dates in all API responses.
+[MEMORY.md updated: "API returns ISO 8601 dates (not Unix timestamps)"]</code></pre>
+<p><strong>Wednesday — Session 2:</strong></p>
+<pre><code>&gt; why is Claude writing ISO 8601 dates here?
+
+Claude: Based on my notes from Monday, we decided to use ISO 8601 format
+because the frontend expects it that way.</code></pre>
+<p><strong>Friday — Session 3:</strong></p>
+<pre><code>&gt; add a new /api/events endpoint
+
+Claude: [automatically formats dates as ISO 8601 without being told]</code></pre>
+<p>Each session builds on the last. After a week, Claude has a detailed picture of your project's quirks, decisions, and preferences — and you never had to repeat yourself.</p>
+<hr>
+<h2 id="privacy-note">Privacy Note<a href="#privacy-note" class="anchor-link">#</a></h2>
+<p>Memory files are stored <strong>only on your local machine</strong>:</p>
+<p><strong>macOS / Linux / WSL:</strong></p>
+<pre><code>~/.claude/projects/&lt;path-hash&gt;/memory/</code></pre>
+<p><strong>Windows:</strong></p>
+<pre><code>C:\Users\YourName\.claude\projects\&lt;path-hash&gt;\memory\</code></pre>
+<p>They are never sent to Anthropic's servers independently — they're included as part of your conversation context (which follows normal data handling policies).</p>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>

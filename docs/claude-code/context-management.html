@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context Management — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="context-management">Context Management<a href="#context-management" class="anchor-link">#</a></h1>
+<p>Imagine a whiteboard in a meeting room. It's big, but it has a fixed amount of space. As the meeting goes on, you fill it with diagrams, notes, decisions, and code snippets. Eventually the whiteboard gets full — and when you need to write something new, you have to erase something old to make room. You choose carefully: erase the stuff from two hours ago that you've already acted on, keep the current plan clearly visible.</p>
+<p>Claude's context window works the same way. Everything in your conversation — your messages, Claude's replies, files it read, command output — gets written onto this whiteboard. When it fills up, older information has to be erased or compressed to make room for new work. Understanding how to manage this whiteboard is the key to working on long, complex tasks without Claude losing important information.</p>
+<p>Claude Code has a limited context window — the amount of conversation history and file content it can hold at once. Understanding and managing context helps you work on long tasks without losing important information.</p>
+<hr>
+<h2 id="what-is-the-context-window">What is the Context Window?<a href="#what-is-the-context-window" class="anchor-link">#</a></h2>
+<p>Think of context as Claude's working memory. Everything in the current conversation (your messages, Claude's replies, files it read, command output) takes up space in the context window.</p>
+<p>When it fills up, older information gets pushed out — Claude might "forget" things from earlier in the session.</p>
+<h3 id="what-are-tokens">What are tokens?<a href="#what-are-tokens" class="anchor-link">#</a></h3>
+<p>If you've never heard the word "token" in this context, here's the plain-English version:</p>
+<p>A <strong>token</strong> is a small chunk of text — roughly a word, or a common word fragment. The phrase "context window" is 2 tokens. A 100-line code file might be 500–1000 tokens. A full conversation after an hour of work might be 50,000–100,000 tokens.</p>
+<pre><code>"Hello, world!"   =  4 tokens  (Hello, comma, world, !)
+A typical function =  50-200 tokens
+A 200-line file   =  800-1500 tokens
+This entire doc   =  ~3000 tokens
+Claude's context  =  200,000+ tokens (varies by model)</code></pre>
+<p>The context window limit is how many tokens Claude can "see" at once. It's not about time — it's about volume of text.</p>
+<hr>
+<h2 id="visualizing-the-context-window">Visualizing the Context Window<a href="#visualizing-the-context-window" class="anchor-link">#</a></h2>
+<pre><code>Your Context Window (200,000 tokens)
+┌──────────────────────────────────────────────────────────────────┐
+│ ████████████████████████████████████████░░░░░░░░░░░░░░░░░░░░░░ │
+│ ──────────────────────────────────────────────────────────────── │
+│ Used: 140,000 tokens                      Free: 60,000 tokens   │
+└──────────────────────────────────────────────────────────────────┘
+
+Legend:
+████  = Used (conversation history, files read, outputs)
+░░░░  = Free (available for new messages and responses)
+
+When it reaches ~95% full:
+┌──────────────────────────────────────────────────────────────────┐
+│ ██████████████████████████████████████████████████████████░░░░ │
+│ Used: 190,000 tokens                      Free: 10,000 tokens   │
+└──────────────────────────────────────────────────────────────────┘
+→ Auto-compaction triggers here
+
+What fills up context:
+├── Your messages and Claude's replies
+├── Files Claude has read (can be large!)
+├── Terminal/command output
+└── Tool call results (database queries, API responses, etc.)</code></pre>
+<hr>
+<h2 id="visualizing-context-usage">Visualizing Context Usage<a href="#visualizing-context-usage" class="anchor-link">#</a></h2>
+<pre><code>&gt; /context</code></pre>
+<p>Displays a colored grid showing how full your context window is:</p>
+<ul>
+<li>Green — plenty of space</li>
+<li>Yellow — getting full</li>
+<li>Red — nearly full, compaction recommended</li>
+</ul>
+<blockquote><p>What to expect: a visual grid of colored blocks representing how much of your context window is used. Green blocks are used-but-comfortable, yellow means you're getting near 70%, red means compaction is about to happen or is recommended now. A percentage number shows exactly how full the window is.</p></blockquote>
+<hr>
+<h2 id="auto-compaction">Auto-Compaction<a href="#auto-compaction" class="anchor-link">#</a></h2>
+<p>By default, Claude Code automatically compacts your conversation when it reaches <strong>~95% capacity</strong>.</p>
+<p>Compaction summarizes the conversation history, keeping key decisions and context while freeing space. You usually won't notice — it just keeps working.</p>
+<pre><code>Before compaction (95% full):
+┌──────────────────────────────────────────────────────────────────┐
+│ [hour 1 messages] [hour 2 messages] [hour 3 messages] [current] │
+│ 190,000 / 200,000 tokens                                         │
+└──────────────────────────────────────────────────────────────────┘
+                            │
+                            │  Auto-compaction runs
+                            │  (Summarizes old messages)
+                            ▼
+After compaction:
+┌──────────────────────────────────────────────────────────────────┐
+│ [SUMMARY: what was decided and built] [hour 3] [current]        │
+│ 40,000 / 200,000 tokens                                          │
+└──────────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="trigger-compaction-earlier">Trigger compaction earlier<a href="#trigger-compaction-earlier" class="anchor-link">#</a></h3>
+<p>If you want to compact before hitting 95%, set a lower threshold:</p>
+<pre data-lang="bash"><code>CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70 claude</code></pre>
+<p>This compacts at 70% capacity instead of 95%.</p>
+<p><strong>When to use:</strong> On very long tasks (building a whole feature over several hours), compacting earlier means Claude never gets into the "context scramble" zone where important information starts competing for space.</p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code># For the current session only:
+CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70 claude
+
+# To make it permanent, add to your shell profile:
+echo 'export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70' &gt;&gt; ~/.zshrc  # macOS
+echo 'export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70' &gt;&gt; ~/.bashrc  # Linux</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70 claude
+# To make permanent:
+echo 'export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+<hr>
+<h2 id="manual-compaction">Manual Compaction<a href="#manual-compaction" class="anchor-link">#</a></h2>
+<pre><code>&gt; /compact</code></pre>
+<p>Summarizes the conversation immediately. You can give instructions:</p>
+<pre><code>&gt; /compact keep only the decisions about the database schema and the code we wrote for authentication</code></pre>
+<p>This gives you control over what's preserved in the summary.</p>
+<p><strong>When to use:</strong> Before starting a new sub-task within the same session. For example, you spent two hours designing a database schema, got it right, and now you're moving on to building the API. Compact, preserving the schema decisions, before diving into the API work.</p>
+<hr>
+<h2 id="starting-fresh">Starting Fresh<a href="#starting-fresh" class="anchor-link">#</a></h2>
+<pre><code>&gt; /clear</code></pre>
+<p>Wipes the entire conversation history. Use this when:</p>
+<ul>
+<li>You're starting a completely new task</li>
+<li>Context is full and compaction isn't enough</li>
+<li>You want a clean slate</li>
+</ul>
+<p><strong>Important:</strong> <code>/clear</code> clears the active context, not the session on disk. If you need to go back, use <code>/rewind</code> instead.</p>
+<hr>
+<h2 id="signs-your-context-is-getting-full">Signs Your Context is Getting Full<a href="#signs-your-context-is-getting-full" class="anchor-link">#</a></h2>
+<p>You may notice these symptoms before <code>/context</code> turns red:</p>
+<table>
+<thead><tr><th>Symptom</th><th>What's happening</th></tr></thead>
+<tbody>
+<tr><td>Claude forgets something you discussed an hour ago</td><td>Old messages were pushed out of context</td></tr>
+<tr><td>Responses become shorter or less detailed</td><td>Claude is conserving space</td></tr>
+<tr><td>Claude asks you to re-explain something it already knew</td><td>Earlier explanation was compacted or lost</td></tr>
+<tr><td>Claude seems "confused" about the current state of the code</td><td>File contents it read earlier are no longer in context</td></tr>
+<tr><td>Response quality drops noticeably</td><td>Context is very full and Claude is working in a constrained space</td></tr>
+</tbody>
+</table>
+<p><strong>What to do when you notice these signs:</strong></p>
+<pre><code>Step 1: Check context usage
+&gt; /context
+
+Step 2: Compact with instructions
+&gt; /compact keep the architecture decisions, the auth code, and the database schema
+
+Step 3: Verify Claude still has what it needs
+&gt; Summarize what you know about this project so far
+
+Step 4: If needed, clear and restart
+&gt; /clear</code></pre>
+<hr>
+<h2 id="checkpoints-rewind">Checkpoints &amp; Rewind<a href="#checkpoints-rewind" class="anchor-link">#</a></h2>
+<h3 id="save-a-checkpoint">Save a checkpoint<a href="#save-a-checkpoint" class="anchor-link">#</a></h3>
+<pre><code>Esc Esc     # Opens rewind/checkpoint menu</code></pre>
+<p>Or:</p>
+<pre><code>&gt; /checkpoint</code></pre>
+<p>This saves the current state of your code and conversation.</p>
+<p><strong>When to use:</strong> Before trying something risky or experimental. Like a game save point — if the experiment goes wrong, you can restore to exactly here.</p>
+<h3 id="rewind-to-a-checkpoint">Rewind to a checkpoint<a href="#rewind-to-a-checkpoint" class="anchor-link">#</a></h3>
+<pre><code>Esc Esc     # Select a previous checkpoint to restore</code></pre>
+<p>Or:</p>
+<pre><code>&gt; /rewind</code></pre>
+<p><strong>What gets restored:</strong></p>
+<ul>
+<li>Files are reverted to the state at checkpoint time</li>
+<li>Conversation history is rolled back</li>
+<li>You can continue from that point</li>
+</ul>
+<p><strong>Use this when:</strong></p>
+<ul>
+<li>Claude went down a wrong path</li>
+<li>Changes made weren't what you wanted</li>
+<li>You want to try a different approach</li>
+</ul>
+<p><strong>Real-world scenario:</strong> You asked Claude to "refactor the authentication module" and after 20 minutes of changes, the result is worse than what you started with. Rather than manually undoing everything, you rewind to the checkpoint you made before the refactor, and try a different approach.</p>
+<hr>
+<h2 id="context-saving-strategies">Context-Saving Strategies<a href="#context-saving-strategies" class="anchor-link">#</a></h2>
+<h3 id="1-use-claudemd-instead-of-explaining-each-session">1. Use CLAUDE.md instead of explaining each session<a href="#1-use-claudemd-instead-of-explaining-each-session" class="anchor-link">#</a></h3>
+<p>Instead of saying "we use TypeScript, run tests with npm test, never use var" every session — put it in CLAUDE.md. This information doesn't fill up your context window as conversation.</p>
+<pre data-lang="markdown"><code># CLAUDE.md
+
+## Project conventions
+- TypeScript only (never var, always const/let)
+- Run tests with: npm test
+- Database: PostgreSQL (never use raw SQL, always use our QueryBuilder)
+- API responses always have { data, error, meta } shape</code></pre>
+<h3 id="2-use-memory-for-recurring-context">2. Use Memory for recurring context<a href="#2-use-memory-for-recurring-context" class="anchor-link">#</a></h3>
+<p>Let Claude save important discoveries to memory:</p>
+<pre><code>&gt; Remember that our API always returns { data, error, meta } shaped responses</code></pre>
+<p>Next session, Claude knows this without you repeating it.</p>
+<h3 id="3-compact-aggressively-for-long-tasks">3. Compact aggressively for long tasks<a href="#3-compact-aggressively-for-long-tasks" class="anchor-link">#</a></h3>
+<p>When working on a big feature over multiple hours:</p>
+<pre><code>&gt; /compact save the authentication implementation decisions and the code structure we decided on</code></pre>
+<h3 id="4-start-fresh-for-unrelated-tasks">4. Start fresh for unrelated tasks<a href="#4-start-fresh-for-unrelated-tasks" class="anchor-link">#</a></h3>
+<p>If you finish one task and start something unrelated:</p>
+<pre><code>&gt; /clear</code></pre>
+<p>Don't carry irrelevant context forward. Starting fresh on a new task is faster than trying to work around a full context.</p>
+<h3 id="5-use-subagents-for-parallel-research">5. Use subagents for parallel research<a href="#5-use-subagents-for-parallel-research" class="anchor-link">#</a></h3>
+<p>Instead of reading 20 files into your main context, use an Explore agent:</p>
+<pre><code>&gt; Use the Explore agent to find all the places we handle user authentication</code></pre>
+<p>The agent does the reading, your main context only gets the summary.</p>
+<hr>
+<h2 id="pre-compaction-hooks">Pre-Compaction Hooks<a href="#pre-compaction-hooks" class="anchor-link">#</a></h2>
+<p>You can inject notes right before compaction happens, ensuring key info survives:</p>
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PreCompact": [
+      {
+        "command": "cat $CLAUDE_PROJECT_DIR/.claude/always-remember.md"
+      }
+    ]
+  }
+}</code></pre>
+<p>Create <code>.claude/always-remember.md</code>:</p>
+<pre data-lang="markdown"><code># Always Remember
+- Database is PostgreSQL, not MySQL
+- Authentication uses JWT in httpOnly cookies
+- Never call db:seed in production
+- Main API is at api.acme.com/v2</code></pre>
+<p>This gets injected every time the conversation compacts. Even after aggressive compaction, Claude will still know these critical facts.</p>
+<hr>
+<h2 id="session-vs-context">Session vs Context<a href="#session-vs-context" class="anchor-link">#</a></h2>
+<table>
+<thead><tr><th></th><th>Session</th><th>Context Window</th></tr></thead>
+<tbody>
+<tr><td><strong>What it is</strong></td><td>The full conversation history on disk</td><td>What Claude can actively "see"</td></tr>
+<tr><td><strong>Persistent?</strong></td><td>Yes — stored in <code>~/.claude/projects/</code></td><td>No — temporary</td></tr>
+<tr><td><strong>Size</strong></td><td>Unlimited (it's just a file)</td><td>Limited (model-dependent)</td></tr>
+<tr><td><strong>After compaction</strong></td><td>Original kept, summary active</td><td>Freed up for new content</td></tr>
+</tbody>
+</table>
+<p>You can <strong>resume</strong> a session even after context was compacted — the full history is still on disk, but Claude works from the compact summary.</p>
+<p><strong>Where sessions are stored:</strong></p>
+<p><strong>macOS / Linux (Ubuntu):</strong></p>
+<pre data-lang="bash"><code>ls ~/.claude/projects/
+# Each subfolder is a project; inside are session JSON files</code></pre>
+<p><strong>Windows (WSL):</strong></p>
+<pre data-lang="bash"><code>ls ~/.claude/projects/</code></pre>
+<hr>
+<h2 id="large-file-handling">Large File Handling<a href="#large-file-handling" class="anchor-link">#</a></h2>
+<p>When you ask Claude to read a very large file, it may partially read it or summarize sections to fit in context.</p>
+<p><strong>Tips for large files:</strong></p>
+<pre><code>&gt; read just the authentication-related functions in this 5000-line file
+&gt; show me only the first 100 lines of the migration file
+&gt; what's in the getUserById function in models/user.js? (not the whole file)</code></pre>
+<p>If you're regularly working with large files, consider:</p>
+<ol>
+<li>Asking about specific functions rather than whole files</li>
+<li>Using subagents to explore large codebases</li>
+<li>Using MCP servers to query databases or APIs rather than loading data into chat</li>
+</ol>
+<hr>
+<h2 id="extended-context-1m-tokens">Extended Context (1M tokens)<a href="#extended-context-1m-tokens" class="anchor-link">#</a></h2>
+<p>Some organizations have access to an extended 1M token context window. With this, you can:</p>
+<ul>
+<li>Load entire codebases into context</li>
+<li>Work on very long documents</li>
+<li>Keep weeks of conversation history</li>
+</ul>
+<p>Contact your Anthropic admin to enable extended context for your organization.</p>
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js"></script>
+</body>
+</html>
