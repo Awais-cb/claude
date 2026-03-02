@@ -38,7 +38,7 @@
   --content-max: 860px;
 }
 
-html { font-size: 16px; scroll-behavior: smooth; overflow-x: hidden; }
+html { font-size: 16px; scroll-behavior: smooth; }
 
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -51,7 +51,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
 }
 
 /* === Layout === */
@@ -210,13 +209,17 @@ body {
 .content {
   margin-left: var(--sidebar-w);
   flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
   background: var(--bg);
 }
 .article {
   max-width: var(--content-max);
+  width: 100%;
   padding: 3rem 3.75rem;
   margin: 0 auto;
   font-size: 1.0125rem;
+  box-sizing: border-box;
 }
 
 /* === Typography === */
@@ -633,6 +636,10 @@ h3:hover .anchor-link, h4:hover .anchor-link { opacity: 1; }
   color: var(--text-3);
 }
 .qrc-arr { display: none; }
+@media (max-width: 768px) {
+  /* Allow pills to wrap text on mobile so they never exceed viewport width */
+  .qrc-item { white-space: normal; max-width: 100%; }
+}
 @media (max-width: 640px) {
   .qrc-body, .qrc-body.cols-2 { padding: 0.625rem 0.875rem; gap: 0.3rem; }
 }
