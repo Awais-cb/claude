@@ -17,30 +17,34 @@ const NAV = [
     icon: "⌨️",
     items: [
       { title: "Overview",              path: "claude-code/index.html" },
+      // Phase 1 — Get Up and Running
       { title: "Getting Started",       path: "claude-code/getting-started.html" },
+      { title: "Permissions & Safety",  path: "claude-code/permissions.html" },
       { title: "CLI Commands & Flags",  path: "claude-code/cli-commands.html" },
       { title: "Slash Commands",        path: "claude-code/slash-commands.html" },
       { title: "Keyboard Shortcuts",    path: "claude-code/keyboard-shortcuts.html" },
+      // Phase 2 — Work Smarter Every Day
       { title: "CLAUDE.md",             path: "claude-code/claude-md.html" },
-      { title: "Memory System",         path: "claude-code/memory-system.html" },
-      { title: "Permissions & Safety",  path: "claude-code/permissions.html" },
       { title: "Plan Mode",             path: "claude-code/plan-mode.html" },
-      { title: "Extended Thinking",     path: "claude-code/thinking-mode.html" },
-      { title: "Fast Mode",             path: "claude-code/fast-mode.html" },
+      { title: "Context Management",    path: "claude-code/context-management.html" },
+      { title: "Git Integration",       path: "claude-code/git-integration.html" },
+      { title: "Memory System",         path: "claude-code/memory-system.html" },
+      { title: "Cost Tracking",         path: "claude-code/cost-tracking.html" },
+      // Phase 3 — Unlock Power Features
       { title: "Subagents",             path: "claude-code/subagents.html" },
       { title: "Skills",                path: "claude-code/skills.html" },
       { title: "Hooks",                 path: "claude-code/hooks.html" },
       { title: "MCP Servers",           path: "claude-code/mcp-servers.html" },
-      { title: "Git Integration",       path: "claude-code/git-integration.html" },
-      { title: "IDE Integration",       path: "claude-code/ide-integration.html" },
       { title: "Settings & Config",     path: "claude-code/settings.html" },
-      { title: "Context Management",    path: "claude-code/context-management.html" },
-      { title: "Task List",             path: "claude-code/task-list.html" },
-      { title: "Output Formats",        path: "claude-code/output-formats.html" },
-      { title: "Vision & Multimodal",   path: "claude-code/vision-multimodal.html" },
-      { title: "Chrome Integration",    path: "claude-code/chrome-integration.html" },
+      { title: "Extended Thinking",     path: "claude-code/thinking-mode.html" },
+      // Phase 4 — Specialise for Your Setup
       { title: "Headless Mode",         path: "claude-code/headless-mode.html" },
-      { title: "Cost Tracking",         path: "claude-code/cost-tracking.html" }
+      { title: "Output Formats",        path: "claude-code/output-formats.html" },
+      { title: "IDE Integration",       path: "claude-code/ide-integration.html" },
+      { title: "Fast Mode",             path: "claude-code/fast-mode.html" },
+      { title: "Task List",             path: "claude-code/task-list.html" },
+      { title: "Vision & Multimodal",   path: "claude-code/vision-multimodal.html" },
+      { title: "Chrome Integration",    path: "claude-code/chrome-integration.html" }
     ]
   },
   {
