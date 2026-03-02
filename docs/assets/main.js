@@ -412,6 +412,18 @@ function injectSearchModal() {
   });
 }
 
+// ── Table scroll wrappers ─────────────────────────────────────
+
+function wrapTables() {
+  document.querySelectorAll(".article table").forEach(table => {
+    if (table.parentElement.classList.contains("table-wrap")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "table-wrap";
+    table.parentNode.insertBefore(wrap, table);
+    wrap.appendChild(table);
+  });
+}
+
 // ── Init ──────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -420,4 +432,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initSearch();
   scrollActiveLink();
   injectSearchModal();
+  wrapTables();
 });
