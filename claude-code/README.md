@@ -31,6 +31,7 @@ claude
 ### Configuration & Instructions
 | File | What it covers |
 |------|---------------|
+| [claude-folder-system.md](claude-folder-system.md) | The `.claude` folder system — all features by level (project, user, system) |
 | [claude-md.md](claude-md.md) | CLAUDE.md project instructions — teach Claude about your project |
 | [memory-system.md](memory-system.md) | Auto-memory (MEMORY.md) — Claude remembers across sessions |
 | [settings.md](settings.md) | settings.json, environment variables, all config options |
@@ -102,6 +103,7 @@ claude-code/
 ├── cli-commands.md
 ├── slash-commands.md
 ├── keyboard-shortcuts.md
+├── claude-folder-system.md
 ├── claude-md.md
 ├── memory-system.md
 ├── settings.md

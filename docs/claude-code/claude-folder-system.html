@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>.claude Folder System — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css?v=eaf4794">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="claude-folder-system">The <code>.claude</code> Folder System<a href="#claude-folder-system" class="anchor-link">#</a></h1>
+
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Levels</div>
+    <a class="qrc-item" href="#system-level-managed-policy"><code class="qrc-k">/etc/claude-code/</code><span class="qrc-d">System-wide (IT/admin, highest priority)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#user-level-claude"><code class="qrc-k">~/.claude/</code><span class="qrc-d">Your personal config across all projects</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#project-level-claude"><code class="qrc-k">.claude/</code><span class="qrc-d">Team-shared, committed to git</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#local-overrides"><code class="qrc-k">CLAUDE.local.md</code><span class="qrc-d">Your personal project overrides (not committed)</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Features</div>
+    <a class="qrc-item" href="#full-feature-map-by-level"><code class="qrc-k">settings.json</code><span class="qrc-d">Config at every level</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#full-feature-map-by-level"><code class="qrc-k">CLAUDE.md</code><span class="qrc-d">Instructions at every level</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#full-feature-map-by-level"><code class="qrc-k">rules/ · skills/ · agents/</code><span class="qrc-d">User or project scope</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#full-feature-map-by-level"><code class="qrc-k">.mcp.json</code><span class="qrc-d">Team-shared MCP servers</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#how-each-feature-resolves-across-levels"><code class="qrc-k">Priority order</code><span class="qrc-d">Which level wins when they conflict</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#quick-reference-what-to-put-where"><code class="qrc-k">What goes where?</code><span class="qrc-d">Quick decision table</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
+
+<p>Claude Code uses a layered folder system to let you configure behaviour at three distinct levels: your whole machine, a specific project, and personal overrides within a project. Think of it like CSS inheritance — more specific levels override broader ones, and each level serves a different purpose.</p>
+
+<p>Understanding this system means you can write an instruction once and have it apply everywhere it's relevant, share team settings without exposing personal preferences, and lock down behaviour for your whole organisation without touching individual projects.</p>
+
+<hr>
+
+<h2 id="the-three-levels-at-a-glance">The Three Levels at a Glance<a href="#the-three-levels-at-a-glance" class="anchor-link">#</a></h2>
+
+<pre><code>/etc/claude-code/              ← System-wide  (managed by IT/admin, highest priority)
+~/.claude/                     ← User-wide    (your personal config, all projects)
+your-project/.claude/          ← Project      (team-shared, committed to git)
+your-project/CLAUDE.local.md   ← Local        (your personal project overrides, not committed)</code></pre>
+
+<p>When the same setting exists at multiple levels, this priority order decides which wins:</p>
+
+<pre><code>Priority (highest → lowest):
+──────────────────────────────────────────────────────────────────
+1. Managed policy   /etc/claude-code/  or  C:\Program Files\ClaudeCode\
+         │  wins over
+2. Local override   .claude/settings.local.json  (you, this repo only)
+         │  wins over
+3. Project          .claude/settings.json  (whole team, committed)
+         │  wins over
+4. User-wide        ~/.claude/settings.json  (you, all projects)</code></pre>
+
+<hr>
+
+<h2 id="full-feature-map-by-level">Full Feature Map by Level<a href="#full-feature-map-by-level" class="anchor-link">#</a></h2>
+
+<div class="table-wrap"><table>
+<thead><tr>
+  <th>Feature</th>
+  <th>System (managed)</th>
+  <th>User <code>~/.claude/</code></th>
+  <th>Project <code>.claude/</code></th>
+  <th>Local</th>
+</tr></thead>
+<tbody>
+<tr><td>Settings (<code>settings.json</code>)</td><td><code>managed-settings.json</code></td><td><code>settings.json</code></td><td><code>settings.json</code></td><td><code>settings.local.json</code></td></tr>
+<tr><td>Project instructions</td><td><code>CLAUDE.md</code></td><td><code>CLAUDE.md</code></td><td><code>CLAUDE.md</code> or <code>../CLAUDE.md</code></td><td><code>../CLAUDE.local.md</code></td></tr>
+<tr><td>Scoped rules</td><td>—</td><td><code>rules/</code></td><td><code>rules/</code></td><td>—</td></tr>
+<tr><td>Hooks</td><td>via <code>managed-settings.json</code></td><td>via <code>settings.json</code></td><td>via <code>settings.json</code></td><td>via <code>settings.local.json</code></td></tr>
+<tr><td>MCP servers</td><td><code>managed-mcp.json</code></td><td><code>~/.claude.json</code></td><td><code>.mcp.json</code></td><td><code>~/.claude.json</code> (per-project)</td></tr>
+<tr><td>Skills / commands</td><td>via managed settings</td><td><code>skills/</code></td><td><code>skills/</code></td><td>—</td></tr>
+<tr><td>Subagents</td><td>—</td><td><code>agents/</code></td><td><code>agents/</code></td><td>—</td></tr>
+<tr><td>Auto memory</td><td>—</td><td><code>projects/&lt;repo&gt;/memory/</code></td><td>—</td><td>—</td></tr>
+<tr><td>Permissions</td><td>via <code>managed-settings.json</code></td><td>via <code>settings.json</code></td><td>via <code>settings.json</code></td><td>via <code>settings.local.json</code></td></tr>
+</tbody>
+</table></div>
+
+<hr>
+
+<h2 id="system-level-managed-policy">System Level (Managed Policy)<a href="#system-level-managed-policy" class="anchor-link">#</a></h2>
+
+<p>The system level is for organisations that need to enforce configuration across all developer machines. These files are deployed by IT/DevOps using MDM, Group Policy, Ansible, or similar tools. Individual users cannot override them.</p>
+
+<h3 id="system-file-paths">File paths<a href="#system-file-paths" class="anchor-link">#</a></h3>
+
+<div class="table-wrap"><table>
+<thead><tr><th>OS</th><th>Directory</th></tr></thead>
+<tbody>
+<tr><td>macOS</td><td><code>/Library/Application Support/ClaudeCode/</code></td></tr>
+<tr><td>Linux / WSL</td><td><code>/etc/claude-code/</code></td></tr>
+<tr><td>Windows</td><td><code>C:\Program Files\ClaudeCode\</code></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="what-lives-in-system">What lives here<a href="#what-lives-in-system" class="anchor-link">#</a></h3>
+
+<p><strong><code>managed-settings.json</code></strong> — organisation-wide settings that no user can override. Everything in the regular <code>settings.json</code> format is valid here: permissions, hooks, allowed tools, environment variables.</p>
+
+<pre data-lang="json"><code>{
+  "permissions": {
+    "deny": ["Bash(rm -rf *)"]
+  },
+  "env": {
+    "CLAUDE_DISABLE_TELEMETRY": "1"
+  }
+}</code></pre>
+
+<p><strong><code>managed-mcp.json</code></strong> — a fixed list of MCP servers. When this file exists, users cannot add, modify, or remove any MCP server. It uses the same format as <code>.mcp.json</code>:</p>
+
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}</code></pre>
+
+<p><strong><code>CLAUDE.md</code></strong> — organisation-wide instructions that load in every session and cannot be excluded by any user-level setting. Use it for company coding standards, security policies, or compliance requirements.</p>
+
+<blockquote><p><strong>Who this is for:</strong> Platform/DevOps teams rolling out Claude Code across an engineering org. Individual developers don't create files here.</p></blockquote>
+
+<hr>
+
+<h2 id="user-level-claude">User Level (<code>~/.claude/</code>)<a href="#user-level-claude" class="anchor-link">#</a></h2>
+
+<p>The user level lives in your home directory and applies to every project you open — your personal defaults that follow you everywhere. Nothing here is committed to a repo, so it stays private.</p>
+
+<pre><code>~/.claude/
+├── settings.json           # Your personal settings for all projects
+├── CLAUDE.md               # Instructions that apply across all your projects
+├── rules/                  # Personal rules loaded in every session
+│   ├── preferences.md
+│   └── workflows.md
+├── skills/                 # Personal custom commands available everywhere
+│   └── my-skill/
+│       └── SKILL.md
+├── agents/                 # Personal custom subagent definitions
+│   └── my-agent.md
+└── projects/               # Auto memory, one folder per git repo
+    └── my-project/
+        └── memory/
+            ├── MEMORY.md
+            └── debugging.md</code></pre>
+
+<h3 id="user-settings-json"><code>~/.claude/settings.json</code><a href="#user-settings-json" class="anchor-link">#</a></h3>
+<p>Your personal defaults. Good place for theme preferences, editor settings, and tools you always want available:</p>
+<pre data-lang="json"><code>{
+  "theme": "dark",
+  "model": "claude-sonnet-4-6",
+  "permissions": {
+    "allow": ["Bash(git *)"]
+  }
+}</code></pre>
+
+<h3 id="user-claude-md"><code>~/.claude/CLAUDE.md</code><a href="#user-claude-md" class="anchor-link">#</a></h3>
+<p>Instructions Claude reads at the start of every session across all your projects. Useful for personal coding style preferences, shortcuts, or workflows that aren't project-specific.</p>
+
+<h3 id="user-rules"><code>~/.claude/rules/</code><a href="#user-rules" class="anchor-link">#</a></h3>
+<p>Personal rules that load in every session. Rules can be scoped to specific file types using YAML frontmatter:</p>
+<pre data-lang="markdown"><code>---
+paths:
+  - "**/*.test.ts"
+---
+
+# My Testing Preferences
+
+- Use `describe`/`it` blocks, not `test()`
+- Always assert on the specific value, not just `toBeTruthy()`</code></pre>
+<p>Rules without a <code>paths</code> field load unconditionally. Rules in subdirectories are discovered recursively.</p>
+
+<h3 id="user-skills"><code>~/.claude/skills/</code><a href="#user-skills" class="anchor-link">#</a></h3>
+<p>Personal custom <code>/commands</code> available in every project. Each skill is a directory containing a <code>SKILL.md</code>:</p>
+<pre><code>~/.claude/skills/
+├── explain-code/
+│   └── SKILL.md        → /explain-code command
+└── daily-standup/
+    └── SKILL.md        → /daily-standup command</code></pre>
+
+<h3 id="user-agents"><code>~/.claude/agents/</code><a href="#user-agents" class="anchor-link">#</a></h3>
+<p>Personal subagent definitions available in every project.</p>
+
+<h3 id="user-memory"><code>~/.claude/projects/&lt;repo&gt;/memory/</code><a href="#user-memory" class="anchor-link">#</a></h3>
+<p>Auto memory is stored here — notes Claude writes for itself as it works with you. Each git repository gets its own subdirectory, so memories don't bleed across projects.</p>
+<pre><code>~/.claude/projects/my-project/memory/
+├── MEMORY.md           # Concise index (first 200 lines loaded each session)
+├── debugging.md        # Detailed debugging notes
+└── api-conventions.md  # API design patterns Claude observed</code></pre>
+<p>You never need to create these files manually. Claude manages them automatically. The <code>/memory</code> command lets you browse what's been saved.</p>
+
+<hr>
+
+<h2 id="project-level-claude">Project Level (<code>.claude/</code>)<a href="#project-level-claude" class="anchor-link">#</a></h2>
+
+<p>The project <code>.claude/</code> directory lives at the root of your repository and gets committed to git. It's shared with your whole team and defines how Claude behaves for anyone working on that project.</p>
+
+<pre><code>your-project/
+├── CLAUDE.md               # Team-shared project instructions
+├── CLAUDE.local.md         # Your personal overrides (add to .gitignore)
+├── .mcp.json               # Team-shared MCP server list
+└── .claude/
+    ├── settings.json       # Team-shared project settings
+    ├── settings.local.json # Your personal local overrides
+    ├── CLAUDE.md           # Alternative location for project instructions
+    ├── rules/              # Scoped instruction files
+    │   ├── testing.md
+    │   ├── api-design.md
+    │   └── security.md
+    ├── skills/             # Project-specific custom commands
+    │   └── deploy/
+    │       └── SKILL.md
+    └── agents/             # Project-specific subagent definitions
+        └── reviewer.md</code></pre>
+
+<h3 id="project-settings-json"><code>.claude/settings.json</code><a href="#project-settings-json" class="anchor-link">#</a></h3>
+<p>Settings that apply to everyone on the team. Commit this file to version control:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": ["Bash(npm run *)"],
+    "deny": ["Bash(npm publish)"]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "npm run lint --fix" }]
+      }
+    ]
+  }
+}</code></pre>
+
+<h3 id="project-claude-md"><code>CLAUDE.md</code> or <code>.claude/CLAUDE.md</code><a href="#project-claude-md" class="anchor-link">#</a></h3>
+<p>Project instructions shared with the whole team. Both locations work identically. Run <code>/init</code> to auto-generate a starting file from your codebase.</p>
+<p>Common things to include:</p>
+<ul>
+  <li>Build and test commands</li>
+  <li>Project architecture overview</li>
+  <li>Coding standards and naming conventions</li>
+  <li>Which patterns to use or avoid</li>
+  <li>Common workflows (how to add a feature, run migrations, etc.)</li>
+</ul>
+
+<h3 id="project-rules"><code>.claude/rules/</code><a href="#project-rules" class="anchor-link">#</a></h3>
+<p>Modular instruction files for larger projects. Split your instructions by topic and optionally scope them to specific file types:</p>
+<pre><code>.claude/rules/
+├── code-style.md       # General style (no paths, always loads)
+├── testing.md          # Test conventions (no paths, always loads)
+├── api-handlers.md     # Scoped to src/api/**/*.ts
+└── migrations.md       # Scoped to database/migrations/**/*.ts</code></pre>
+
+<p>Example of a path-scoped rule:</p>
+<pre data-lang="markdown"><code>---
+paths:
+  - "src/api/**/*.ts"
+---
+
+# API Handler Rules
+
+- Every handler must validate request input before processing
+- Use the standard { success, data, error } response envelope
+- Log all 4xx and 5xx responses with request ID</code></pre>
+
+<blockquote><p><strong>Tip:</strong> Path-scoped rules only load into context when Claude works with matching files, saving context space compared to loading everything at once.</p></blockquote>
+
+<h3 id="project-mcp-json"><code>.mcp.json</code><a href="#project-mcp-json" class="anchor-link">#</a></h3>
+<p>Team-shared MCP server configuration, committed to git. Created automatically when you run <code>claude mcp add --scope project</code>:</p>
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "database": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@bytebase/dbhub", "--dsn", "${DATABASE_URL}"]
+    }
+  }
+}</code></pre>
+<p>Use <code>${ENV_VAR}</code> syntax to reference environment variables so secrets stay out of the file.</p>
+
+<h3 id="project-skills"><code>.claude/skills/</code><a href="#project-skills" class="anchor-link">#</a></h3>
+<p>Project-specific custom <code>/commands</code>. Only available when working in this repo:</p>
+<pre><code>.claude/skills/
+├── deploy/
+│   └── SKILL.md        → /deploy
+├── review-pr/
+│   └── SKILL.md        → /review-pr
+└── seed-db/
+    └── SKILL.md        → /seed-db</code></pre>
+
+<h3 id="project-agents"><code>.claude/agents/</code><a href="#project-agents" class="anchor-link">#</a></h3>
+<p>Project-specific subagent definitions for specialised tasks:</p>
+<pre><code>.claude/agents/
+├── backend-reviewer.md     → reviews backend code against project patterns
+└── migration-writer.md     → writes DB migrations following project conventions</code></pre>
+
+<hr>
+
+<h2 id="local-overrides">Local Overrides<a href="#local-overrides" class="anchor-link">#</a></h2>
+
+<p>Two mechanisms let you have personal project-specific config that's not committed to git.</p>
+
+<h3 id="claude-local-md"><code>CLAUDE.local.md</code><a href="#claude-local-md" class="anchor-link">#</a></h3>
+<p>Personal instructions for a specific project. Automatically excluded from git (Claude adds it to <code>.gitignore</code>). Use it for sandbox URLs, personal test data, or anything you don't want to share:</p>
+<pre data-lang="markdown"><code># My Local Notes
+
+- My local DB is on port 5433 (not the default 5432)
+- Test account: dev@example.com / password123
+- My local dev API key is in ~/.env.local</code></pre>
+
+<h3 id="settings-local-json"><code>.claude/settings.local.json</code><a href="#settings-local-json" class="anchor-link">#</a></h3>
+<p>Personal project settings that override the committed <code>.claude/settings.json</code> without changing it:</p>
+<pre data-lang="json"><code>{
+  "permissions": {
+    "allow": ["Bash(docker *)"]
+  },
+  "claudeMdExcludes": [
+    "**/legacy-service/CLAUDE.md"
+  ]
+}</code></pre>
+
+<blockquote><p><strong>Always add</strong> <code>.claude/settings.local.json</code> and <code>CLAUDE.local.md</code> to your <code>.gitignore</code>.</p></blockquote>
+
+<hr>
+
+<h2 id="how-each-feature-resolves-across-levels">How Each Feature Resolves Across Levels<a href="#how-each-feature-resolves-across-levels" class="anchor-link">#</a></h2>
+
+<h3 id="settings-resolution">Settings<a href="#settings-resolution" class="anchor-link">#</a></h3>
+<p>The most specific level wins for scalar values. For arrays (permission lists, allowed domains), values <strong>merge</strong> across all levels — so a permission allowed at user level stays allowed even if the project settings don't mention it.</p>
+<pre><code>Managed → cannot be overridden by anyone
+Local   → overrides Project
+Project → overrides User
+User    → baseline defaults</code></pre>
+
+<h3 id="claudemd-resolution">CLAUDE.md Files<a href="#claudemd-resolution" class="anchor-link">#</a></h3>
+<p>All CLAUDE.md files in the hierarchy load — they don't override each other, they stack. Claude reads the managed policy file, your user-level file, the project file, and any local file, combining them all as context. More specific files take precedence when instructions conflict.</p>
+
+<h3 id="skills-resolution">Skills<a href="#skills-resolution" class="anchor-link">#</a></h3>
+<p>When skills share the same name at multiple levels, the higher-priority location wins:</p>
+<pre><code>Managed → Enterprise (overrides all)
+User    → Personal  (~/.claude/skills/)
+Project → Team      (.claude/skills/)</code></pre>
+<p>Plugin skills use a <code>plugin-name:skill-name</code> namespace and never conflict with the above.</p>
+
+<h3 id="mcp-resolution">MCP Servers<a href="#mcp-resolution" class="anchor-link">#</a></h3>
+<p>When servers with the same name exist at multiple scopes, local takes precedence:</p>
+<pre><code>Managed  (managed-mcp.json)    → exclusive control, users cannot add servers
+Local    (~/.claude.json)       → your override for this project
+Project  (.mcp.json)            → team-shared
+User     (~/.claude.json)       → your personal servers, all projects</code></pre>
+
+<h3 id="hooks-resolution">Hooks<a href="#hooks-resolution" class="anchor-link">#</a></h3>
+<p>Hooks are defined inside <code>settings.json</code> at any level. The most specific level's hooks for a given event take effect. User-level hooks run for all projects unless the project defines hooks for the same event.</p>
+
+<hr>
+
+<h2 id="quick-reference-what-to-put-where">Quick Reference: What to Put Where<a href="#quick-reference-what-to-put-where" class="anchor-link">#</a></h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>What you want to configure</th><th>Where to put it</th></tr></thead>
+<tbody>
+<tr><td>Company coding standards enforced everywhere</td><td>System: <code>managed-settings.json</code> + <code>CLAUDE.md</code></td></tr>
+<tr><td>Your personal code style across all projects</td><td>User: <code>~/.claude/CLAUDE.md</code></td></tr>
+<tr><td>Team-shared project architecture notes</td><td>Project: <code>CLAUDE.md</code></td></tr>
+<tr><td>Your personal sandbox URLs and test data</td><td>Local: <code>CLAUDE.local.md</code></td></tr>
+<tr><td>Allow a tool for all your projects</td><td>User: <code>~/.claude/settings.json</code> → <code>permissions.allow</code></td></tr>
+<tr><td>Restrict a tool for the whole team</td><td>Project: <code>.claude/settings.json</code> → <code>permissions.deny</code></td></tr>
+<tr><td>Auto-format on every file edit (team)</td><td>Project: <code>.claude/settings.json</code> → <code>hooks</code></td></tr>
+<tr><td>Your preferred model</td><td>User: <code>~/.claude/settings.json</code> → <code>model</code></td></tr>
+<tr><td>Connect to a shared team database</td><td>Project: <code>.mcp.json</code></td></tr>
+<tr><td>Connect to a personal API you use everywhere</td><td>User scope: <code>claude mcp add --scope user ...</code></td></tr>
+<tr><td>A <code>/deploy</code> command for the team</td><td>Project: <code>.claude/skills/deploy/SKILL.md</code></td></tr>
+<tr><td>A <code>/my-review</code> command just for you</td><td>User: <code>~/.claude/skills/my-review/SKILL.md</code></td></tr>
+<tr><td>Rules for API files only</td><td>Project: <code>.claude/rules/api.md</code> with <code>paths:</code> frontmatter</td></tr>
+</tbody>
+</table></div>
+
+<hr>
+
+<h2 id="practical-setup-for-a-new-project">Practical Setup for a New Project<a href="#practical-setup-for-a-new-project" class="anchor-link">#</a></h2>
+
+<pre data-lang="bash"><code># 1. Generate a starting CLAUDE.md from your codebase
+claude "/init"
+
+# 2. Add team MCP servers to .mcp.json
+claude mcp add --scope project --transport http github https://api.githubcopilot.com/mcp/
+
+# 3. Create a project settings file
+cat > .claude/settings.json &lt;&lt; 'EOF'
+{
+  "permissions": {
+    "allow": ["Bash(npm run *)"]
+  }
+}
+EOF
+
+# 4. Add local overrides files to .gitignore
+echo "CLAUDE.local.md" >> .gitignore
+echo ".claude/settings.local.json" >> .gitignore
+
+# 5. Create your personal local instructions
+cat > CLAUDE.local.md &lt;&lt; 'EOF'
+# My Local Notes
+- Local DB on port 5433
+- Dev server: http://localhost:3001
+EOF</code></pre>
+
+<hr>
+
+<h2 id="related-docs">Related Docs<a href="#related-docs" class="anchor-link">#</a></h2>
+<ul>
+  <li><a href="claude-md.html">CLAUDE.md</a> — writing effective CLAUDE.md files</li>
+  <li><a href="settings.html">Settings</a> — full settings reference</li>
+  <li><a href="hooks.html">Hooks</a> — automating workflows with hooks</li>
+  <li><a href="mcp-servers.html">MCP Servers</a> — connecting Claude to external tools</li>
+  <li><a href="skills.html">Skills</a> — building custom <code>/commands</code></li>
+  <li><a href="memory-system.html">Memory System</a> — auto memory and MEMORY.md</li>
+  <li><a href="permissions.html">Permissions</a> — controlling what Claude can do</li>
+</ul>
+
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js?v=eaf4794"></script>
+</body>
+</html>

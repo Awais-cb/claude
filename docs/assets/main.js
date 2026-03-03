@@ -34,7 +34,9 @@ const NAV = [
       { title: "Subagents",             path: "claude-code/subagents.html" },
       { title: "Skills",                path: "claude-code/skills.html" },
       { title: "Hooks",                 path: "claude-code/hooks.html" },
+      { title: "Plugins",               path: "claude-code/plugins.html" },
       { title: "MCP Servers",           path: "claude-code/mcp-servers.html" },
+      { title: ".claude Folder System",  path: "claude-code/claude-folder-system.html" },
       { title: "Settings & Config",     path: "claude-code/settings.html" },
       { title: "Extended Thinking",     path: "claude-code/thinking-mode.html" },
       // Phase 4 — Specialise for Your Setup

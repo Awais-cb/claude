@@ -4,7 +4,7 @@ A complete, beginner-friendly reference for every feature of **Claude Code** —
 
 ## What's Inside
 
-24 guides covering everything from getting started to advanced automation:
+25 guides covering everything from getting started to advanced automation:
 
 | Guide | Description |
 |-------|-------------|
@@ -24,6 +24,7 @@ A complete, beginner-friendly reference for every feature of **Claude Code** —
 | [MCP Servers](claude-code/mcp-servers.md) | Connect Claude to external tools |
 | [Git Integration](claude-code/git-integration.md) | Commits, PRs, worktrees, GitHub |
 | [IDE Integration](claude-code/ide-integration.md) | VS Code and JetBrains extensions |
+| [.claude Folder System](claude-code/claude-folder-system.md) | Every feature manageable via project, user, and system `.claude` folders |
 | [Settings](claude-code/settings.md) | settings.json and environment variables |
 | [Context Management](claude-code/context-management.md) | Context window, compaction, rewind |
 | [Task List](claude-code/task-list.md) | Built-in progress tracking |

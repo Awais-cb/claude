@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" data-depth="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plugins — Claude Code Docs</title>
+  <link rel="stylesheet" href="../assets/style.css?v=eaf4794">
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="../index.html"><span class="logo-icon">⚡</span><span class="logo-text">Claude Code<br><small>Docs</small></span></a>
+      </div>
+      <div class="sidebar-search">
+        <input type="search" placeholder="Search…" id="searchInput" autocomplete="off">
+      </div>
+      <nav id="sidebarNav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <main class="content">
+      <article class="article">
+        <h1 id="plugins">Plugins — Package &amp; Share Extensions<a href="#plugins" class="anchor-link">#</a></h1>
+
+<div class="qrc">
+  <div class="qrc-head">
+    <span class="qrc-title">⚡ Quick Reference</span>
+    <span class="qrc-hint">click any row to jump to that section</span>
+  </div>
+  <div class="qrc-body cols-2">
+    <div class="qrc-group">Structure</div>
+    <a class="qrc-item" href="#plugin-structure"><code class="qrc-k">.claude-plugin/plugin.json</code><span class="qrc-d">Plugin manifest (name, version, description)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#plugin-structure"><code class="qrc-k">skills/</code><span class="qrc-d">Custom /commands (namespaced)</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#plugin-structure"><code class="qrc-k">agents/</code><span class="qrc-d">Custom subagent definitions</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#plugin-structure"><code class="qrc-k">hooks/hooks.json</code><span class="qrc-d">Event hooks for the plugin</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#plugin-structure"><code class="qrc-k">.mcp.json</code><span class="qrc-d">MCP servers bundled with the plugin</span><span class="qrc-arr">↓</span></a>
+    <div class="qrc-group">Usage</div>
+    <a class="qrc-item" href="#test-locally"><code class="qrc-k">claude --plugin-dir ./my-plugin</code><span class="qrc-d">Load plugin for this session</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#managing-plugins"><code class="qrc-k">/plugin</code><span class="qrc-d">Manage installed plugins</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#skill-namespacing"><code class="qrc-k">/my-plugin:skill-name</code><span class="qrc-d">Invoke a plugin skill</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#plugins-vs-standalone"><code class="qrc-k">Plugins vs .claude/</code><span class="qrc-d">When to use each approach</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#convert-to-plugin"><code class="qrc-k">Migrate from .claude/</code><span class="qrc-d">Convert existing config to a plugin</span><span class="qrc-arr">↓</span></a>
+    <a class="qrc-item" href="#share-plugins"><code class="qrc-k">Share &amp; distribute</code><span class="qrc-d">Publish via marketplace</span><span class="qrc-arr">↓</span></a>
+  </div>
+</div>
+
+<p>Plugins let you package skills, agents, hooks, and MCP servers into a single shareable unit. Instead of manually copying <code>.claude/</code> files across projects or teammates' machines, you create a plugin once and install it anywhere.</p>
+
+<pre><code>Standalone (.claude/)         Plugin
+─────────────────────         ──────────────────────────
+Available in one project  →   Shared via marketplaces
+Files copied manually     →   Installed with /plugin
+Short names: /hello       →   Namespaced: /my-plugin:hello
+No version tracking       →   Semantic versioning</code></pre>
+
+<hr>
+
+<h2 id="plugins-vs-standalone">Plugins vs Standalone Config<a href="#plugins-vs-standalone" class="anchor-link">#</a></h2>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Use standalone <code>.claude/</code> when…</th><th>Use a plugin when…</th></tr></thead>
+<tbody>
+<tr><td>Customising a single project</td><td>Sharing with your team or community</td></tr>
+<tr><td>Personal config, doesn't need sharing</td><td>Same skills/agents needed across multiple projects</td></tr>
+<tr><td>Quick experiments</td><td>You want version control and easy updates</td></tr>
+<tr><td>You want short names like <code>/hello</code></td><td>Distributing through a marketplace</td></tr>
+</tbody>
+</table></div>
+
+<blockquote><p><strong>Tip:</strong> Start with <code>.claude/</code> for quick iteration, then convert to a plugin when you're ready to share.</p></blockquote>
+
+<hr>
+
+<h2 id="plugin-structure">Plugin Structure<a href="#plugin-structure" class="anchor-link">#</a></h2>
+
+<pre><code>my-plugin/
+├── .claude-plugin/
+│   └── plugin.json         ← manifest (required)
+├── skills/
+│   └── code-review/
+│       └── SKILL.md        ← creates /my-plugin:code-review
+├── agents/
+│   └── reviewer.md         ← custom subagent
+├── hooks/
+│   └── hooks.json          ← event hooks
+├── .mcp.json               ← bundled MCP servers
+├── settings.json           ← default settings
+└── README.md               ← user documentation</code></pre>
+
+<blockquote><p><strong>Common mistake:</strong> Only <code>plugin.json</code> goes inside <code>.claude-plugin/</code>. All other directories (<code>skills/</code>, <code>agents/</code>, <code>hooks/</code>) must be at the plugin root level.</p></blockquote>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Directory/File</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>.claude-plugin/plugin.json</code></td><td>Plugin manifest — name, version, description</td></tr>
+<tr><td><code>skills/</code></td><td>Agent Skills (<code>SKILL.md</code> files)</td></tr>
+<tr><td><code>commands/</code></td><td>Legacy skills as plain Markdown files</td></tr>
+<tr><td><code>agents/</code></td><td>Custom subagent definitions</td></tr>
+<tr><td><code>hooks/hooks.json</code></td><td>Event hook configuration</td></tr>
+<tr><td><code>.mcp.json</code></td><td>MCP server configurations bundled with the plugin</td></tr>
+<tr><td><code>.lsp.json</code></td><td>LSP server configs for code intelligence</td></tr>
+<tr><td><code>settings.json</code></td><td>Default settings applied when plugin is enabled</td></tr>
+</tbody>
+</table></div>
+
+<hr>
+
+<h2 id="create-a-plugin">Create a Plugin<a href="#create-a-plugin" class="anchor-link">#</a></h2>
+
+<h3>1. Create the directory and manifest</h3>
+<pre data-lang="bash"><code>mkdir -p my-plugin/.claude-plugin</code></pre>
+
+<p>Create <code>my-plugin/.claude-plugin/plugin.json</code>:</p>
+<pre data-lang="json"><code>{
+  "name": "my-plugin",
+  "description": "My custom Claude Code extensions",
+  "version": "1.0.0",
+  "author": {
+    "name": "Your Name"
+  }
+}</code></pre>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>Unique identifier and skill namespace. Skills become <code>/my-plugin:skill-name</code>.</td></tr>
+<tr><td><code>description</code></td><td>Shown in the plugin manager.</td></tr>
+<tr><td><code>version</code></td><td>Semantic versioning for releases.</td></tr>
+<tr><td><code>author</code></td><td>Optional attribution.</td></tr>
+</tbody>
+</table></div>
+
+<h3>2. Add a skill</h3>
+<pre data-lang="bash"><code>mkdir -p my-plugin/skills/hello</code></pre>
+
+<p>Create <code>my-plugin/skills/hello/SKILL.md</code>:</p>
+<pre data-lang="yaml"><code>---
+description: Greet the user with a friendly message
+---
+
+Greet the user named "$ARGUMENTS" warmly and ask how you can help.</code></pre>
+
+<h3 id="test-locally">3. Test locally</h3>
+<pre data-lang="bash"><code>claude --plugin-dir ./my-plugin</code></pre>
+<pre><code>/my-plugin:hello Alex</code></pre>
+
+<p>Load multiple plugins at once:</p>
+<pre data-lang="bash"><code>claude --plugin-dir ./plugin-one --plugin-dir ./plugin-two</code></pre>
+
+<hr>
+
+<h2 id="skill-namespacing">Skill Namespacing<a href="#skill-namespacing" class="anchor-link">#</a></h2>
+
+<p>Plugin skills are always namespaced to prevent conflicts. A <code>hello</code> skill in a plugin named <code>my-plugin</code> becomes <code>/my-plugin:hello</code>. To change the prefix, update the <code>name</code> field in <code>plugin.json</code>.</p>
+
+<p>Claude's auto-invocation still works — if the skill description matches your prompt, Claude loads it without you typing the full command.</p>
+
+<hr>
+
+<h2 id="add-hooks">Add Hooks to a Plugin<a href="#add-hooks" class="anchor-link">#</a></h2>
+
+<p>Create <code>my-plugin/hooks/hooks.json</code> with the same format as <code>settings.json</code> hooks:</p>
+
+<pre data-lang="json"><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path' | xargs npm run lint:fix"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+<hr>
+
+<h2 id="add-mcp-servers">Bundle MCP Servers<a href="#add-mcp-servers" class="anchor-link">#</a></h2>
+
+<p>Create <code>my-plugin/.mcp.json</code> to include MCP servers that start automatically when the plugin is enabled:</p>
+
+<pre data-lang="json"><code>{
+  "mcpServers": {
+    "database-tools": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/db-server",
+      "args": ["--config", "${CLAUDE_PLUGIN_ROOT}/config.json"],
+      "env": {
+        "DB_URL": "${DB_URL}"
+      }
+    }
+  }
+}</code></pre>
+
+<p>Use <code>${CLAUDE_PLUGIN_ROOT}</code> for paths relative to the plugin directory. MCP server changes require restarting Claude Code to take effect.</p>
+
+<hr>
+
+<h2 id="default-settings">Default Settings<a href="#default-settings" class="anchor-link">#</a></h2>
+
+<p>Create <code>my-plugin/settings.json</code> to apply configuration when the plugin is enabled. Currently supports the <code>agent</code> key to activate a custom agent as the main thread:</p>
+
+<pre data-lang="json"><code>{
+  "agent": "security-reviewer"
+}</code></pre>
+
+<p>This activates the <code>security-reviewer</code> agent from the plugin's <code>agents/</code> directory, changing how Claude Code behaves by default when the plugin is enabled.</p>
+
+<hr>
+
+<h2 id="managing-plugins">Managing Plugins<a href="#managing-plugins" class="anchor-link">#</a></h2>
+
+<p>Use the <code>/plugin</code> command in Claude Code to manage installed plugins:</p>
+
+<pre><code>/plugin              # Open the plugin manager
+/plugin install      # Install a plugin from a marketplace
+/plugin list         # Show all installed plugins</code></pre>
+
+<p>Plugin skills appear in the <code>/</code> menu with their namespace prefix. Run <code>/mcp</code> to see MCP servers bundled by plugins.</p>
+
+<hr>
+
+<h2 id="convert-to-plugin">Convert Existing Config to a Plugin<a href="#convert-to-plugin" class="anchor-link">#</a></h2>
+
+<p>Already have skills or hooks in <code>.claude/</code>? Migrate them:</p>
+
+<pre data-lang="bash"><code># 1. Create plugin structure
+mkdir -p my-plugin/.claude-plugin
+
+# 2. Write the manifest
+cat > my-plugin/.claude-plugin/plugin.json << 'EOF'
+{
+  "name": "my-plugin",
+  "description": "Migrated from standalone configuration",
+  "version": "1.0.0"
+}
+EOF
+
+# 3. Copy existing files
+cp -r .claude/skills my-plugin/     # if you have skills
+cp -r .claude/commands my-plugin/   # if you have commands
+cp -r .claude/agents my-plugin/     # if you have agents
+
+# 4. Migrate hooks (copy the hooks object from settings.json)
+mkdir my-plugin/hooks
+# create my-plugin/hooks/hooks.json with your hooks
+
+# 5. Test it
+claude --plugin-dir ./my-plugin</code></pre>
+
+<div class="table-wrap"><table>
+<thead><tr><th>Standalone</th><th>Plugin equivalent</th></tr></thead>
+<tbody>
+<tr><td><code>.claude/skills/</code></td><td><code>my-plugin/skills/</code></td></tr>
+<tr><td><code>.claude/commands/</code></td><td><code>my-plugin/commands/</code></td></tr>
+<tr><td><code>.claude/agents/</code></td><td><code>my-plugin/agents/</code></td></tr>
+<tr><td>Hooks in <code>settings.json</code></td><td><code>my-plugin/hooks/hooks.json</code></td></tr>
+</tbody>
+</table></div>
+
+<hr>
+
+<h2 id="share-plugins">Share &amp; Distribute<a href="#share-plugins" class="anchor-link">#</a></h2>
+
+<p>When your plugin is ready to share:</p>
+
+<ol>
+  <li><strong>Add a README.md</strong> with installation and usage instructions</li>
+  <li><strong>Version it</strong> using semantic versioning in <code>plugin.json</code></li>
+  <li><strong>Publish to a marketplace</strong> — a marketplace is simply a directory or git repo listing plugins your team can install from <code>/plugin install</code></li>
+  <li><strong>Submit to the official Anthropic marketplace</strong> at <a href="https://claude.ai/settings/plugins/submit">claude.ai/settings/plugins/submit</a></li>
+</ol>
+
+<hr>
+
+<h2 id="troubleshooting">Troubleshooting<a href="#troubleshooting" class="anchor-link">#</a></h2>
+
+<p><strong>Plugin not loading:</strong> Confirm directories are at the plugin root, not inside <code>.claude-plugin/</code>. Only <code>plugin.json</code> belongs in <code>.claude-plugin/</code>.</p>
+
+<p><strong>Skills not appearing:</strong> Check the skill has a valid <code>SKILL.md</code> with frontmatter. Restart Claude Code after making changes.</p>
+
+<p><strong>MCP servers not starting:</strong> MCP server changes require restarting Claude Code. Run <code>/mcp</code> to see if the server appears in the list.</p>
+
+<p><strong>Wrong skill name:</strong> Skill names are always prefixed with the plugin's <code>name</code> field from <code>plugin.json</code>. Check that field matches what you expect.</p>
+
+<hr>
+
+<h2 id="related-docs">Related Docs<a href="#related-docs" class="anchor-link">#</a></h2>
+<ul>
+  <li><a href="skills.html">Skills</a> — building custom <code>/commands</code></li>
+  <li><a href="hooks.html">Hooks</a> — event-driven automation</li>
+  <li><a href="subagents.html">Subagents</a> — custom agent definitions</li>
+  <li><a href="mcp-servers.html">MCP Servers</a> — bundling external tool integrations</li>
+  <li><a href="claude-folder-system.html">.claude Folder System</a> — standalone config reference</li>
+</ul>
+
+      </article>
+    </main>
+  </div>
+  <script src="../assets/main.js?v=eaf4794"></script>
+</body>
+</html>
